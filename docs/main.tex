@@ -2,25 +2,27 @@
 \usepackage[utf8]{inputenc}
 
 \title{FPGA Example Design: Xilinx Zynq Board}
-\author{Project Team}
+\author{JITX Team}
 \date{\today}
 
 \begin{document}
 
 \maketitle
 
-\section{Project Goals}
+\section{Project Goals and Future Prospects}
 
-This project aims to create a simple FPGA example design using the JITX circuit board design tool. The primary objectives are:
-
+\subsection{Primary Objectives}
 \begin{itemize}
-    \item Design a basic Xilinx Zynq board
-    \item Implement essential components including Zynq SoC, DDR4 memory, and Flash memory
-    \item Integrate a simple ADC input fed from a Coax connector
-    \item Establish a foundation for more complex FPGA designs
-    \item Demonstrate the capabilities of JITX in FPGA board design
+    \item Develop an FPGA design of moderate complexity using JITX, serving as a comprehensive overview of the tool's capabilities.
+    \item Utilize this design as a stress test to identify and resolve bugs in the JITX toolchain, while ensuring adequate performance.
+    \item Create a compelling marketing asset: A Zynq-based board represents a significant engineering challenge. Successfully implementing this design demonstrates JITX's ability to handle complex projects, appealing to professionals already working with the Zynq platform and those engaged in projects of similar complexity.
 \end{itemize}
 
-The design will focus on core functionality while maintaining simplicity, serving as a starting point for future expansions and modifications.
+\subsection{Future Enhancements}
+\begin{itemize}
+    \item Refactor the codebase to improve reusability and parameterization, with the ultimate goal of integrating it into the JSL library.
+    \item Expand the design to interface with a VPX backplane, contingent upon the development of a VPX backplane generator. This addition would transform the project into a highly attractive example for specific industry players, such as Lockheed-Martin.
+    \item Potential to evolve into a world-class VPX backplane solution, further enhancing JITX's market position in specialized, high-performance computing applications.
+\end{itemize}
 
 \end{document}
