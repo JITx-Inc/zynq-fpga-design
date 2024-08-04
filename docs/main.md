@@ -31,16 +31,23 @@ Here's the key components of the design:
 
 ### FPGA device
 
-Considering *XCZU1CG-1UBVA494I*:
+Considering *XCZU2CG-L1SFVC784I*:
 
-- Driven by need to support DDR4 memory. Lower-cost Zynq-7000 series only support up to DDR3.
-- Lowest-cost Zynq Ultrascale+ part in stock on Digikey is XCZU1CG-1UBVA494I: $292.52
+- Supports DDR4 memory. (Lower-cost Zynq-7000 series only support up to DDR3.)
+- SFVC784 package supports from U1 to U5, which means we can easily later extend to support PCIe Gen3, and GTH highspeed transceivers.
+- In stock on Digikey: $406.25
 - Dual core Arm Cortex-A53 (APU) + Dual core Arm Cortex-R5F (RPU)
-- 81,900 Logic cells.
+- 103K Logic cells.
+
+TODO: Re-verify
 - 170 PS (Processing System) I/O, supporting 32-bit DDR4 only.
 - 24 HD (High-Density) I/O. 58 HP (High-Performance) I/O.
 
+Datasheet: ds891-zynq-ultrascale-plus-overview.pdf
+
 #### Supported DDR4 memory speed
+
+TODO: Re-verify section.
 
 - For UBVA494 package
 - For 1-rank components: Min 1000 Mb/s. Max 1866 Mb/s
@@ -50,6 +57,8 @@ Considering *XCZU1CG-1UBVA494I*:
 See Table 30 in *ds925-zynq-ultrascale-dc-ac-switching-characteristics.pdf*. 
 
 #### Selecting a memory configuration
+
+TODO: Re-verify section.
 
 1. Memory Type: DDR4
 2. Total Capacity: 4 GB (32 Gb)
@@ -63,6 +72,8 @@ This configuration uses two 16 Gb (2 GB) DDR4 chips, each with a x16 interface, 
 ### Memory ICs
 
 Based on above requirements Micron *MT40A1G16TD-062E AIT:F* seems to work. Currently in-stock at Digikey for $18.73.
+
+Datasheet: micron-MT40A1G16.pdf
 
 ## Selecting an ADC
 
@@ -80,3 +91,7 @@ Consider the Analog Devices *AD7091R-8BCPZ-RL7*.
 - Voltage 2.09V - 5.25V
 
 In stock for $9.93 at Digikey.
+
+Datasheet: AD7091R.pdf
+
+
