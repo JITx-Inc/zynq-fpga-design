@@ -6,8 +6,6 @@
     the resulting board is practically non-sensical without it.
     We should punt it to a later version if resulting board
     is still a reasonable design without ethernet. 
-- Choose a Coax SMA connector
-- Choose a filter for the incoming analog signal to feed into ADC.
 - What is JESD204B? Do we need to verify whether the chosen ADC adheres to this protocol?
 - Choose a power system.
 - Do something about the clock? Clock generation? Clock tree?
@@ -150,3 +148,16 @@ TODO: Initial reasoning (verify)
 
 Datasheet: opa1655.pdf
 
+### Supporting USB2.0 ###
+
+For PHY: Consider *USB3320C-EZK-TR*
+- 32-VFQFN Exposed Pad
+- Surface mount.
+- In stock for $2.17 at Digikey.
+
+Datasheet: usb3320.pdf
+
+For connector: Consider Amphenol *UE27AC5410H-ND*
+- In stock for $0.75 on Digikey
+
+Datasheet: amphenol-pue27acx4x0x.pdf
