@@ -8,8 +8,6 @@
     later version.
 - What is JESD204B? Do we need to verify whether the chosen ADC adheres to this protocol?
 - Choose a power system.
-- Do something about the clock? Clock generation? Clock tree?
-- Support JTAG somehow.
 
 ## Project Goals and Future Prospects
 
@@ -160,3 +158,20 @@ For connector: Consider Amphenol *UE27AC5410H-ND*
 - In stock for $0.75 on Digikey
 
 Datasheet: amphenol-pue27acx4x0x.pdf
+
+### Supporting JTAG ###
+
+Use a 2x7 pin header.
+
+### Supporting Clock ###
+
+- Need a 20ppm, 32.768KHz crystal.
+- Consider Abracon *ABS25-32.768KHZ-T*:
+  - SUrface mount.
+  - In stock for $0.49 at Digikey.
+  
+- Need a simple coin-cell battery to power the clock. E.g. SR1154
+- Consider Keystone *3002TR* battery retainer:
+  - Surface mount.
+  - In stock for $0.94 on Digikey.
+
