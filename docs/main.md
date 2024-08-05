@@ -175,3 +175,20 @@ Use a 2x7 pin header.
   - Surface mount.
   - In stock for $0.94 on Digikey.
 
+## Power System Design ##
+
+Reference: power-design-guide.pdf
+
+See the above document for an example design of a power system.
+
+For PMIC, Consider TI *TPS6508641RSKT*:
+- In stock for $11.03
+- Used by the power design reference manual.
+
+Datasheet: tps650864.pdf
+
+Need a buck converter to step down from wall power:
+Consider TI TPS54308DDCR:
+- In stock for $1.63
+
+Datasheet: tps54308.pdf
