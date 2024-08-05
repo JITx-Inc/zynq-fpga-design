@@ -7,7 +7,6 @@
     is practically non-sensical without it. Otherwise punt it to a
     later version.
 - What is JESD204B? Do we need to verify whether the chosen ADC adheres to this protocol?
-- Choose a power system.
 
 ## Project Goals and Future Prospects
 
