@@ -192,3 +192,40 @@ Consider TI TPS54308DDCR:
 - In stock for $1.63
 
 Datasheet: tps54308.pdf
+
+### List of Required Rails ###
+
+For the ZynQ:
+- VCCINT (core voltage for Zynq): 0.85V
+- VCCAUX: 1.8V
+- VCCO_PSDDR (for DDR4 interface): 1.2V
+- VCC_PSPLL: 1.8V
+- VCCBRAM: 0.85V
+
+For DDR4:
+- VDD: 1.2V
+- VDDQ: 1.2V
+- VTT: 0.6V
+
+For ADC:
+- 3.3V
+
+For Flash:
+- 3.3V
+
+For general-purpose I/O peripherals:
+- 3.3V
+
+Minimal Configuration:
+- 0.85V rail for VCCINT and VCCBRAM
+- 1.2V rail for VCCO_PSDDR and DDR4 VDD/VDDQ
+- 1.8V for VCCAUX, VCC_PSPLL
+- 3.3V for general I/O, ADC, Flash
+- 0.6V for DDR4 VTT
+
+TODO:
+- Select parts for push-button power-on/off control.
+- Compute caps, inductors, and resistors.
+- Select connector for wall power.
+- The TPS6508641 needs external FETS for BUCK1, BUCK2 and BUCK6.
+  Consider the CSD87381P NexFET power blocks.
