@@ -2,15 +2,14 @@
 
 ## TODO ##
 - Should we support ethernet on v0? If so, we will need a PHY chip.
-  - Patrick: We should support it if it makes bring up easier, or if
-    the resulting board is practically non-sensical without it.
-    We should punt it to a later version if resulting board
-    is still a reasonable design without ethernet. 
+  - Patrick: We should support it if it makes bring up easier, trivial
+    enough that we should just support it, or if the resulting board
+    is practically non-sensical without it. Otherwise punt it to a
+    later version.
 - What is JESD204B? Do we need to verify whether the chosen ADC adheres to this protocol?
 - Choose a power system.
 - Do something about the clock? Clock generation? Clock tree?
 - Support JTAG somehow.
-- Support USB 2.0 somehow.
 
 ## Project Goals and Future Prospects
 
