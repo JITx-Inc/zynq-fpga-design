@@ -1,5 +1,19 @@
 # FPGA Example Design: Xilinx Zynq Board
 
+## TODO ##
+- Should we support ethernet on v0? If so, we will need a PHY chip.
+  - Patrick: We should support it if it makes bring up easier, or if
+    the resulting board is practically non-sensical without it.
+    We should punt it to a later version if resulting board
+    is still a reasonable design without ethernet. 
+- Choose a Coax SMA connector
+- Choose a filter for the incoming analog signal to feed into ADC.
+- What is JESD204B? Do we need to verify whether the chosen ADC adheres to this protocol?
+- Choose a power system.
+- Do something about the clock? Clock generation? Clock tree?
+- Support JTAG somehow.
+- Support USB 2.0 somehow.
+
 ## Project Goals and Future Prospects
 
 ### Primary Objectives
@@ -75,7 +89,7 @@ Based on above requirements Micron *MT40A1G16TD-062E AIT:F* seems to work. Curre
 
 Datasheet: micron-MT40A1G16.pdf
 
-## Selecting an ADC
+### Selecting an ADC ###
 
 The ZynQ has MIO (Multiplexed I/O) and EMIO (Extended Multipled I/O) pins, with SPI available on both. 
 
@@ -94,4 +108,45 @@ In stock for $9.93 at Digikey.
 
 Datasheet: AD7091R.pdf
 
+### Supporting Flash ###
+
+Considerations:
+- For simplicity: Let's use QSPI Flash for bring-up. Ensure that the flash memory chip supports QSPI. (VERIFY)
+- TODO: What storage capacity do we need? Can we start with 128 MB (1 Gb)?
+- Ensure that chip's operating voltage matches. The FPGA operates at 1.8V or 3.3V for I/O banks.
+- Ensure FPGA supports this Flash device.
+
+Consider *MT25QL01GBBB1EW9-0SIT TR*:
+
+- 1Gb organized into 128Mb x 8.
+- FLASH-NOR technology.
+- QSPI
+- 133 MHz
+- In stock for $14.92 at Digikey.
+
+Datasheet: micron-flash-mt25ql01gbbb.pdf
+
+### Coaxial SMA Connector ###
+
+Consider Moxel 0732511350:
+- In stock for $4.22 on Digikey.
+- Surface-mount solder.
+- Female socket
+- 50 ohm impedance.
+- 18 GHz max frequency.
+
+### Filter between Coaxial SMA Connector and ADC ###
+
+What example application do we want to demonstrate? How about a simple Spectrum Analyzer? We'll read in the input signal, run an FFT, and display it over HDMI. 
+
+TODO: Initial reasoning (verify)
+- Nyquist frequency of a 1MSPS ADC is 500 kHZ.
+- Let's stay conservative and analyze signals between 0 to 100 kHz.
+- To prevent aliasing, we'll use a lowpass filter.
+- Let's use an active filter to be fancy for no good reason.
+- Consider *TI OPA1656IDR*:
+- In stock for $2.89 at Digikey.
+- We can configure it into a 2nd-order low-pass Sallen-Key filter: sallen-key-filter.pdf
+
+Datasheet: opa1655.pdf
 
