@@ -31,3 +31,20 @@ We don't need:
 - RTC
 - SYZYGY expansion
 
+## Generating the Reference Clock for the ARM Cores ##
+
+![Reference Clock](figures/ref-clock.png)
+
+Main component:
+- U28 (DSC1525MI2A-33M33333) : Oscillator chip that produces a 33.33MHz clock signal. (VERIFY)
+
+Power supply:
+- Powered by 3.3V supply.
+- C32 (100nF): Decoupling cap to reduce noise.
+
+Enable Circuit:
+- R198 (2.21K): Pull up resistor to keep EN high.
+
+Output Circuit:
+- R207 (22.1 ohm): Series termination resistor for clock trace. Keep this resistor close to OUT pin on clock chip. Keep overall trace to Pin H14 on ZynQ chip short.
+
