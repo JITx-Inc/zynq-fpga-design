@@ -110,4 +110,14 @@ Remaining questions:
 
 TODO...
 
+## Supporting USB2.0 ##
 
+TODO...
+
+## Supporting USB-C Power Input ##
+
+TODO...
+
+## Power Supplies ##
+
+TODO...
