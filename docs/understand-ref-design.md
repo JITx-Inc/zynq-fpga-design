@@ -48,3 +48,40 @@ Enable Circuit:
 Output Circuit:
 - R207 (22.1 ohm): Series termination resistor for clock trace. Keep this resistor close to OUT pin on clock chip. Keep overall trace to Pin H14 on ZynQ chip short.
 
+## Supporting Flash ##
+
+![QSPI](figures/qspi.png)
+
+Main component:
+- U10 (IS25WP256E-JLLE) flash memory chip.
+
+Power supply:
+- Powered by 1.8V supply.
+- C31 (100nF): Decoupling cap to reduce noise.
+
+Enable Circuit:
+- R60 (4.75K): Pull-up resistor to keep CE# (Chip Enable) high.
+
+SPI Clock input:
+- SCK pin on flash chip.
+
+Data lines:
+- IO0, IO1, IO2, IO3 pins on flash chip going to MIO pins on ZynQ.
+
+Defaults Configuration:
+- WP# is Write Protect pin, active low on flash chip. (Verify)
+  R65 (4.75K) pull-up resistor used to disable write protect by default.
+- Hold# (Reset) is active low on flash chip. (Verify)
+  R64 (4.75K) pull-up resistor used to keep it high for normal operation.
+
+## uSD ##
+
+TODO ...
+
+
+
+## Supporting JTAG ##
+
+TODO...
+
+
