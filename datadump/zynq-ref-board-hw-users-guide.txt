@@ -1,0 +1,1813 @@
+Page 1
+Copyright © 2023 Avnet, Inc. AVNET, and “Reach Further” are registered
+trademarks of Avnet, Inc. All other brands are the property of their respective owners.
+LIT# ZUBoard 1CG-HW-User-Guide-v1.0
+ZUBoard 1CG Hardware User’s Guide
+Version 1.0
+
+Page 2
+Contents
+1 Document Control .................................................................................................6
+2 Version History ......................................................................................................6
+3 Introduction ...........................................................................................................7
+3.1 Glossary ................................................................................................................................... 8
+3.2 Reference Documents ............................................................................................................. 9
+4 ZUBoard 1CG Architecture and Features ...........................................................10
+4.1 List of Features ...................................................................................................................... 10
+4.2 ZUBoard 1CG Block Diagram ................................................................................................ 11
+5 Functional Description .........................................................................................12
+5.1 Zynq UltraScale+ MPSoC ...................................................................................................... 12
+5.1.1 Processor System (PS) .................................................................................................. 13
+5.1.2 PS MIOs (Banks 500, 501, 502) .................................................................................... 13
+5.1.3 Other PS IOs (Banks 503, 504, 505) ............................................................................. 16
+5.1.4 Programmable Logic ...................................................................................................... 22
+5.2 LPDDR4 Memory ................................................................................................................... 26
+5.3 microSD Card......................................................................................................................... 29
+5.3.1 MLC Advantage ............................................................................................................. 29
+5.3.2 microSD Pin Table ......................................................................................................... 30
+5.4 USB 2.0 .................................................................................................................................. 31
+5.4.1 USB3321C-GL-TR Implementation Details ................................................................... 31
+5.4.2 USB Pin Tables .............................................................................................................. 31
+5.5 Ethernet .................................................................................................................................. 32
+5.5.1 Ethernet 10/100/1000 ..................................................................................................... 32
+5.6 UART ..................................................................................................................................... 33
+5.7 SPI ......................................................................................................................................... 34
+5.8 I2C .......................................................................................................................................... 34
+5.9 LEDs ...................................................................................................................................... 35
+5.10 Push Buttons .......................................................................................................................... 37
+5.11 Switches ................................................................................................................................. 37
+5.12 Clocking ................................................................................................................................. 38
+5.13 On/Off Controller .................................................................................................................... 39
+5.14 Expansion Connectors ........................................................................................................... 45
+5.14.1 MikroE Click Site ............................................................................................................ 45
+5.14.2 High Speed Expansion Connector (J1, J2, and J6) ....................................................... 45
+6 Configuration and Debug ....................................................................................48
+6.1 Boot Mode .............................................................................................................................. 48
+
+Page 3
+6.2 JTAG Configuration and Debug ............................................................................................. 49
+7 Power ..................................................................................................................49
+7.1 USB Type C power In ............................................................................................................ 49
+7.2 USB Type C Controller .......................................................................................................... 49
+7.3 Power On/Off ......................................................................................................................... 49
+7.4 Power Estimation Using XPE................................................................................................. 50
+7.5 Power Regulators................................................................................................................... 50
+7.6 Power Control and Sequence ................................................................................................ 51
+8 Thermal ...............................................................................................................54
+8.1 Mounting the ZUBoard 1CG heatsink .................................................................................... 55
+9 Reset ...................................................................................................................55
+10 Getting Help and Support ....................................................................................56
+
+Page 4
+Figures
+Figure 1 – ZUBoard 1CG Block Diagram...................................................................11
+Figure 2 – SBVA484 Package Diagram.....................................................................12
+Figure 3 – Location of R213 and R212 ......................................................................40
+Figure 4 – On/Off Controller Diagram 1 .....................................................................41
+Figure 5 – On/Off Controller Diagram 2 .....................................................................41
+Figure 6 – On/Off Controller Diagram 3 .....................................................................42
+Figure 7 – On/Off Controller Diagram 4 .....................................................................42
+Figure 8 – On/Off Controller Diagram 5 .....................................................................43
+Figure 9 – On/Off Controller Diagram 6 .....................................................................43
+Figure 10 – On/Off Controller Diagram 7 ...................................................................44
+Figure 11 – On/Off Controller Diagram 8 ...................................................................44
+Figure 12 – Boot Mode Switch ...................................................................................49
+Figure 13 – ZUBoard 1CG DC-DC Power Regulation ...............................................50
+Figure 14 – ZUBoard 1CG Power Sequencing ..........................................................51
+
+Page 5
+Tables
+Table 1 – PS MIO Bank 500 (1.8V, MIOs 0 to 25) .....................................................14
+Table 2 – PS MIO Bank 501 (1.8V, MIOs 26 to 51) ...................................................15
+Table 3 – PS MIO Bank 502 (1.8V, MIOs 52 to 77) ...................................................16
+Table 4 – PS MIO Bank 503 (1.8V) ...........................................................................17
+Table 5 – PS DDR IO Bank 504 (1.1V)......................................................................18
+Table 6 – PS Transceiver IO Bank 505 .....................................................................21
+Table 7 – HD PL IO Bank 44 (1.8V)...........................................................................23
+Table 8 – HP PL IO Bank 65 (1.8 or 1.2V).................................................................24
+Table 9 – HP PL IO Bank 66 (1.8 or 1.2V).................................................................25
+Table 10 – LPDDR4 Pin Table ..................................................................................27
+Table 11 – Comparison of TLC vs. MLC microSD Cards ..........................................29
+Table 12 – microSD Pin Table ...................................................................................30
+Table 13 – USB 2.0 Host ...........................................................................................31
+Table 14 – Gigabit Ethernet Pin Table .......................................................................32
+Table 15 – Pinout for UART to Translator and J4 Connector ....................................33
+Table 16 – SPI Pin Table ...........................................................................................34
+Table 17 – I2C Pin Table ...........................................................................................34
+Table 18 – LED Pin Table..........................................................................................36
+Table 19 – Push Button Pin Table .............................................................................37
+Table 20 – Switch Pin Table ......................................................................................37
+Table 21 – Clock Generator Pin Table.......................................................................38
+Table 22 – On/Off Controller Inputs and Outputs ......................................................39
+Table 23 – On/Off Controller Pin Table......................................................................44
+Table 24 – MikroE Click Site(J5 & J9) .......................................................................45
+Table 25 – HIGH SPEED EXPANION I/O w/ 2-GTR MIO (J2) ..................................45
+Table 26 – HIGH SPEED EXPANION I/O w/ 2-GTR MIO (J1) ..................................47
+Table 27 – HIGH SPEED EXPANION I/O Standard (J6) ...........................................48
+.
+
+Page 6
+1 Document Control
+Document Version: 1.0
+Document Date: 15 Apr 2023
+2 Version History
+Version Date Comment
+0.1 1/20/22 Draft
+0.2 11/15/22 Changed title to ZUBoard 1CG
+0.2 11/15/22 Removed barrel Jack power option and updated power sequence
+1.0 4/15/2023 Renamed High Speed Expansion I/O
+Updated Reference Documents
+Added Power On/Off reference
+Updated Table 22 On/Off Controller
+
+Page 7
+3 Introduction
+The ZUBoard 1CG is a low-cost Development Kit targeted for broad use in many applications:
+• Offer a low-cost, AMD based Development Kit in Commercial (0ºC to 70ºC) temperature grades for
+engineers to adopt in development, proof-of-concept, and production projects
+• Combine ARM processing with programmable logic in a convenient and expandable board
+• Showcase a wide range of potential peripherals and acceleration engines in the programmable logic
+• Be a low-cost starter kit for Zynq UltraScale+ MPSoC developers
+• Showcase hardware acceleration for software bottlenecks
+• Allow expansion to a variety of sensors and peripherals through the Click Board and Samtec high-
+speed expansion connectors
+• Target many applications for development, including:
+o Artificial Intelligence
+o Machine Learning
+o IoT/Cloud connectivity for add-on sensors
+o Embedded Computing
+o Robotics
+o Wired Ethernet Designs
+
+Page 8
+3.1 Glossary
+Term Definition
+ZU+ Zynq UltraScale+
+MPSoC Multi-Processor System on Chip
+PS Zynq UltraScale+ MPSoC Processing System
+PL Zynq UltraScale+ MPSoC Programmable Logic
+MIO PS Multiplexed Input Output Pins
+POR Power On Reset
+APU Application Processing Unit
+RPU Real-time Processing Unit
+GPU Graphics Processing Unit
+SYSMON System Monitor
+HD High Density PL I/O Pins
+HP High Performance PL I/O Pins
+PMBus Power Management Bus
+AI Artificial Intelligence
+ML Machine Learning
+IoT Internet of Things
+AR Answer Record
+
+Page 9
+3.2 Reference Documents
+[1] Zynq UltraScale+ MPSoC Overview DS891
+[2] Zynq UltraScale+ MPSoC DC and AC Switching Characteristics DS925
+[3] Zynq UltraScale+ MPSoC Technical Reference Manual UG1085
+[4] Zynq UltraScale+ MPSoC Packaging and Pinout Product Specification UG1075
+[5] Zynq UltraScale+ MPSoC PCB Design Guide UG583
+[6] UltraScale Architecture SelectIO Resources UG571
+[7] SBVA484 Package File
+[8] Xilinx Vivado Design Suite
+[9] Xilinx Vitis Unified Software Platform
+[10] Microchip USB3320 Hi-Speed USB 2.0 ULPI Transceiver
+[11] Microchip USB5744 Smart Hub
+[12] ISSI LPDDR4 SDRAM Product Page
+[13] ISSI QSPI Flash Product Page
+[14] Delkin Devices Utility Industrial MLC microSD
+
+Page 10
+4 ZUBoard 1CG Architecture and Features
+This section summarizes the features of the single board computer, followed by functional descriptions of
+each circuit.
+4.1 List of Features
+The ZUBoard 1CG Single Board Computer supports the following features:
+• AMD Zynq UltraScale+ MPSoC XCZU1CG-1SBVA484E
+• Memory/storage
+o ISSI 1 GB (512 x 32) LPDDR4 Memory
+ Part number IS43LQ32256EA-062B2LI
+o ISSI 32 MB (32 x 8) Nor Flash Memory
+ Part number IS25WP256E-JLLE
+o MicroSD Socket
+ C-grade microSD card
+• Delkin Utility class device
+• Part number S416APG49-U3000-3
+ I-grade microSD card
+• Delkin Utility+ class device
+• Part number S316APG49-U3000-3
+• Microchip 10/100/1000 Ethernet KSZ9131RNXC-TR
+• TDK configurable Buck Converters
+• 1x USB 2.0 Type A Host port
+• 1x 16-pin MikroE Click Site
+• 2x 40-pin Samtec high-speed expansion header with 2 GTR lanes
+• 1x 40-pin Samtec high-speed expansion header with
+• Thermally dissipative device
+o Rev B: Aavid passive heatsink
+ EA-190-H095-T710
+Note that there is no on-board, Wi-Fi interface, although this can be added through the expansion
+connectors. All communications without add-ons must be done via USB, Ethernet, JTAG, or
+expansion interface.
+
+Page 11
+4.2 ZUBoard 1CG Block Diagram
+Figure 1 – ZUBoard 1CG Block Diagram
+
+Page 12
+5 Functional Description
+The following sections provide brief descriptions of each feature provided on the ZUBoard 1CG SBC.
+5.1 Zynq UltraScale+ MPSoC
+ZUBoard 1CG features a Zynq UltraScale+ MPSoC ZU1CG device (in the SBVA484 package).
+Figure 2 – SBVA484 Package Diagram
+
+Page 13
+5.1.1 Processor System (PS)
+• Application Processing Unit
+Dual-core ARM Cortex-A53 MPCore with CoreSight; NEON & Single/Double Precision
+Floating Point; 32KB/32KB L1 Cache, 1MB L2 Cache
+• Real-Time Processing Unit
+Dual-core ARM Cortex-R5 with CoreSight; Single/Double Precision Floating Point;
+32KB/32KB L1 Cache, and TCM
+• Embedded and External Memory
+256KB On-Chip Memory w/ECC; External DDR memory controller (LPDDR4 on ZUBoard
+1CG)
+• General Connectivity
+214 PS I/O; UART; USB 2.0; I2C; SPI; 32b GPIO; Real Time Clock; WatchDog Timers;
+Triple Timer Counters
+• High-Speed Connectivity
+4 PS-GTR; DisplayPort 1.2a; USB 3.0
+• Graphic Processing Unit
+N/A
+5.1.2 PS MIOs (Banks 500, 501, 502)
+The Zynq UltraScale+ MPSoC Processing System (PS) provides 78 flexible multiplexed I/O
+(MIO) (configured as three banks of 26 I/Os) for peripheral pin assignment. These MIO support
+a wide variety of peripheral interfaces, with bank voltage support ranging from 1.8V to 3.3V.
+The ZUBoard 1CG connects all three MIO banks to 1.8V.
+• VCCO_PSIO0_500 = +VCC_PSAUX = 1.8V
+• VCCO_+PSIO0_501 = +VCC_PSAUX = 1.8V
+• VCCO_PSIO0_502 = +VCC_PSAUX = 1.8V
+The default peripheral configuration for the three MIO banks is shown in the Vivado Block
+Design. The descriptions and specific pinouts are shown in the three tables that follow.
+
+Page 14
+Table 1 – PS MIO Bank 500 (1.8V, MIOs 0 to 25)
+MPSoC
+Pin
+Number
+MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+Function Connects to:
+REFDES REFDES
+Pin
+Number
+U4 PS_MIO0_500 MIO00_QSPI0_SCLK_OUT
+QSPI
+U10 6
+W1 PS_MIO1_500 MIO01_QSPI0_MISO_MO1 U10 2
+V2 PS_MIO2_500 MIO02_QSPI0_MO2 U10 3
+U5 PS_MIO3_500 MIO03_QSPI0_MO3 U10 7
+U6 PS_MIO4_500 MIO04_QSPI0_MOSI_MI0 U10 5
+AA1 PS_MIO5_500 MIO05_QSPI0_N_SS_OUT U10 1
+Y1 PS_MIO6_500 NetU6_Y1 No Connect N/C N/C
+V4 PS_MIO7_500 MIO07_GPIO_LED1 User LED Q12 2
+V3 PS_MIO8_500 MIO08_I2C1_SCL 
+I2C1 
+U7 6
+V5 PS_MIO9_500 MIO09_I2C1_SDA U7 5
+AA2 PS_MIO10_500 MIO10_UART0_RX_1V8 
+UART0 
+J4 4
+W2 PS_MIO11_500 MIO11_UART0_TX_1V8 J4 3
+AB2 PS_MIO12_500 MIO12_ETH_RST_N GEM2 U15 1
+W3 PS_MIO13_500 MIO13
+HIGH SPEED
+EXPANSION I/O w/ 2
+GTR MIO
+J2 14
+W5 PS_MIO14_500 MIO14 J2 16
+Y4 PS_MIO15_500 MIO15 J2 17
+Y3 PS_MIO16_500 MIO16 J2 19
+AA3 PS_MIO17_500 MIO17 J2 18
+Y5 PS_MIO18_500 MIO18 J2 20
+AA4 PS_MIO19_500 MIO19 J2 21
+AB4 PS_MIO20_500 MIO20 J2 23
+W6 PS_MIO21_500 MIO21 J2 22
+AA6 
+PS_MIO22_500 
+MIO22 
+J2 24
+AB5 PS_MIO23_500 MIO23 J2 25
+AB6 PS_MIO24_500 MIO24_GPIO_LED2 User LEDs Q3 5
+Y6 PS_MIO25_500 MIO25_GPIO_LED3 Q12 5
+
+Page 15
+Table 2 – PS MIO Bank 501 (1.8V, MIOs 26 to 51)
+MPSoC
+Pin
+Number
+MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+Function Connects to:
+REFDES REFDES Pin
+Number
+G9 
+PS_MIO26_501 
+MIO26_PWR_INT 
+On/Off Controller 
+U29 11
+G11 
+PS_MIO27_501 
+MIO27 
+HIGH SPEED
+EXPANION I/O TXR-2
+MIO
+J2 29
+G12 
+PS_MIO28_501 
+MIO28 
+J2 31
+F9 
+PS_MIO29_501 
+MIO29 
+J2 30
+G10 
+PS_MIO30_501 
+MIO30 
+J2 32
+F11 
+PS_MIO31_501 
+MIO31_GPIO_SW_4 
+User Switch 
+SW4 4
+F12 
+PS_MIO32_501 
+MIO32_GPIO_PB1 
+User Push Button SW1 1/2
+E9 
+PS_MIO33_501 
+MIO33_GPIO_LED4 
+User LED 
+Q3 2
+F13 
+PS_MIO34_501 
+MIO34_POWER_KILL_N 
+On/Off Controller 
+U29 10
+E10 
+PS_MIO35_501 
+MIO35 
+HIGH SPEED
+EXPANION I/O TXR-2
+MIO
+J2 27
+D10 
+PS_MIO36_501 
+MIO36 
+J2 26
+E11 
+PS_MIO37_501 
+MIO37 
+J2 28
+C9 
+PS_MIO38_501 
+MIO38_SPI0_SCLK 
+SPI0 
+U2 2
+C10 
+PS_MIO29_501 
+MIO39_GPIO_SW_3 
+User Switch 
+SW4 3
+D11 
+PS_MIO40_501 
+MIO40_GPIO_SW_2 
+SW4 2
+B10 
+PS_MIO41_501 
+MIO41_SPI0_SS0
+SPI0
+U2 6
+D12 
+PS_MIO42_501 
+MIO42_SPI0_MISO 
+U2 5
+E13 
+PS_MIO43_501 
+MIO43_SPI0_MOSI 
+U2 4
+B11 
+PS_MIO44_501 
+MIO44_GPIO_SW_1 
+User Switch SW4 1
+A11 
+PS_MIO45_501 
+MIO45_SD1_DETECT
+SD1
+J12 9
+C12 PS_MIO46_501 MIO46_SD1_DAT0 U20 D1
+B12 PS_MIO47_501 MIO47_SD1_DAT1 U20 E1
+A12 PS_MIO48_501 MIO48_SD1_DAT2 U20 A1
+D13 PS_MIO49_501 MIO49_SD1_DAT3 U20 B1
+A13 PS_MIO50_501 MIO50_SD1_CMD U20 C1
+C13 PS_MIO51_501 MIO51_SD1_CLK U20 D2
+
+Page 16
+Table 3 – PS MIO Bank 502 (1.8V, MIOs 52 to 77)
+MPSoC
+Pin Number
+MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+Function Connects to:
+REFDES REFDES Pin
+Number
+G14 PS_MIO52_502 MIO52_RGMII_TX_CLK GEM2 U32 24
+F14 PS_MIO53_502 MIO53_RGMII_TXD0 U32 19
+G15 PS_MIO54_502 MIO54_RGMII_TXD1 U32 20
+C14 PS_MIO55_502 MIO55_RGMII_TXD2 U32 21
+E14 PS_MIO56_502 MIO56_RGMII_TXD3 U32 22
+B14 PS_MIO57_502 MIO57_RGMII_TX_CTL U32 25
+A14 PS_MIO58_502 MIO58_RGMII_RX_CLK U32 35
+E15 PS_MIO59_502 MIO59_RGMII_RXD0 U32 32
+D15 PS_MIO60_502 MIO60_RGMII_RXD1 U32 31
+G16 PS_MIO61_502 MIO61_RGMII_RXD2 U32 28
+C15 PS_MIO62_502 MIO62_RGMII_RXD3 U32 27
+F16 PS_MIO63_502 MIO63_RGMII_RX_CTL U32 33
+E16 PS_MIO64_502 MIO64_USB1_CLK USB1 U22 A5
+B15 PS_MIO65_502 MIO65_USB1_DIR U22 A4
+D16 PS_MIO66_502 MIO66_USB1_DATA2 U22 C4
+G17 PS_MIO67_502 MIO67_USB1_NXT U22 B5
+B16 PS_MIO68_502 MIO68_USB1_DATA0 U22 B4
+A16 PS_MIO69_502 MIO69_USB1_DATA1 U22 C5
+A17 PS_MIO70_502 MIO70_USB1_STP U22 A3
+F17 PS_MIO71_502 MIO71_USB1_DATA3 U22 D5
+C17 PS_MIO72_502 MIO72_USB1_DATA4 U22 D4
+D17 PS_MIO73_502 MIO73_USB1_DATA5 U22 E5
+D18 PS_MIO74_502 MIO74_USB1_DATA6 U22 E4
+B17 PS_MIO75_502 MIO75_USB1_DATA7 U22 D3
+F18 PS_MIO76_502 MIO76_GEM2_MDC GEM2 U32 36
+B18 PS_MIO77_502 MIO77_GEM2_MDIO_OUT U32 37
+5.1.3 Other PS IOs (Banks 503, 504, 505)
+Additionally, the ZU+ PS provides three additional I/O banks for the DDR, Config, and
+transceiver I/Os.
+o One Config I/O bank (Bank 503)
+ 11 I/Os connected
+ VCCO = +VCC_PSAUX = 1.8V
+
+o One DDR I/O bank (Bank 504)
+ 64 I/Os connected
+ VCCO = +VCCO_PSDDR = 1.1V
+
+Page 17
+o One Transceiver I/O bank (Bank 505)
+ 16 I/Os connected
+ +MGTRAVCC = 0.85V
+ +MGTRAVTT = 1.8V
+Table 4 – PS MIO Bank 503 (1.8V)
+MPSoC
+Pin
+Number
+MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+Function Connects to:
+REFDES REFDES Pin
+Number
+K12 PS_POR_B_503 POWER_GOOD Power On Reset SW6 1/2
+J16 PS_MODE0_503 PS_MODE0 Boot Mode DIP
+Switch
+SW2 1
+H15 PS_MODE1_503 PS_MODE1 Boot Mode DIP
+Switch
+SW2 2
+J15 PS_MODE2_503 PS_MODE2 Boot Mode DIP
+Switch
+SW2 3
+H18 PS_MODE3_503 PS_MODE3 Boot Mode DIP
+Switch
+SW2 4
+K13 PS_SRST_B_503 PS_SRST_N_1V8 JTAG Translator U24 6
+H17 PS_PADI_503 PS_PAD_IN MPSoC RTC Crystal X1 2
+J17 PS_PADO_503 PS_PAD_OUT X1 1
+K15 PS_INIT_B_503 PS_INIT_N PS INIT LED Q2 4
+H14 PS_REF_CLK_503 PS_REF_CLK System Reference
+Clock
+U28 3
+K16 PS_ERROR_OUT_503 PS_ERR_OUT Testpoint TP8 1
+K18 PS_ERROR_STATUS_503 PS_ERR_STAT TP7 1
+L12 PS_DONE PS_DONE PS DONE LED Q2 2
+
+Page 18
+Table 5 – PS DDR IO Bank 504 (1.1V)
+MPSoC
+Pin
+Number
+MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+Function Connects to:
+REFDES REFDES
+Pin
+Number
+T19 PS_DDR_ZQ_504 NetR224_2
+LPDDR4
+R224 2
+AA22 PS_DDR_A00_504 PS_DDR_CAA0 U16 H2
+AB20 PS_DDR_A01_504 PS_DDR_CAA1 U16 J2
+AB17 PS_DDR_A02_504 PS_DDR_CAA2 U16 H9
+AB19 PS_DDR_A03_504 PS_DDR_CAA3 U16 H10
+AB21 PS_DDR_A04_504 PS_DDR_CAA4 U16 H11
+AB16 PS_DDR_A05_504 PS_DDR_CAA5 U16 J11
+Y21 PS_DDR_A10_504 PS_DDR_CAB0 U16 R2
+AA21 PS_DDR_A11_504 PS_DDR_CAB1 U16 P2
+AA18 PS_DDR_A12_504 PS_DDR_CAB2 U16 R9
+AA19 PS_DDR_A13_504 PS_DDR_CAB3 U16 R10
+AA17 PS_DDR_A14_504 PS_DDR_CAB4 U16 R11
+AA16 PS_DDR_A15_504 PS_DDR_CAB5 U16 P11
+W20 PS_DDR_CK_N0_504 PS_DDR_CKA_C U16 J9
+V20 PS_DDR_CK0_504 PS_DDR_CKA_T U16 J8
+V19 PS_DDR_CK_N1_504 PS_DDR_CKB_C U16 P9
+V18 PS_DDR_CK1_504 PS_DDR_CKB_T U16 P8
+U22 PS_DDR_CKE0_504 PS_DDR_CKE0 U16 J4
+V22 PS_DDR_CS_N0_504 PS_DDR_CS0_N U16 H4
+U20 PS_DDR_CS_N1_504 PS_DDR_CS1_N U16 H3
+AB9 PS_DDR_DM0_504 PS_DDR_DMA0 U16 C3
+AB14 PS_DDR_DM1_504 PS_DDR_DMA1 U16 C10
+U9 PS_DDR_DM2_504 PS_DDR_DMB0 U16 Y3
+W13 PS_DDR_DM3_504 PS_DDR_DMB1 U16 Y10
+AB11 PS_DDR_DQ0_504 PS_DDR_DQ0 U16 B2
+Y10 PS_DDR_DQ1_504 PS_DDR_DQ1 U16 C2
+AA12 PS_DDR_DQ10_504 PS_DDR_DQ10 U16 E11
+AB12 PS_DDR_DQ11_504 PS_DDR_DQ11 U16 F11
+Y14 PS_DDR_DQ12_504 PS_DDR_DQ12 U16 F9
+AA14 PS_DDR_DQ13_504 PS_DDR_DQ13 U16 E9
+Y15 PS_DDR_DQ14_504 PS_DDR_DQ14 U16 C9
+AB15 PS_DDR_DQ15_504 PS_DDR_DQ15 U16 B9
+W8 PS_DDR_DQ16_504 PS_DDR_DQ16 U16 AA2
+W7 PS_DDR_DQ17_504 PS_DDR_DQ17 U16 Y2
+
+Page 19
+V7 PS_DDR_DQ18_504 PS_DDR_DQ18
+LPDDR4
+U16 V2
+V10 PS_DDR_DQ19_504 PS_DDR_DQ19 U16 U2
+AB10 PS_DDR_DQ2_504 PS_DDR_DQ2 U16 E2
+U7 PS_DDR_DQ20_504 PS_DDR_DQ20 U16 U4
+T9 PS_DDR_DQ21_504 PS_DDR_DQ21 U16 V4
+U10 PS_DDR_DQ22_504 PS_DDR_DQ22 U16 Y4
+T10 PS_DDR_DQ23_504 PS_DDR_DQ23 U16 AA4
+U11 PS_DDR_DQ24_504 PS_DDR_DQ24 U16 AA11
+U12 PS_DDR_DQ25_504 PS_DDR_DQ25 U16 Y11
+W12 PS_DDR_DQ26_504 PS_DDR_DQ26 U16 V11
+W11 PS_DDR_DQ27_504 PS_DDR_DQ27 U16 U11
+V14 PS_DDR_DQ28_504 PS_DDR_DQ28 U16 U9
+U14 PS_DDR_DQ29_504 PS_DDR_DQ29 U16 V9
+W10 PS_DDR_DQ3_504 PS_DDR_DQ3 U16 F2
+W15 PS_DDR_DQ30_504 PS_DDR_DQ30 U16 Y9
+V15 PS_DDR_DQ31_504 PS_DDR_DQ31 U16 AA9
+AA8 PS_DDR_DQ4_504 PS_DDR_DQ4 U16 F4
+Y8 PS_DDR_DQ5_504 PS_DDR_DQ5 U16 E4
+AB7 PS_DDR_DQ6_504 PS_DDR_DQ6 U16 C4
+AA7 PS_DDR_DQ7_504 PS_DDR_DQ7 U16 B4
+AA11 PS_DDR_DQ8_504 PS_DDR_DQ8 U16 B11
+Y11 PS_DDR_DQ9_504 PS_DDR_DQ9 U16 C11
+AA9 PS_DDR_DQS_N0_504 PS_DDR_DQSA0_C U16 E3
+Y9 PS_DDR_DQS_P0_504 PS_DDR_DQSA0_T U16 D3
+AA13 PS_DDR_DQS_N1_504 PS_DDR_DQSA1_C U16 E10
+Y13 PS_DDR_DQS_P1_504 PS_DDR_DQSA1_T U16 D10
+V8 PS_DDR_DQS_N2_504 PS_DDR_DQSB0_C U16 V3
+V9 PS_DDR_DQS_P2_504 PS_DDR_DQSB0_T U16 W3
+V13 PS_DDR_DQS_N3_504 PS_DDR_DQSB1_C U16 V10
+V12 PS_DDR_DQS_P3_504 PS_DDR_DQSB1_T U16 W10
+T18 PS_DDR_RAM_RST_N_504 PS_DDR_RST_N U16 T11
+U21 PS_DDR_CKE1_504 PS_DDR_CKE1 U16 P5/J5
+N18 PS_DDR_DQ70_504 NetU6_N18
+No
+Connect
+none None
+N19 PS_DDR_DQ71_504 NetU6_N19 none None
+P18 PS_DDR_DQ69_504 NetU6_P18 none None
+P20 PS_DDR_DQS_P8_504 NetU6_P20 none None
+P21 PS_DDR_DQ67_504 NetU6_P21 none None
+P22 PS_DDR_DQ65_504 NetU6_P22 none None
+R18 PS_DDR_DQ68_504 NetU6_R18 none None
+R19 PS_DDR_DM8_504 NetU6_R19 none None
+
+Page 20
+R20 PS_DDR_DQS_N8_504 NetU6_R20
+No
+Connect
+none None
+R21 PS_DDR_DQ66_504 NetU6_R21 none None
+T21 PS_DDR_ALERT_N_504 NetU6_T21 none None
+T22 PS_DDR_DQ64_504 NetU6_T22 none None
+U15 PS_DDR_ACT_N_504 NetU6_U15 none None
+U16 PS_DDR_BG0_504 NetU6_U16 none None
+U17 PS_DDR_BA0_504 NetU6_U17 none None
+U19 PS_DDR_PARITY_504 NetU6_U19 none None
+V17 PS_DDR_BA1_504 NetU6_V17 none None
+W16 PS_DDR_A17_504 NetU6_W16 none None
+W17 PS_DDR_A08_504 NetU6_W17 none None
+W18 PS_DDR_BG1_504 NetU6_W18 none None
+W21 PS_DDR_ODT1_504 NetU6_W21 none None
+W22 PS_DDR_ODT0_504 NetU6_W22 none None
+Y16 PS_DDR_A16_504 NetU6_Y16 none None
+Y18 PS_DDR_A09_504 NetU6_Y18 none None
+Y19 PS_DDR_A07_504 NetU6_Y19 none None
+Y20 PS_DDR_A06_504 NetU6_Y20 none None
+
+Page 21
+Table 6 – PS Transceiver IO Bank 505
+(+MGTRAVCC = 0.85V, +MGTRAVTT = 1.8V)
+MPSoC
+Pin
+Number
+MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+Function Connects to:
+REFDES REFDES
+Pin
+Number
+L20 PS_MGTREFCLK0N_505 GTR_CLK0_N HIGH SPEED
+EXPANION GTR
+MIO
+J2 15
+L19 PS_MGTREFCLK0P_505 GTR_CLK0_P J2 13
+M22 PS_MGTRRXN0_505 GTR_LANE0_RX_N J2 7
+M21 PS_MGTRRXP0_505 GTR_LANE0_RX_P J2 5
+K22 PS_MGTRTXN0_505 GTR_LANE0_TX_N J2 8
+K21 PS_MGTRTXP0_505 GTR_LANE0_TX_P J2 6
+H22 
+PS_MGTRRXN1_505 
+GTR_LANE1_RX_N 
+J2 11
+H21 PS_MGTRRXP1_505 GTR_LANE1_RX_P J2 9
+F22 PS_MGTRTXN1_505 GTR_LANE1_TX_N J2 12
+F21 PS_MGTRTXP1_505 GTR_LANE1_TX_P J2 10
+J20 PS_MGTREFCLK1N_505 GTR_CLK1_N HIGH SPEED
+EXPANION GTR
+MIO
+J1 15
+J19 PS_MGTREFCLK1P_505 GTR_CLK1_P J1 13
+D22 PS_MGTRRXN2_505 GTR_LANE2_RX_N J1 7
+D21 PS_MGTRRXP2_505 GTR_LANE2_RX_P J1 5
+C20 PS_MGTRTXN2_505 GTR_LANE2_TX_N J1 8
+C19 PS_MGTRTXP2_505 GTR_LANE2_TX_P J1 6
+B22 PS_MGTRRXN3_505 GTR_LANE3_RX_N J1 11
+B21 PS_MGTRRXP3_505 GTR_LANE3_RX_P J1 9
+A20 PS_MGTRTXN3_505 GTR_LANE3_TX_N J1 12
+A19 PS_MGTRTXP3_505 GTR_LANE3_TX_P J1 10
+G20 PS_MGTREFCLK2N_505 NetU1_G20 none None
+G19 PS_MGTREFCLK2P_505 NetU1_G19 none None
+E20 PS_MGTREFCLK3N_505 NetU1_E20 none None
+E19 PS_MGTREFCLK3P_505 NetU1_E19 none None
+M20 PS_MGTRREF_505 NetR223_2 none None
+
+Page 22
+5.1.4 Programmable Logic
+• System Logic Cells 81,000
+• CLB Flip-Flops 74,000
+• CLB LUTs 37,000
+• Distributed RAM (Mb) 1.0
+• Block RAM Blocks 108
+• Block RAM (Mb) 3.8
+• UltraRAM Blocks 0
+• UltraRAM (Mb) 0
+• DSP Slices 216
+• CMTs 3
+• System Monitor 1
+The Zynq UltraScale+ MPSoC Programable Logic (PL) provides two types of I/O banks: High-
+density (HD) banks and high-performance (HP) banks. The ZU1CG device on the ZUBoard
+1CG provides:
+• One HD bank
+o Bank 26
+ 22 I/Os connected
+ VCCO_44 = +VCCAUX = 1.8V
+• Two HP banks
+o Bank 65
+ 29 I/Os connected
+ VCCO_65 = +VCCO_HP = 1.2V & 1.8V
+o Bank 66
+ 2 I/Os connected
+ VCCO_66  Bank 66 is powered off the Bank 65 VCCO rail
+• VCCO_65 = VCCO_66 = +VCCO_HP = 1.2V & 1.8V
+• See Xilinx AR# 67755
+The PL I/Os on ZUBoard 1CG are tied to the MikroE Click Site, the three HIGH SPEED
+EXPANION I/O sites, and user LEDs/Push Buttons.
+
+Page 23
+Table 7 – HD PL IO Bank 44 (1.8V)
+MPSoC
+Pin Number
+MPSoC
+Site Name
+ZUBoard 1CG
+Net name 
+Function
+Connects to:
+REFDES REFDES
+Pin
+Number
+G7 IO_L2P_AD10P_44 HD_CLICK_CS0_1V8 MikroE Click Site J5 3
+G5 IO_L1N_AD11N_44 HD_CLICK_CS1_AN_1V8 U11 5
+E8 IO_L6P_HDGC_AD6P_44 HD_CLICK_INT_1V8 J9 2
+E6 IO_L3P_AD9P_44 HD_CLICK_MISO_1V8 U11/J5 6/5
+E5 IO_L3N_AD9N_44 HD_CLICK_MOSI_1V8 J5 6
+G6 IO_L1P_AD11P_44 HD_CLICK_PWM_1V8 J9 1
+D8 IO_L6N_HDGC_AD6N_44 HD_CLICK_RST_1V8 J5 2
+D7 IO_L5P_HDGC_AD7P_44 HD_CLICK_RX_1V8 J9 3
+F6 IO_L2N_AD10N_44 HD_CLICK_SCK_1V8 U11/J5 7/4
+F8 IO_L4P_AD8P_44 HD_CLICK_SCL_1V8 J9 5
+F7 IO_L4N_AD8N_44 HD_CLICK_SDA_1V8 J9 6
+D6 IO_L5N_HDGC_AD7N_44 HD_CLICK_TX_1V8 J9 4
+C5 IO_L7N_HDGC_AD5N_44 HD_DP_07_GC_N HIGH SPEED
+EXPANION HD I/O
+MIO
+J2
+D5 IO_L7P_HDGC_AD5P_44 HD_DP_07_GC_P J2
+C7 IO_L8N_HDGC_AD4N_44 HD_DP_08_GC_N J2 34
+C8 IO_L8P_HDGC_AD4P_44 HD_DP_08_GC_P J2 36
+A8 IO_L10P_AD2P_44 HD_GPIO_PB1 User Push Button SW3 1/2
+B5 IO_L11N_AD1N_44 HD_GPIO_RGB1_B User RGB LED Q10 2
+B6 IO_L11P_AD1P_44 HD_GPIO_RGB1_G Q11 5
+A7 IO_L10N_AD2N_44 HD_GPIO_RGB1_R Q11 2
+A6 IO_L12N_AD0N_44 HD_SENSOR_I2C_SCL Temperature Sensor U1 1
+B7 IO_L12P_AD0P_44 HD_SENSOR_I2C_SDA U1 6
+B9 IO_L9P_AD3P_44 HD_HSIO_SCL_1V8 High Speed Expansion
+I2C Addressing
+J2/J1/J6 1/1/1
+A9 IO_L9N_AD3N_44 HD_HSIO_SDA_1V8 J2/J1/J6 3/3/3
+
+Page 24
+Table 8 – HP PL IO Bank 65 (1.8 or 1.2V)
+MPSoC
+Pin
+Number
+MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+Function Connects to:
+REFDES REFDES
+Pin
+Number
+T2 IO_L1N_T0L_N1_DBC_65 HP_DP_01_DBC_N HIGH SPEED EXPANION
+HD I/O PL
+J1 14
+T3 IO_L1P_T0L_N0_DBC_65 HP_DP_01_DBC_P J1 16
+R3 IO_L2N_T0L_N3_65 HP_DP_02_N J1 19
+P3 IO_L2P_T0L_N2_65 HP_DP_02_P J1 17
+U1 IO_L3N_T0L_N5_AD15N_65 HP_DP_03_N J1 20
+U2 IO_L3P_T0L_N4_AD15P_65 HP_DP_03_P J1 18
+T4 IO_L4N_T0U_N7_DBC_AD7N_65 HP_DP_04_N J1 23
+R4 IO_L4P_T0U_N6_DBC_AD7P_SMBALERT_65 HP_DP_04_P J1 21
+T1 IO_L5N_T0U_N9_AD14N_65 HP_DP_05_N J1 24
+R1 IO_L5P_T0U_N8_AD14P_65 HP_DP_05_P J1 22
+R5 IO_L6N_T0U_N11_AD6N_65 HP_DP_06_N J1 27
+P5 IO_L6P_T0U_N10_AD6P_65 HP_DP_06_P J1 25
+P1 IO_L7N_T1L_N1_QBC_AD13N_65 HP_DP_07_QBC_N
+HIGH SPEED EXPANION
+HD I/O
+J6 8
+N2 IO_L7P_T1L_N0_QBC_AD13P_65 HP_DP_07_QBC_P J6 6
+N4 IO_L8N_T1L_N3_AD5N_65 HP_DP_08_N J6 12
+N5 IO_L8P_T1L_N2_AD5P_65 HP_DP_08_P J6 10
+M1 IO_L9N_T1L_N5_AD12N_65 HP_DP_09_N J6 16
+M2 IO_L9P_T1L_N4_AD12P_65 HP_DP_09_P J6 14
+M4 IO_L10N_T1U_N7_QBC_AD4N_65 HP_DP_10_QBC_N J6 20
+M5 IO_L10P_T1U_N6_QBC_AD4P_65 HP_DP_10_QBC_P J6 18
+L1 IO_L11N_T1U_N9_GC_65 HP_DP_11_GC_N J6 24
+L2 IO_L11P_T1U_N8_GC_65 HP_DP_11_GC_P J6 22
+L3 IO_L12N_T1U_N11_GC_65 HP_DP_12_GC_N J6 35
+L4 IO_L12P_T1U_N10_GC_65 HP_DP_12_GC_P J6 33
+J2 IO_L13N_T2L_N1_GC_QBC_65 HP_DP_13_GC_N J6 36
+J3 IO_L13P_T2L_N0_GC_QBC_65 HP_DP_13_GC_P J6 34
+K3 IO_L14N_T2L_N3_GC_65 HP_DP_14_GC_N HIGH SPEED EXPANION
+HD I/O PL
+J1 28
+K4 IO_L14P_T2L_N2_GC_65 HP_DP_14_GC_P J1 26
+J1 IO_L15N_T2L_N5_AD11N_65 HP_DP_15_N J1 31
+K1 IO_L15P_T2L_N4_AD11P_65 HP_DP_15_P J1 29
+H5 IO_L16N_T2U_N7_QBC_AD3N_65 HP_DP_16_QBC_N HIGH SPEED EXPANION
+HD I/O
+J6 16
+J5 IO_L16P_T2U_N6_QBC_AD3P_65 HP_DP_16_QBC_P J6 13
+G2 IO_L17N_T2U_N9_AD10N_65 HP_DP_17_N J6 7
+H2 IO_L17P_T2U_N8_AD10P_65 HP_DP_17_P J6 5
+
+Page 25
+G4 IO_L18N_T2U_N11_AD2N_65 HP_DP_18_N HIGH SPEED EXPANION
+HD I/O
+J6 11
+H4 IO_L18P_T2U_N10_AD2P_65 HP_DP_18_P J6 9
+F1 IO_L19N_T3L_N1_DBC_AD9N_65 HP_DP_19_DBC_N J6 19
+G1 IO_L19P_T3L_N0_DBC_AD9P_65 HP_DP_19_DBC_P J6 17
+E3 IO_L20N_T3L_N3_AD1N_65 HP_DP_20_N J6 23
+E4 IO_L20P_T3L_N2_AD1P_65 HP_DP_20_P J6 21
+D1 IO_L21N_T3L_N5_AD8N_65 HP_DP_21_N J6 27
+E1 IO_L21P_T3L_N4_AD8P_65 HP_DP_21_P J6 25
+C3 IO_L22N_T3U_N7_DBC_AD0N_65 HP_DP_22_N J6 31
+D3 IO_L22P_T3U_N6_DBC_AD0P_65 HP_DP_22_P J6 29
+F2 IO_L23N_T3U_N9_65 HP_DP_23_N J6 26
+F3 IO_L23P_T3U_N8_I2C_SCLK_65 HP_DP_23_P J6 28
+C2 IO_L24N_T3U_N11_PERSTN0_65 HP_DP_24_N HIGH SPEED EXPANION
+HD I/O PL
+J1 32
+D2 IO_L24P_T3U_N10_PERSTN1_I2C_SDA_65 HP_DP_24_P J1 30
+F4 IO_T3U_N12_65 HP_GPIO_RGB2_B USER RGB LED Q13 2
+N3 IO_T1U_N12_65 HP_SE_01 HIGH SPEED EXPANION
+HD I/O
+J6 30
+H3 IO_T2U_N12_65 HP_SE_02 J6 32
+K5 VREF_65 NetU6_K5 None None
+P2 IO_T0U_N12_VRP_65 NetR62_2 R62 2
+Table 9 – HP PL IO Bank 66 (1.8 or 1.2V)
+MPSoC
+Pin
+Number
+MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+Function Connects to:
+REFDES REFDES
+Pin
+Number
+A2 IO_T3U_N12_66 HP_GPIO_RGB2_G USER RGB LED Q13 5
+B4 IO_T0U_N12_VRP_66 HP_GPIO_RGB2_R Q10 5
+A4 IO_L12P_T1U_N10_GC_66 HP_DP_12_GC_66_P
+HIGH SPEED EXPANION HD I/O PL
+J1 34
+B1 IO_L11N_T1U_N9_GC_66 HP_DP_11_GC_66_N J1 33
+B2 IO_L11P_T1U_N8_GC_66 HP_DP_11_GC_66_P J1 35
+A3 IO_L12N_T1U_N11_GC_66 HP_DP_12_GC_66_N J1 36
+C4 VREF_66 NetU6_C4 None None
+
+Page 26
+5.2 LPDDR4 Memory
+ZUBoard 1CG provides 1GB (256Mbit x 16 x 2 channels) of 533MHz (1066Mbps) LPDDR4 memory
+using a single-die ISSI IS43LQ32256EA-062B2LI.
+The memory device is a -062 (1600 MHz) speed grade. However, that is irrelevant as the interface
+clocking is set by the MPSoC package as 533 MHz maximum. This can be found in AMD document
+DS925 (as seen in Table 30 of DS925 v1.17 March 13, 2020).
+Additionally, the temperature grade for the LPDDR4 on the ZUBoard 1CG.
+
+Page 27
+Table 10 – LPDDR4 Pin Table
+MPSoC
+Pin
+Number
+Bank 
+MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+Connects to:
+REFDES REFDES
+Pin
+Number
+T19 504 PS_DDR_ZQ_504 NetR224_2 R224 2
+AA22 504 PS_DDR_A00_504 PS_DDR_CAA0 U16 H2
+AB20 504 PS_DDR_A01_504 PS_DDR_CAA1 U16 J2
+AB17 504 PS_DDR_A02_504 PS_DDR_CAA2 U16 H9
+AB19 504 PS_DDR_A03_504 PS_DDR_CAA3 U16 H10
+AB21 504 PS_DDR_A04_504 PS_DDR_CAA4 U16 H11
+AB16 504 PS_DDR_A05_504 PS_DDR_CAA5 U16 J11
+Y21 504 PS_DDR_A10_504 PS_DDR_CAB0 U16 R2
+AA21 504 PS_DDR_A11_504 PS_DDR_CAB1 U16 P2
+AA18 504 PS_DDR_A12_504 PS_DDR_CAB2 U16 R9
+AA19 504 PS_DDR_A13_504 PS_DDR_CAB3 U16 R10
+AA17 504 PS_DDR_A14_504 PS_DDR_CAB4 U16 R11
+AA16 504 PS_DDR_A15_504 PS_DDR_CAB5 U16 P11
+W20 504 PS_DDR_CK_N0_504 PS_DDR_CKA_C U16 J9
+V20 504 PS_DDR_CK0_504 PS_DDR_CKA_T U16 J8
+V19 504 PS_DDR_CK_N1_504 PS_DDR_CKB_C U16 P9
+V18 504 PS_DDR_CK1_504 PS_DDR_CKB_T U16 P8
+U22 504 PS_DDR_CKE0_504 PS_DDR_CKE0 U16 J4
+V22 504 PS_DDR_CS_N0_504 PS_DDR_CS0_N U16 H4
+U20 504 PS_DDR_CS_N1_504 PS_DDR_CS1_N U16 H3
+AB9 504 PS_DDR_DM0_504 PS_DDR_DMA0 U16 C3
+AB14 504 PS_DDR_DM1_504 PS_DDR_DMA1 U16 C10
+U9 504 PS_DDR_DM2_504 PS_DDR_DMB0 U16 Y3
+W13 504 PS_DDR_DM3_504 PS_DDR_DMB1 U16 Y10
+AB11 504 PS_DDR_DQ0_504 PS_DDR_DQ0 U16 B2
+Y10 504 PS_DDR_DQ1_504 PS_DDR_DQ1 U16 C2
+AB10 504 PS_DDR_DQ2_504 PS_DDR_DQ2 U16 E2
+W10 504 PS_DDR_DQ3_504 PS_DDR_DQ3 U16 F2
+AA8 504 PS_DDR_DQ4_504 PS_DDR_DQ4 U16 F4
+Y8 504 PS_DDR_DQ5_504 PS_DDR_DQ5 U16 E4
+AB7 504 PS_DDR_DQ6_504 PS_DDR_DQ6 U16 C4
+AA7 504 PS_DDR_DQ7_504 PS_DDR_DQ7 U16 B4
+AA11 504 PS_DDR_DQ8_504 PS_DDR_DQ8 U16 B11
+Y11 504 PS_DDR_DQ9_504 PS_DDR_DQ9 U16 C11
+
+Page 28
+AA12 504 PS_DDR_DQ10_504 PS_DDR_DQ10 U16 E11
+AB12 504 PS_DDR_DQ11_504 PS_DDR_DQ11 U16 F11
+Y14 504 PS_DDR_DQ12_504 PS_DDR_DQ12 U16 F9
+AA14 504 PS_DDR_DQ13_504 PS_DDR_DQ13 U16 E9
+Y15 504 PS_DDR_DQ14_504 PS_DDR_DQ14 U16 C9
+AB15 504 PS_DDR_DQ15_504 PS_DDR_DQ15 U16 B9
+W8 504 PS_DDR_DQ16_504 PS_DDR_DQ16 U16 AA2
+W7 504 PS_DDR_DQ17_504 PS_DDR_DQ17 U16 Y2
+V7 504 PS_DDR_DQ18_504 PS_DDR_DQ18 U16 V2
+V10 504 PS_DDR_DQ19_504 PS_DDR_DQ19 U16 U2
+U7 504 PS_DDR_DQ20_504 PS_DDR_DQ20 U16 U4
+T9 504 PS_DDR_DQ21_504 PS_DDR_DQ21 U16 V4
+U10 504 PS_DDR_DQ22_504 PS_DDR_DQ22 U16 Y4
+T10 504 PS_DDR_DQ23_504 PS_DDR_DQ23 U16 AA4
+U11 504 PS_DDR_DQ24_504 PS_DDR_DQ24 U16 AA11
+U12 504 PS_DDR_DQ25_504 PS_DDR_DQ25 U16 Y11
+W12 504 PS_DDR_DQ26_504 PS_DDR_DQ26 U16 V11
+W11 504 PS_DDR_DQ27_504 PS_DDR_DQ27 U16 U11
+V14 504 PS_DDR_DQ28_504 PS_DDR_DQ28 U16 U9
+U14 504 PS_DDR_DQ29_504 PS_DDR_DQ29 U16 V9
+W15 504 PS_DDR_DQ30_504 PS_DDR_DQ30 U16 Y9
+V15 504 PS_DDR_DQ31_504 PS_DDR_DQ31 U16 AA9
+AA9 504 PS_DDR_DQS_N0_504 PS_DDR_DQSA0_C U16 E3
+Y9 504 PS_DDR_DQS_P0_504 PS_DDR_DQSA0_T U16 D3
+AA13 504 PS_DDR_DQS_N1_504 PS_DDR_DQSA1_C U16 E10
+Y13 504 PS_DDR_DQS_P1_504 PS_DDR_DQSA1_T U16 D10
+V8 504 PS_DDR_DQS_N2_504 PS_DDR_DQSB0_C U16 V3
+V9 504 PS_DDR_DQS_P2_504 PS_DDR_DQSB0_T U16 W3
+V13 504 PS_DDR_DQS_N3_504 PS_DDR_DQSB1_C U16 V10
+V12 504 PS_DDR_DQS_P3_504 PS_DDR_DQSB1_T U16 W10
+T18 504 PS_DDR_RAM_RST_N_504 PS_DDR_RST_N U16 T11
+U21 504 PS_DDR_CKE1_504 PS_DDR_CKE1 U16 P5/J5
+
+Page 29
+5.3 microSD Card
+ZUBoard 1CG provides a microSD card socket as the primary boot device. VCCO for the SDIO
+lines going into the Zynq MPSoC is 1.80V, thus a level shifter (U20, PI4ULS3V4857) is required to
+go from the 3.3V native SD card slot to 1.80V
+The microSD card socket J12 is a TE Connectivity 2201778-1. This is a push-push style socket.
+This socket is rated -30C to +85C. This socket has a spring-type mechanism inside that can
+become brittle at very cold temperatures. If the mechanism is exercised at extremely cold
+temperatures, the mechanism could break.
+The ZUBoard 1CG recommends the use of a Delkin Devices 16 GB MLC microSD card.
+• C-grade microSD card
+o Delkin Utility class device
+o Part number S416APG49-U3000-3
+• I-grade microSD card
+o Delkin Utility+ class device
+o Part number S316APG49-U3000-3
+The Delkin Utility/Utility+ cards are rated at Read Performance = 95MB/s and Write Performance
+= 55MB/s (measured using CrystalDiskMark).
+5.3.1 MLC Advantage
+There are several advantages to using MLC over the typical retail TLC that is readily available.
+These advantages are significant, and this explains why an MLC card was specifically chosen
+for these kits. For more information, refer to this article on the Element14 community:
+https://www.element14.com/community/groups/embedded/blog/2018/03/26/why-not-all-sd-
+cards-are-created-equal-storage-insights-1
+Table 11 – Comparison of TLC vs. MLC microSD Cards
+Retail TLC Delkin Utility MLC
+CrystalDiskMark Read Performance 80MB/s 95 MB/s
+CrystalDiskMark Write Performance 20MB/s 55 MB/s
+Lifecycle <12 months 18-24 months
+Endurance (Program/Erase cycles) 300-600 3000
+SMART data enabled (card life stats) No Yes
+Embedded mode – aligned to efficiently work
+with Linux based OS as opposed to FAT only
+No Yes
+
+Page 30
+5.3.2 microSD Pin Table
+The table below shows the pin connections for the microSD circuit on ZUBoard 1CG.
+Table 12 – microSD Pin Table
+MPSoC
+Pin Number
+Bank MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+Connects to:
+REFDES REFDES
+Pin
+Number
+A11 501 PS_MIO45_501 MIO45_SD1_DETECT J12 9
+C12 501 PS_MIO46_501 MIO46_SD1_DAT0 U20 D1
+B12 501 PS_MIO47_501 MIO47_SD1_DAT1 U20 E1
+A12 501 PS_MIO48_501 MIO48_SD1_DAT2 U20 A1
+D13 501 PS_MIO49_501 MIO49_SD1_DAT3 U20 B1
+A13 501 PS_MIO50_501 MIO50_SD1_CMD U20 C1
+C13 501 PS_MIO51_501 MIO51_SD1_CLK U20 D2
+
+Page 31
+5.4 USB 2.0
+ZUBoard 1CG provides one USB 2.0 Host type A connections. This is accomplished by the use of
+a Microchip USB3321C-GL-TR (U22) device.
+5.4.1 USB3321C-GL-TR Implementation Details
+Refer to the USB3321C-GL-TR datasheet
+(https://ww1.microchip.com/downloads/en/DeviceDoc/00001902A.pdf 
+)and the EVB-
+USB3320 evaluation Board schematics (https://www.microchip.com/en-us/development-
+tool/evb-usb3320 ) for implementation details.
+5.4.2 USB Pin Tables
+Table 13 – USB 2.0 Host
+MPSoC
+Pin
+Number
+Bank MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+Function Connects to:
+REFDES REFDES
+Pin
+Number
+E16 502 PS_MIO64_502 MIO64_USB1_CLK USB1 U22 A5
+B15 502 PS_MIO65_502 MIO65_USB1_DIR U22 A4
+D16 502 PS_MIO66_502 MIO66_USB1_DATA2 U22 C4
+G17 502 PS_MIO67_502 MIO67_USB1_NXT U22 B5
+B16 502 PS_MIO68_502 MIO68_USB1_DATA0 U22 B4
+A16 502 PS_MIO69_502 MIO69_USB1_DATA1 U22 C5
+A17 502 PS_MIO70_502 MIO70_USB1_STP U22 A3
+F17 502 PS_MIO71_502 MIO71_USB1_DATA3 U22 D5
+C17 502 PS_MIO72_502 MIO72_USB1_DATA4 U22 D4
+D17 502 PS_MIO73_502 MIO73_USB1_DATA5 U22 E5
+D18 502 PS_MIO74_502 MIO74_USB1_DATA6 U22 E4
+B17 502 PS_MIO75_502 MIO75_USB1_DATA7 U22 D3
+
+Page 32
+5.5 Ethernet
+The ZUBoard 1CG supports 10/100/1000 Mbps Single-Chip Ethernet Transceiver interface suitable
+for IEEE 802.3 applications. A Microchip KSZ9131RNXC-TR device is utilized for these interfaces.
+5.5.1 Ethernet 10/100/1000
+The KSZ9131RNXC-TR LAN interface connects to the MPSoC through the gigabit Ethernet
+controller GEM2 interface. The LAN MDIO and MDC interfaces are connected to PS MIO77
+and PS MIO76.
+Table 14 – Gigabit Ethernet Pin Table
+MPSoC
+Pin
+Number
+Bank MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+MPSoC
+VCCO
+Connects to:
+REFDES REFDES
+Pin
+Number
+G14 502 PS_MIO52_502 MIO52_RGMII_TX_CLK +VCC_PSAUX = 1.8V U32 24
+F14 502 PS_MIO53_502 MIO53_RGMII_TXD0 +VCC_PSAUX = 1.8V U32 19
+G15 502 PS_MIO54_502 MIO54_RGMII_TXD1 +VCC_PSAUX = 1.8V U32 20
+C14 502 PS_MIO55_502 MIO55_RGMII_TXD2 +VCC_PSAUX = 1.8V U32 21
+E14 502 PS_MIO56_502 MIO56_RGMII_TXD3 +VCC_PSAUX = 1.8V U32 22
+B14 502 PS_MIO57_502 MIO57_RGMII_TX_CTL +VCC_PSAUX = 1.8V U32 25
+A14 502 PS_MIO58_502 MIO58_RGMII_RX_CLK +VCC_PSAUX = 1.8V U32 35
+E15 502 PS_MIO59_502 MIO59_RGMII_RXD0 +VCC_PSAUX = 1.8V U32 32
+D15 502 PS_MIO60_502 MIO60_RGMII_RXD1 +VCC_PSAUX = 1.8V U32 31
+G16 502 PS_MIO61_502 MIO61_RGMII_RXD2 +VCC_PSAUX = 1.8V U32 28
+C15 502 PS_MIO62_502 MIO62_RGMII_RXD3 +VCC_PSAUX = 1.8V U32 27
+F16 502 PS_MIO63_502 MIO63_RGMII_RX_CTL +VCC_PSAUX = 1.8V U32 33
+F18 502 PS_MIO76_502 MIO76_GEM2_MDC +VCC_PSAUX = 1.8V U32 36
+B18 502 PS_MIO77_502 MIO77_GEM2_MDIO_OUT +VCC_PSAUX = 1.8V U32 37
+
+Page 33
+5.6 UART
+ZUBoard 1CG provides access to one UART on the baseboard. PS UART0 (MIO10, MIO11 on
+Bank 500) is connected though a FTDI JTAG/UART device which outputs these signals to a
+microUSB header (J16). The IO Voltage on the MPSoC is 1.8V, and the signals are routed through
+a level translator (U24) to allow for compatibility with 3.3V. In addition, a UART is supported on the
+MikroE Click mezzanine though the HD PL I/O
+Table 15 – Pinout for UART to Translator and J4 Connector
+MPSoC
+Pin
+Number
+MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+MPSoC
+VCCO
+Connects to: Connects to:
+REFDES REFDES
+Pin
+Number
+REFDES REFDES
+Pin
+Number
+W2 PS_MIO11_500 MIO11_UART1_TX +VCC_PSAUX
+= 1.8V
+U24 A7 J4 3
+AA2 PS_MIO10_500 MIO10_UART1_RX +VCC_PSAUX
+= 1.8V
+U24 A8 J4 4
+N/A N/A GND N/A N/A N/A 4 2
+D7 IO_L5N_HDGC_AD7N_44 HD_CLICK_RX_1V8 +VCCO_HD =
+1.8V
+U12 9 N/A N/A
+D6 IO_L5N_HDGC_AD7N_44 HD_CLICK_TX_1V8 +VCCO_HD =
+1.8V
+U12 10 N/A N/A
+
+Page 34
+5.7 SPI
+ZUBoard 1CG supports two SPI bus interfaces by default. One is supported over the PS MIO the
+other over HD PL I/O. The PS MIO SPI bus supports a Pressure sensor from ST Micro
+LPS22HHTR. Over the HD PL SPI Bus we support the MikroE Click site expansion.
+Table 16 – SPI Pin Table
+MPSoC
+Pin Number 
+Bank 
+MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+Connects to:
+REFDES REFDES Pin Number
+C9 501 PS_MIO38_501 MIO38_SPI0_SCLK U2 2
+B10 501 PS_MIO41_501 MIO41_SPI0_SS0 U2 6
+D12 501 PS_MIO42_501 MIO42_SPI0_MISO U2 5
+E13 501 PS_MIO43_501 MIO41_SPI0_MOSI U2 4
+G7 44 IO_L2P_AD10P_44 HD_CLICK_CS0_3V3 J5 3
+G5 44 IO_L1N_AD11N_44 HD_CLICK_CS1_AN_3V3 U11 5
+F6 44 IO_L2N_AD10N_44 HD_CLICK_SCK_3V3 J5/U11 4/7
+E6 44 IO_L3P_AD9P_44 HD_CLICK_MISO_3V3 J5 5
+E5 44 IO_L3N_AD9N_44 HD_CLICK_MOSI_3V3 J5/U11 6/6
+5.8 I2C
+ZUBoard 1CG supports one I2C1 bus on the PS and three I2C buses over High Density PL I/O.
+This I2C bus supports address and communication between the MPSoC and the AT24MAC602
+EEPROM which provides the Ethernet with a MAC Address. Over PL I/O we support I2C
+communication with a temperature sensor from St Micro STTS22HTR in addition to supporting
+High-speed and Click expansion connectors with the additional I2C bus.
+Table 17 – I2C Pin Table
+MPSoC
+Pin Number
+Bank MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+Connects to:
+REFDES REFDES Pin Number
+V3 500 PS_MIO8_500 MIO08_I2C1_SCL U7 6
+V5 500 PS_MIO9_500 MIO09_I2C1_SDA U7 5
+B7 44 IO_L12P_AD0O_44 HD_SENSOR_I2C_SCL U1 1
+A6 44 IO_L12N_AD0N_44 HD_SENSOR_I2C_SDA U1 6
+B9 44 IO_L9P_AD3P_44 HD_HSIO_SCL_1V8 J2/J1/J6 1/1/1
+A9 44 IO_L9N_AD3N_44 HD_HSIO_SDA_1V8 J2/J1/J6 3/3/3
+F8 44 IO_L4P_AD8P_44 HD_CLICK_SCL_3V3 J9 5
+F7 44 IO_L4N_AD8N_44 HD_CLICK_SDA_3V3 J9 6
+
+Page 35
+5.9 LEDs
+ZUBoard 1CG utilizes various LEDs for the following functions:
+• 2x Green LED - EAST0603GA0
+o +3.3V Power Good
+o VIN Power Good
+• 1x Blue LED - EAST0603BA0
+o MPSoC DONE
+• 6x Red LED - EAST0603RA0
+o PS MIO
+o Sensor Interrupts
+• 7x Orange LED - EAST0603OA0
+o PS_INIT Status
+o JTAG/UART Status
+o Volt Meter
+o USB C Controller Status
+• 2x RGB LED - LRTBGVSR-U4V2-JW+A6BB-D8+S2U2-7Z-20-S
+o HD I/O
+o HP I/O
+
+Page 36
+Table 18 – LED Pin Table
+MPSoC
+Pin
+Number
+Bank MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+MPSoC
+VCCO
+Function Connects to: Connects to:
+REFDES REFDES
+Pin
+Number
+LED
+REFDES
+Color
+N/A N/A N/A N/A N/A Power
+Good
+R143 2 D23 Green
+N/A N/A N/A N/A N/A VIN R142 2 D22 Green
+L12 503 PS_MIO20_500 PS_DONE +VCC_PSAUX =
+1.8V
+PS_Done Q2 2 D3 Blue
+K15 503 PS_MIO19_500 PS_INIT_N +VCC_PSAUX =
+1.8V
+PS_INIT Q2 4 D2 Orange
+N/A N/A N/A N/A N/A JTAG/UART D24 2 D24 Orange
+N/A N/A N/A N/A N/A 5V Present U33 1 D16 Orange
+N/A N/A N/A N/A N/A 9V Present U33 2 D15 Orange
+N/A N/A N/A N/A N/A 15V
+Present
+U33 14 D14 Orange
+N/A N/A N/A N/A N/A EN SINK R103 2 D17 Orange
+N/A N/A N/A N/A N/A CAP
+Mismatch
+R107 2 D18 Orange
+V4 500 PS_MIO07_500 MIO07_GPIO_LED1 +VCC_PSAUX =
+1.8V
+User LED Q12 2 D9 Red
+AB6 500 PS_MIO24_500 MIO24_GPIO_LED2 +VCC_PSAUX =
+1.8V
+User LED Q3 5 D7 Red
+Y6 501 PS_MIO25_500 MIO25_GPIO_LED3 +VCC_PSAUX =
+1.8V
+User LED Q12 5 D6 Red
+F11 501 PS_MIO33_501 MIO33_GPIO_LED4 +VCC_PSAUX =
+1.8V
+User LED Q3 2 D8 Red
+B5 44 IO_L11N_AD1N_44 HD_GPIO_RGB1_B +VCCO_44 = 1.8V User RGB Q10 2 D4,A3 Blue
+B6 44 IO_L11P_AD1P_44 HD_GPIO_RGB1_G +VCCO_44 = 1.8V User RGB Q11 5 D4,A1 Green
+A7 44 IO_L10N_AD2N_44 HD_GPIO_RGB1_R +VCCO_44 = 1.8V User RGB Q11 2 D4,A2 Red
+F4 65 IO_T3U_N12_65 HD_GPIO_RGB2_B +VCC0_HP = 1.8 &
+1.2V
+User RGB Q13 2 D5,A3 Blue
+A2 66 IO_T3U_N12_66 HD_GPIO_RGB2_G +VCC0_HP = 1.8 &
+1.2V
+User RGB Q13 5 D5,A1 Green
+B4 66 IO_T0U_N12_VRP_66 HD_GPIO_RGB2_R +VCC0_HP = 1.8 &
+1.2V
+User RGB Q10 5 D5,A2 Red
+
+Page 37
+5.10 Push Buttons
+The ZUBoard 1CG utilizes various push buttons for the following functions
+Table 19 – Push Button Pin Table
+MPSoC
+Pin
+Numbe
+r
+Ban
+k
+MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+MPSoC
+VCCO
+Functio
+n
+Connects to:
+REFDE
+S
+REFDES
+Pin
+Numbe
+r
+Push
+Button
+REFDE
+S
+F12 501 PS_MIO32_501 MIO32_GPIO_PB
+1
++VCC_PSAUX =
+1.8V
+User
+Defined
+Push
+Button
+R19 2 SW1
+A8 44 IO_L10P_AD2P_4
+4
+HD_GPIO_PB1 +VCCO_44 = 1.8V User
+Defined
+Push
+Button
+R33 2 SW3
+L12 503 PS_MIO20_500 PS_DONE +VCC_PSAUX =
+1.8V
+PS_SRST R114 2 SW5
+K12 503 PS_POR_B POWER_GOOD +VCC_PSAUX =
+1.8V
+PS_POR R119 2 SW6
+N/A N/A N/A N/A N/A On/Off
+Ctrl
+U29 3 SW7
+5.11 Switches
+The ZUBoard 1CG supports two sets of four-bit switches. One set is used for Boot Mode selection.
+The other switch is used for user development over the PS MIO GPIO interface.
+Table 20 – Switch Pin Table
+MPSoC
+Pin
+Number
+Bank 
+MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+MPSoC
+VCCO 
+Function
+Connects to:
+Switch
+REFDES
+REFDES
+Pin
+Number
+B11 501 PS_MIO44_501 MIO44_GPIO_SW1 +VCC_PSAUX = 1.8V User
+Switch
+SW4 1
+D11 501 PS_MIO40_501 MIO40_GPIO_SW2 +VCC_PSAUX = 1.8V User
+Switch
+SW4 2
+C10 501 PS_MIO39_501 MIO39_GPIO_SW3 +VCC_PSAUX = 1.8V User
+Switch
+SW4 3
+F11 501 PS_MIO31_501 MIO431_GPIO_SW4 +VCC_PSAUX = 1.8V User
+Switch
+SW4 4
+J16 503 PS_MODE0 PS_MODE0 +VCC_PSAUX = 1.8V Boot
+Mode
+SW2 1
+H15 503 PS_MODE1 PS_MODE1 +VCC_PSAUX = 1.8V Boot
+Mode
+SW2 2
+J15 503 PS_MODE2 PS_MODE2 +VCC_PSAUX = 1.8V Boot
+Mode
+SW2 3
+H18 503 PS_MODE3 PS_MODE3 +VCC_PSAUX = 1.8V Boot
+Mode
+SW2 4
+
+Page 38
+5.12 Clocking
+ZUBoard 1CG provides the following system clocks to the MPSoC:
+• PS_CLK: PS (33. 3MHz), 1.8V LVCMOS - DSC1525MI2A-33M33333
+• RTC CLK: RTC 32KHz LVDS - ECS-.327-12.5-34B-TR
+• USB 2.0 CLK: 26MHz - DSC6101ME1B-026.0000
+• Ethernet CLK: 25MHz, LVDS - DSC1121DE2-025.0000T
+• UART/JTAG CLK: 12MHz - ECS‐120‐10‐33B‐CKM‐TR
+Table 21 – Clock Generator Pin Table
+MPSoC
+Pin
+Number
+Bank 
+MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+MPSoC
+VCCO 
+Function
+Connects to: Connects to:
+REFDES REFDES
+Pin
+Number
+REFDES REFDES
+Pin
+Number
+H14 503 PS_REF_CLK_503 PS_REF_CLK +VCC_PSAUX =
+1.8V
+System
+Reference Clock
+U28 3 N/A N/A
+H17 503 PS_PADI_503 PS_PAD_IN +VCC_PSBATT Real Time Clock X1 1 N/A N/A
+J17 503 PS_PADO_503 PS_PAD_OUT +VCC_PSBATT Real Time Clock X1 2 N/A N/A
+N/A N/A N/A N/A N/A USB 2.0 Clock
+Reference
+U26 3 U22 A2
+N/A N/A N/A N/A N/A Gigabit Ethernet
+Reference Clock
+U34 4 U34 46
+N/A N/A N/A N/A N/A JTAG/UART
+Reference CLK
+X2 1 U17 2
+N/A N/A N/A N/A N/A JTAG/UART
+Reference CLK
+X2 2 U17 3
+
+Page 39
+5.13 On/Off Controller
+The AMD Zynq UltraScale+ MPSoC device has an integrated Platform Management Unit or PMU.
+This PMU's functionality is described in Chapter 6 of AMD UG1085, 
+Zynq UltraScale+ Device
+Technical Reference Manual. 
+The PMU controls many things on the ZU+ device, including powering
+up and down the ZU+. The ZUBoard 1CG incorporates an On/Off controller to interface between
+the on-board power regulators and the ZU+. This allows the ZU+, Power Button, and regulators to
+seamlessly work together to power the system on and off without corrupting your Linux (or other
+OS) file system.
+The key inputs/outputs of the system are detailed below:
+Table 22 – On/Off Controller Inputs and Outputs
+Signal Name Source Destination Polarity Description
+PWR_PB_N Push
+Button
+(SW7)
+On/Off
+Controller
+(U29)
+Low-
+enabled
+Push button input for powering on and off.
+Responds to both short and long pushes.
+When the system is powered off, a short or
+long push initiates a power-on sequence.
+When the system is powered on, a short
+push will trigger an interrupt, telling the
+AMD PMU to perform a shutdown. A long
+push (~10 seconds held down) will also
+issue an interrupt but will power off the
+system regardless of whether the PMU
+issues KILL_N or not.
+MIO34_POW
+ER_KILL_N
+ZU+ (U6) On/Off
+Controller
+(U29)
+Low-
+enabled
+Disable the power regulators immediately.
+The ZU+ PMU enables this when it has
+properly processed an internal shutdown
+command successfully and is ready for the
+on/off controller to turn off the regulators.
+EN_SEQ_PL On/Off
+Controll
+er (U29)
+DC-DC
+converters
+(U3, U25, U26)
+High-
+enabled
+Enables the three primary TDK μPOL™
+power converter devices. Asserted by the
+On/Off Controller during a power-up
+sequence, and de-asserted by the On/Off
+Controller during a power-down sequence
+(either a response to KILL_N or a long push).
+MIO26_PWR_
+INT
+On/Off
+Controll
+er (U29)
+ZU+ (U6) High-
+enabled
+Interrupt input to the ZU+ when a power-
+down push button event has been received.
+INIT 
+Pull
+up/down
+resistor
+(R212,
+R213)
+On/Off
+Controller
+(U29)
+Default =
+Low
+When low, the On/Off Controller powers up
+with the push button control. When high,
+the On/Off Controller powers up the system
+as soon as the input voltage is valid.
+
+Page 40
+A Dialog Semiconductor GreenPAK programmable device was developed to accomplish this
+function on ZUBoard 1CG. This device accomplishes everything needed in a very small 2mm x
+2.2mm STQFN package. Specifically, the design is based on the Dialog GreenPAK SLG46170
+device, with the programmed part number being SLG7AV45289. If you want to duplicate the exact
+functionality of the On/Off Controller on the ZUBoard 1CG, the 
+SLG7AV45289 may be ordered from
+Avnet. If you are working on a project with Avnet as your distributor, work with your Avnet FAE to
+request samples of the device to avoid the 3K MOQ, or you can get Avnet's code for the On/Off
+Controller to customize it for yourself by submitting a request to your local FAE.
+For those that want to modify the power-up initialization from push-button control to power-up with
+power connected, you will need to move a single resistor on the ZUBoard 1CG. This is the R212
+and R213 10-Kohm configuration, which selects either pull-down (default, use Push Button) or pull-
+up (power up with power). To implement the Power Up with Power Connected function, DNP
+R213 and populate R212. R212 and R213 are located on the back side of the board directly next
+to U29.
+Figure 3 – Location of R213 and R212
+
+Page 41
+To help explain the functionality of this device, a datasheet is available at Dialog SLG7AV45289
+On-Off Controller Datasheet . Also, here are the functional diagrams showing the logic within this
+device.
+Figure 4 – On/Off Controller Diagram 1
+Figure 5 – On/Off Controller Diagram 2
+
+Page 42
+Figure 6 – On/Off Controller Diagram 3
+Figure 7 – On/Off Controller Diagram 4
+
+Page 43
+Figure 8 – On/Off Controller Diagram 5
+Figure 9 – On/Off Controller Diagram 6
+
+Page 44
+Figure 10 – On/Off Controller Diagram 7
+Figure 11 – On/Off Controller Diagram 8
+Table 23 – On/Off Controller Pin Table
+
+Page 45
+MPSoC
+Pin
+Number
+Bank MPSoC
+Site Name
+ZUBoard 1CG
+Net name
+MPSoC
+VCCO
+Function Connects to:
+REFDES REFDES Pin
+Number
+G9 501 PS_MIO26_501 MIO26_PWR_INT +VCC_PSAUX
+= 1.8V
+On/Off
+Controller
+U29 11
+F13 501 PS_MIO34_501 MIO34_POWER_KILL_N +VCC_PSAUX
+= 1.8V
+On/Off
+Controller
+U29 10
+5.14 Expansion Connectors
+5.14.1 MikroE Click Site
+ZUBoard 1CG provides a single MikroE compatible Click site. This click site allows
+inexpensive Click Board expansion through the MikroE Click ecosystem. Visit
+https://avnet.me/click 
+.This click site is supported through Samtec SSW-108-01-F-S
+connectors.
+Table 24 shows the pinout of the MikroE Click Expansion Header (ZUBoard 1CG column)
+and the differences from the MikroE Click specification (MikroE column).
+Table 24 – MikroE Click Site(J5 & J9)
+ZUBoard 1CG 
+MikroE
+Click
+J5 Pin
+#
+J9 Pin
+# 
+MikroE Click ZUBoard 1CG
+CLICK_AN AN 
+1 1 
+PWM HD_CLICK_PWM_3V3
+HD_CLICK_RST_3V3 RST 
+2 2 
+INT HD_CLICK_INT_3V3
+HD_CLICK_CS0_3V3 CS 
+3 3 
+RX HD_CLICK_RX_3V3
+HD_CLICK_SCK_3V3 SCK 
+4 4 
+TX HD_CLICK_TX_3V3
+HD_CLICK_MISO_3V3 MISO 
+5 5 
+SCL HD_CLICK_SCL_3V3
+HD_CLICK_MOSI_3V3 MOSI 
+6 6 
+SDA HD_CLICK_SDA_3V3
++3V3 +3.3V 
+7 7 
++5V +5V0
+GND GND 
+8 8 
+GND GND
+5.14.2 High Speed Expansion Connector (J1, J2, and J6)
+ZUBoard 1CG offers three Samtec connectors for high-speed interfaces. These three
+interfaces are split up into two GTR connectivity sites and one HP I/O site. A Samtec QSH-
+020-01-F-D-DP-A-K-TR connector support the two High-Speed sites with GTR transceivers,
+and a Samtec QSE-020-01-F-D-A-K-TR supports the HP I/O site.
+Table 25 and 26 show the pinout of the two High-speed GTR connectivity sites and Table 27
+shows the pinout for the High-Speed HP I/O site.
+Table 25 – High-speed GTR MIO (J2)
+ZUBoard 1CG High-speed GTR 
+J2
+Pin #
+J2
+Pin # 
+High-speed GTR ZUBoard 1CG
+HD_HSIO_SCL_3V3 SCL 1 2 +5V +5V0
+HD_HSIO_SDA_3V3 SDA 3 4 R_GA R8 = 49.9k
+
+Page 46
+GTR_LANE0_RX_P RX0P 5 6 TX0P GTR_LANE0_TX_P
+GTR_LANE0_RX_N RX0N 7 8 TX0N GTR_LANE0_TX_N
+GTR_LANE1_RX_P RX1P 9 10 TX1P GTR_LANE1_TX_P
+GTR_LANE1_RX_N RX1N 11 12 TX1N GTR_LANE1_TX_N
+GTR_CLK0_P REFCLKP 13 14 S0 MIO13
+GTR_CLK0_N REFCLKN 15 16 S1 MIO14
+MIO15 S2 17 18 S3 MIO17
+MIO16 S4 19 20 S5 MIO18
+MIO19 S6 21 22 S7 MIO21
+MIO20 S8 23 24 S9 MIO22
+MIO23 S10 25 26 S11 MIO36
+MIO35 S12 27 28 S13 MIO37
+MIO27 S14 29 30 S15 MIO29
+MIO28 S16 31 32 S17 MIO30
+HD_DP_07_GC_P P2C_CLKP 33 34 C2P_CLKP HD_DP_08_GC_P
+HD_DP_07_GC_N P2C_CLKN 35 36 C2P_CLKN HD_DP_08_GC_N
+N/C RSVD 37 38 RSVD N/C
++1V8 VIO1 39 40 +3V3 +3V3
+GND GND GND GND GND GND
+
+Page 47
+Table 26 – High-speed GTR PL IO (J1)
+ZUBoard 1CG High-speed GTR 
+J1
+Pin #
+J1
+Pin # 
+High-speed GTR ZUBoard 1CG
+HD_HSIO_SCL_3V3 SCL 1 2 +5V +5V0
+HD_HSIO_SDA_3V3 SDA 3 4 R_GA R7 = 4.02k
+GTR_LANE2_RX_P RX0P 5 6 TX0P GTR_LANE2_TX_P
+GTR_LANE2_RX_N RX0N 7 8 TX0N GTR_LANE2_TX_N
+GTR_LANE3_RX_P RX1P 9 10 TX1P GTR_LANE3_TX_P
+GTR_LANE3_RX_N RX1N 11 12 TX1N GTR_LANE3_TX_N
+GTR_CLK1_P REFCLKP 13 14 S0 HP_DP_01_DBC_P
+GTR_CLK1_N REFCLKN 15 16 S1 HP_DP_01_DBC_N
+HP_DP_02_P S2 17 18 S3 HP_DP_03_P
+HP_DP_02_N S4 19 20 S5 HP_DP_03_N
+HP_DP_04_P S6 21 22 S7 HP_DP_05_P
+HP_DP_04_N S8 23 24 S9 HP_DP_05_N
+HP_DP_06_P S10 25 26 S11 HP_DP_14_GC_P
+HP_DP_06_N S12 27 28 S13 HP_DP_14_GC_N
+HP_DP_15_P S14 29 30 S15 HP_DP_24_P
+HP_DP_15_N S16 31 32 S17 HP_DP_24_N
+HP_DP_11_GC_66_P P2C_CLKP 33 34 C2P_CLKP HP_DP_12_GC_66_P
+HP_DP_11_GC_66_N P2C_CLKN 35 36 C2P_CLKN HP_DP_12_GC_66_N
+N/C RSVD 37 38 RSVD N/C
++VCCO_HP = 1.8/1.2V VIO1 39 40 +3V3 +3V3
+GND GND GND GND GND GND
+
+Page 48
+Table 27 – High-Speed HP Expansion PL IO (J6)
+ZUBoard 1CG High-Speed HP IO 
+J6
+Pin #
+J6
+Pin # 
+High-Speed HP IO ZUBoard 1CG
+HD_HSIO_SCL_3V3 SCL 1 2 +5V +5V0
+HD_HSIO_SDA_3V3 SDA 3 4 R_GA R50 = 2k
+HP_DP_17_P S0_D0P 5 6 S1_D1P HP_DP_07_QBC_P
+HP_DP_17_N S2_D0N 7 8 S3_D1N HP_DP_07_QBC_N
+HP_DP_18_P S4_D2P 9 10 S5_D3P HP_DP_08_P
+HP_DP_18_N S6_D2N 11 12 S7_D3N HP_DP_08_N
+HP_DP_16_QBC_P S8_D4P 13 14 S9_D5P HP_DP_09_P
+HP_DP_16_QBC_N S10_D4N 15 16 S11_D5N HP_DP_09_N
+HP_DP_19_DBC_P S12_D6P 17 18 S13_D7P HP_DP_10_QBC_P
+HP_DP_19_DBC_N S14_D6N 19 20 S15_D7N HP_DP_10_QBC_N
+HP_DP_20_P S16 21 22 S17 HP_DP_11_GC_P
+HP_DP_20_N S18 23 24 S19 HP_DP_11_GC_N
+HP_DP_21_P S20 25 26 S21 HP_DP_23_P
+HP_DP_21_N S22 27 28 S23 HP_DP_23_N
+HP_DP_22_P S24 29 30 S25 HP_SE_01
+HP_DP_22_N S26 31 32 S27 HP_SE_02
+HP_DP_12_GC_P P2C_CLKP 33 34 C2P_CLKP HP_DP_13_GC_P
+HP_DP_12_GC_N P2C_CLKN 35 36 C2P_CLKN HP_DP_13_GC_N
+N/C RSVD 37 38 RSVD N/C
++VCCO_HP = 1.8/1.2V VIO1 39 40 +3V3 +3V3
+GND GND GND GND GND GND
+6 Configuration and Debug
+6.1 Boot Mode
+ZUBoard 1CG supports booting from JTAG, QSPI, and microSD Card. A DIP switch (SW2) is
+installed to allow selecting the desired boot mode.
+BOOT MODE MODE PIN [3:0] SW2 (1-4)
+JTAG 0x0 ON-ON-ON-ON
+QSPI32 0x2 ON-OFF-ON-ON
+SD1 (2.0) 0x5 OFF-ON-OFF-ON
+eMMC (1.8V) /w Module 0x6 ON-OFF-OFF-ON
+
+Page 49
+Figure 12 – Boot Mode Switch
+6.2 JTAG Configuration and Debug
+JTAG access to the MPSoC is available through a FTDI chip on board which outputs the signals to
+a microUSB header (J16). This allows Vivado hardware manager to interface with ZUBoard and is
+what AMD utilizes for the Vitis System Debugger, based on the Target Communications Framework
+(TCF).
+For more information regarding the FTDI chip, reference AMD knowledge article 
+68889 - Boards
+and Kits - Can the on-board USB-to-JTAG configuration solution on Xilinx Evaluation Kits be
+leveraged for custom board design?
+7 Power
+7.1 USB Type C power In
+The input power method for the ZUBoard 1CG is over the USB type C connector on board.
+This requires a USB Type C Power compliant supply that can negotiate up to 45W (15V/3A).
+Avnet recommends the following USB Type C Compliant Power supply, however any 45W
+USB C compliant supply will work.
+• PSA-A45WM-U - USB-C capable input power supply
+• C06026-00013 - USB C-to-C Plug for power supply
+7.2 USB Type C Controller
+The ZUBoard 1CG features the UPD301C/KYX USB C Controller. This device enables the
+user to negotiate their USB C compliant power supply up to 15V/3A. No other voltage ranges
+are supported by default. This USB C Controller is programmable to support various
+applications. To purchase a programmed controller contact your local Avnet branch and
+request a quote for AVT~UPD301C/KYX~471416~PM from the Avnet programming center.
+7.3 Power On/Off
+Ensure a proper 45W supply is plugged into the AES-ZUB-1CG-DK-G (See 7.1). The power
+good LEDs will illuminate.
+• LED D23 (Green) Power Good
+
+Page 50
+• LED D14 (Orange) 15V Present
+• LED D15 (Orange) 9V Present
+• LED D16 (Orange) 5V Present
+7.4 Power Estimation Using XPE
+AMD Power Estimator (XPE) should be used to generate worst case power estimations. The AMD
+Power Estimator (XPE) spreadsheet is available on AMD’ website that can help you get started
+with your own power estimation. Avnet has also provided an example of this spreadsheet filled out
+for the ZUBoard 1CG under Documentation on the ZUBoard 1CG website.
+http://avnet.me/zuboard-1cg 
+ Technical Documents  Power Analysis
+This blog also gives some good information about using XPE.
+https://www.element14.com/community/groups/power-management/blog/2018/01/11/estimating-
+xilinx-power-requirements
+7.5 Power Regulators
+Configurable TDK Buck converters supply the power architecture for the ZUBoard 1CG. These
+buck regulators are offered in both fixed and configurable outputs. These also have internal bulk
+capacitance and inductors all in one single package.
+TDK Buck Regulators:
+• FS1406-1800-AS
+• FS1406-0600-AS
+• FS1404-3300-AS
+• FS1403-5000-AS
+• FS1406-1100-AS
+The power rail configuration is shown below:
+Figure 13 – ZUBoard 1CG DC-DC Power Regulation
+
+Page 51
+7.6 Power Control and Sequence
+A custom on/off controller using a Renesas/Dialog GreenPak device is used for power up control. The device part number is
+SLG7AV45289 and is available for purchase. Talk with your FAE or account manager for more information.
+In addition to power on control, sequencing is controlled by another Renesas/Dialog GreenPak device, part number SLG7TD43741VTR.
+This device is also available for purchase.
+The diagram below shows the power sequence. Power down sequencing is the reverse order of start-up:
+Figure 14 – ZUBoard 1CG Power Sequencing
+The captures below show the power up sequencing measurements taken on the ZUBoard 1CG:
+
+Page 52
+Pink – 5V Yellow – VCCPSINT_LP Yellow – VCCPSINT_LP
+Yellow – VCCPSINT_LP Blue – VCCPSINT_FP Dark Blue – VCCINT
+Light Blue – VCCPSAUX Pink – VCCINT Light Blue – VCCPSAUX
+Dark Blue – VCCO PSDDR 1.1V Pink – VCCAUX
+Yellow – VCCPSINT_LP Yellow – VCCPSINT_LP Light Blue – VCCAUX
+Pink – PSPLL Light Blue – VCCPSAUX Dark Blue – VCCO PSDDR 1.1V
+Light Blue – VCCPSAUX Dark Blue – VCCO PSDDR 1.1V Pink – VCCO 1.2V
+Dark Blue – VCCO PSDDR 1.1V Pink – VCCO 1.2V Yellow – 3.3V
+
+Page 53
+Timing VCCAUX to 3.3V – 53ms Light Blue – VCCAUX 68ms from VCCAUX to POR (65ms required)
+Yellow – 3.3V
+Pink – POR
+
+Page 54
+8 Thermal
+The ZUBoard 1CG is designed with a keep out around the MPSoC device to allow an attached clip on
+heatsink to dissipate heat. External Airflow
+The Aavid Heatsink does not have an attached fan. It is passive. The heatsink spans on the MPSoC
+device. When we initially experimented with this board on a benchtop with a few moderately
+intensive designs, the heatsink did not get hot to the touch even without airflow.
+Given the flexibility of the AMD ZU+ PL, every design is different and must be analysed once the
+final application is developed. If ZUBoard 1CG is mounted in an enclosure or used in a system
+design, it is expected that the system designer account for an appropriate amount of system-level
+airflow that keeps the MPSoC T 
+j 
+within the bounds of the device.
+While you should typically not have any issues running ZUBoard 1CG on a bench with the heatsink
+without airflow, this may not always be the case. If you run a PL- and Clock-intensive design, you
+may see the heatsink temperature rise 20 or 30 degrees above ambient. You will not want to touch
+the heatsink at this temperature. You should use caution and perhaps apply a small desktop fan
+which will bring the heatsink back within 5 to 10 degrees of ambient.
+
+Page 55
+8.1 Mounting the ZUBoard 1CG heatsink
+The heatsink is clipped directly over top of the ZUBoard 1CG MPSoC device.
+9 Reset
+The ZUBoard 1CG System Reset is managed by signal POWER_GOOD, which is an open-drain signal,
+which is pulled-up to +VCC_PSAUX (+1.8V) through 49.9KΩ R187. This signal is tied to the MPSoC Power-
+on-Reset signal PS_POR_B. There are multiple entities that can assert this signal by driving low:
+o TDK Buck Regulators (U26, U25, U5, U13, U18, U3)
+o Pushbutton Reset (SW6)
+At power-up, the ZU1CG is held in reset by the TDK Regulators until all power rails have ramped up and
+are stable. A pushbutton (SW6) allows manually resetting the ZU1CG.
+
+Page 56
+10 Getting Help and Support
+If additional support is required, Avnet has many avenues to search depending on your needs.
+For general question regarding ZUBoard 1CG, please visit our website at http://avnet.me/zuboard-1cg
+.
+Here you can find documentation, technical specifications, videos and tutorials, reference designs and
+other support.
+Detailed questions regarding ZUBoard 1CG hardware design, software application development, using
+AMD tools, training and other topics can be posted on the ZUBoard 1CG Support Forum at
+http://avnet.me/zuboard-1cg-forum
+. Avnet’s technical support team monitors the forum during normal
+business hours in North America.
+Those interested in customer-specific options on ZUBoard 1CG can send inquiries to
+customize@avnet.com
