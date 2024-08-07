@@ -14,3 +14,20 @@
 [Hardware User's Guide](../datasheets/zynq-ref-board-hw-users-guide.pdf)
 
 [Schematic](../datasheets/zynq-ref-board-schematic.pdf)
+
+## Overall Architecture ##
+
+- Provides microSD.
+- Connects to 1GB RAM. 
+- Connects to Ethernet.
+- Provides JTAG/UART over microUSB.
+- Provides USB2.0
+- Powered by USB-C (Check whether enough for us.)
+- Provides 256Mb Flash for boot
+
+We don't need:
+- Pressure & Temp sensors.
+- MikroE Click expansion
+- RTC
+- SYZYGY expansion
+
