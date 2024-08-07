@@ -76,9 +76,35 @@ Defaults Configuration:
 
 ## uSD ##
 
-TODO ...
+![MicroSD](figures/usd.png)
 
+Main components:
+- U20 (PI4ULS3V4857): This is the voltage level translator chip. Used to convert signals between the 1.8V domain from the ZynQ to the 3.3V domain used by the SD card.
+- J12 (2201778-1): The physical microSD card socket.
 
+Power supplies:
+- 1.8V supply for the ZynQ side.
+- C79 (100nF): Decoupling cap for 1.8V side of level translator.
+- 3.3V supply for the SD card side.
+- C81 (100nF): Decoupling cap for 3.3V side of level translator.
+- C208 (100nF): Decoupling cap for 3.3V supply for microSD socket.
+
+MicroSD Spec:
+- R286 (4.99K): Pull up resistor to keep CMD line high. Dictated by spec. (VERIFY)
+
+Signal lines from ZynQ:
+- MIO50_SD1_CMD: command signaled by
+- MIO50_SD1_CLK: clock signal
+- MIO46_SD1_DAT0, MIO47_SD1_DAT1, MIO48_SD1_DAT2, MIO49_SD1_DAT3: data signals
+  These signals go into DAT0, DAT1, DAT2, DAT3 pins on microSD.
+  
+Configuring the level translator:
+- R113 (0 ohm): Sets the mode of operation for the level translator. (VERIFY)
+
+Remaining questions:
+- What are the 0-ohm resistors for? How does the CardDetect circuitry work?
+- What are the SWA/SWB pins on the MicroSD? What is R274 for?
+- Why do the GND pins on J12 require a ferrite bead? Why don't the other GND pins need one?
 
 ## Supporting JTAG ##
 
