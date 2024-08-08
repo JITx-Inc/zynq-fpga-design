@@ -237,7 +237,6 @@ Test mode:
 - TEST pin is jumpered to GND using R265 (0-ohm).
 - This sets FT2232HL to "Normal Operation Mode" instead of "Test Mode".
 
-
 Remaining questions:
 - What are the VREGIN and VREGOUT pins on U17. How to use them?
 - How does the 5V supply from USB1_5V0 relate to this part of the schematic?
