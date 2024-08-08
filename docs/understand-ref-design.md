@@ -108,7 +108,37 @@ Remaining questions:
 
 ## Supporting JTAG ##
 
-TODO...
+### Level Translation ###
+
+![JTag Level Translation](figures/jtag-level-translation.png)
+
+Main component:
+- U24 (NVT2010PW,118): This is the voltage level translator.
+  Converts 1.8V signals from FPGA to 3.3V for JTAG.
+- 1.8V and 3.3V supplies connected to VREFA and VREFB pins respectively.
+
+Signals being translated:
+- JTAG signals:
+  JTAG_TCK_1V8 => JTAG_TCK_3V3
+  JTAG_TMS_1V8 => JTAG_TCK_3V3
+  JTAG_TDI_1V8 => JTAG_TCK_3V3
+  JTAG_TDO_1V8 => JTAG_TCK_3V3
+- System reset:
+  PS_SRST_N_1V8 => PS_SRST_N_3V3
+- Power-on reset:
+  PS_POR_N_1V8 => PS_POR_N_3V3
+- UART transmit and receive:
+  MIO11_UART0_TX_1V8 => MIO11_UART0_TX_3V3
+  MIO10_UART0_RX_1V8 => MIO10_UART0_RX_3V3
+  
+Pull-up resistors:
+- R184, R178, R41, R176, R39, R171, R37, R168 (4.75K): Ensure signals are high when not actively driven.
+
+Enable circuit:
+- Simple low-pass filter R42(200K) and C115(100nF) to reduce noise on EN.
+
+Remaining questions:
+- There are no decoupling caps on VREFA and VREFB. Why?
 
 ## Supporting USB2.0 ##
 
@@ -119,5 +149,9 @@ TODO...
 TODO...
 
 ## Power Supplies ##
+
+TODO...
+
+## Supporting Ethernet ##
 
 TODO...
