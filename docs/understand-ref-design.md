@@ -140,6 +140,123 @@ Enable circuit:
 Remaining questions:
 - There are no decoupling caps on VREFA and VREFB. Why?
 
+### JTAG/UART MicroUSB Connector ###
+
+![JTAG MicroUSB](figures/jtag-microusb.png)
+
+Main component:
+- J16 (47589-0001): This is the 5-pin MicroUSB connector. 
+  - Pin USB5V0: 5V power supply from the USB.
+  - Pins D- and D+: The USB data lines.
+  - Pin ID: Identifies the type of USB connection.
+  - Pin GND: Ground connection.
+  
+Power rails:
+- USB1_5V0: This will be the 5V power supply line from the USB connector.
+
+USB Signals:
+- ULPI1_D_N, ULPI1_D_P: The USB differential data lines.
+
+Remaining questions:
+- Do we use the USB1_5V0 anywhere else on the board?
+- What is the ID_JTAG_UART signal for?
+- What is the C101 and 0-ohm R144 doing on the S1,S2,S3,S4 pins?
+
+### JTAG/UART Interface ###
+
+![JTAG UART](figures/jtag-uart.png)
+
+Main component:
+- U17 (FT2232HL) is a USB to UART IC: it converts USB signals to UART and JTAG protocols.
+- VREGIN: Main 3.3V input.
+- VREGOUT: Integrated voltage regulator 1.8V output. This can be used to connect to VCORE with 3.3uF filter capacitor.
+- VPHY: This pin powers the USB physical layer interface.
+  It needs a clean 3.3V supply.
+  We connect it to a dedicated 3V3_PHY supply.
+- VPLL: This pin powers the internal PLL of the chip.
+  It needs a very clean, low-noise 3.3V supply.
+  We connect it to a dedicated 3V3_PLL supply.
+- VCORE: This powers the internal core logic of the chip, and needs a 1.8V supply.
+  We connect it to the integrated VREGOUT pin.
+- VCCIO: This powers the I/O banks of the chip.
+  Our desired I/O voltage is 3.3V so we connect it to the main 3V3 rail.
+- C73 (4.7uF) and C74 (100nF) are decoupling caps for VREGIN.
+- C61 (4.7uF) is the decoupling cap for VREGOUT.
+- REF pin: Current reference. Specified on datasheet to be connected via 12K@1% resistor (R272) to ground.
+
+USB Signals and ESD Protection:
+- D21 (CDSOT23-SR208) is a TVS (Transient Voltage Suppressor) diode array. It protects the USB data lines (ULPI1_D_N, ULPI1_D_P) from electrostatic discharge.
+- Once protected, the signal goes into the DM and DP pins on the FT2232.
+- Note: Make sure during physical layout that the TVS diodes are close to the USB connector.
+
+JTAG Signals:
+- The four primary jtag signals (JTAG_TCK_3V3, JTAG_TDI_3V3, JTAG_TDO_3V3, JTAG_TMS_3V3) are output by pins ADBUS[0-3].
+- R128, R129, R130, R131 (22.1 ohm) are series termination resistors for matching impedance.
+
+Reset Signals:
+- Power-on reset and system reset (PS_POR_N_3V3, PS_SRST_N_3V3) is output from ADBUS[6-7].
+
+UART Signals:
+- UART signals from fpga (MIO10_UART0_RX_3V3, MIO11_UART0_TX_3V3) connect to BDBUS[0-1].
+- Note: UART transmit MIO11_UART0_TX_3V3 is *received* by FT2232HL_RX (BDBUS1).
+        UART receive  MIO10_UART0_RX_3V3 is *transmitted* by FT2232HL_TX (BDBUS0).
+        
+USB suspend:
+- Suspend mode detection is not used. SUSPEND pin is left floating.
+
+Enable circuit:
+- PWREN# pin is an active-low power enable. Connected to PWREN_N signal.
+
+Unused Pins:
+- ACBUS[0-7] unused.
+- BDBUS[2-7] unused but go to test points for debugging.
+- BCBUS[0-7] unused. 
+
+EEPROM Configuration:
+- U38 (93LC56B) is a 2MHz, 2Kb EEPROM for storing configuration data for the FT2232HL chip.
+- Powered by 3V3 rail connected to VCC pin. C204 (100nF) for decoupling.
+- EEPROM signals connected to FT2232.
+  CS (Chip Select)           -> EECS
+  CLK (Clock)                -> EECLK (with R275 22.1ohm termination resistor)
+  DI,DO (Data In, Data Out)  -> EEDATA (Bidirectional data line)
+- DI, CLK, CS signals default to high using pull-up resistors (R276, R278, R282, 10K)
+  DO default to high through an additional R283 (2K) resistor.
+
+- Note about bidirectional data line:
+  To write to EEPROM:
+  - FT2232HL drives EEDATA directly.
+  To read from EEPROM:
+  - FT2232HL sets EEDATA to Hi-Z.
+  - EEPROM then drives DO.
+  
+Clock for FT2232 chip:
+- Provided by X2 (ECS-120-10-33B-CKM-TR), a 12MHz crystal with C86, C97 (18pF) load capacitors.
+- Feeds into OSCI and OSCO pins.
+
+Test mode:
+- TEST pin is jumpered to GND using R265 (0-ohm).
+- This sets FT2232HL to "Normal Operation Mode" instead of "Test Mode".
+
+
+Remaining questions:
+- What are the VREGIN and VREGOUT pins on U17. How to use them?
+- How does the 5V supply from USB1_5V0 relate to this part of the schematic?
+- VPHY and VPLL supplies need to be as clean as possible. Are they connected to separate regulators?
+- No decoupling caps are needed for VPHY, VPLL, VCORE, VCCIO?
+- Where is ID_JTAG_UART going?
+- How do we correctly use the CDSOT23? What is the USB1_5V0 connection for?
+- The DNP resistors R136, R133, R135, R134 for the JTAG signals ensure a default high signal. Are they necessary?
+- What is the pull-up R120 on ADBUS4 for?
+- What is happening to the ADBUS5 pin?
+- How do we know the reset signals come out of ADBUS[6-7]?
+- Why do the reset signals (PS_POR_N_3V3, PS_SRST_N_3V3) have 0-ohm jumpers and test points? Delicate place in the schematic?
+- Why does BDBUS[2-7] have test points? What about the other unused pins?
+- How do we program these EEPROMs on the board?
+- How is the BCBUS7 power saving configuration working?
+- Who sends out the PWREN_N signal? Is this for boot sequencing?
+- Values of C86 and C97 load capacitors come from crystal datasheet?
+- Where does the FT2232H_RST_N reset signal come from?
+
 ## Supporting USB2.0 ##
 
 TODO...
@@ -155,3 +272,5 @@ TODO...
 ## Supporting Ethernet ##
 
 TODO...
+
+## Supporting DDR4 ##
