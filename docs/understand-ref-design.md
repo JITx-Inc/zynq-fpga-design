@@ -258,18 +258,137 @@ Remaining questions:
 
 ## Supporting USB2.0 ##
 
-TODO...
+### USB 2.0 PHY ###
+
+![USB 2.0 PHY](figures/usb2-phy.png)
+
+Main component:
+- U22 (USB3321C-GL-TR): The USB 2.0 PHY controller.
+- Powered by 5.0V supply via VBAT pin, and 1.8V supply via VDD18 pin (with 100nF decoupling cap C195).
+
+Power:
+- Powered by 5.0V supply via VBAT pin.
+- Powered by 1.8V supply via VDD18. Spec requires a 0.1uF bypass cap to ground. (C195)
+- VDD33 is a 3.3V regulator output. Spec requires a 2.2uF bypass cap to gorund. (C200)
+
+VBus Pin:
+- Dictated by datasheet, this pin connects to an external resistor (R268 10K) to the VBUS pin of the USB cable.
+- Handles session request protocol for USB On-The-Go (OTG) devices.
+
+USB Signals:
+- ID Pin: Dictated by datasheet. For an A-device, this pin is grounded.
+- DM,DP: D- and D+ signal pins of the USB cable.
+
+Reset:
+- RESETB Pin: Active low. Keep high for normal operation.
+- USB_RST signal comes from PHY reset circuit.
+
+Reference clock:
+- REFCLK: Connect to 26MHz reference clock.
+
+Data and control signals:
+- DATA[7:0] is a ULPI bi-directional data bus. DATA[7] is MSB, Data[0] is LSB. Connects to MIO pins on ZynQ.
+- STP, NXT, DIR, CLKOUT: ULPI control signals connected to ZynQ.
+
+Bias:
+- RBIAS Pin: Dictated by pin. Requires 8.06K resistor (R121) to ground.
+
+### USB 2.0 PHY Reset ###
+
+![USB 2.0 PHY Reset](figures/usb2-phy-reset.png)
+
+How it works:
+- U21 (74LVC1G08GM) is a 2-input AND gate.
+- Powered by 1.8V supply with 100nF decoupling cap.
+- POWER_GOOD signal comes from power management circuit, and indicates when power supply is stable.
+- Since other input of U21 is tied to VCC, USB_RST logically mirrors POWER_GOOD.
+
+Remaining questions:
+- What is the voltage of the POWER_GOOD signal?
+- Is this circuit just a simple level translator to get that signal to 1.8V? 
+
+### 26MHz Reference Clock ###
+
+![26 MHz Clock](figures/usb2-clock.png)
+
+Main component:
+- U36 (DSC6101ME1B-026.0000) is a 26MHz oscillator.
+
+Power:
+- Powered by 3.3V supply with 100nF decoupling cap.
+
+Enable:
+- EN pin is tied to VDD so that oscillator is always enabled.
+
+Clock out:
+- OUT pin outputs generated clock signal.
+- Connected to USB2.0 PHY controller with R263 (22.1 ohm) series terminator resistor.
+- Layout notes say to keep termination resistor as close as possible to oscillator, and
+  to keep clock signal trace as short as possible.
+
+### USB 2.0 Type A Connector ###
+
+![USB 2.0 Connector](figures/usb2-connector.png)
+
+Main component:
+- J13 (USB-A-S-F-B-TH) is the USB Type A connector.
+
+Power:
+- 5.0V power supplied by VBUS pin.
+- C87, C209, C84 caps for power decoupling and filtering.
+
+USB signals:
+- D-, D+ pins.
+
+Shielding:
+- C98 (100nF), R138 (300 ohm) form a simple RC filter to allow high-frequency noise to pass to ground.
+- Helps reduce EMI and improve signal integrity.
+
+Remaining questions:
+- Where is USB0_5V0 used?
+
+### Over Current Fault ###
+
+![Over Current Fault](figures/over-current-fault.png)
+
+Main component:
+- U39 (MIC2009A) is a current-limited power distribution switch.
+
+Power:
+- Input power on +5V0 rail with C207 (100nF) bypass cap.
+- Output power on +USB0_5V0 rail with C205 (100nF) bypass cap.
+
+Configuration:
+- R277 (240ohm) connected to ILIMIT pin. Configures current limit to 900mA.
+
+Enable:
+- Enable# pin jumpered to ground (R284). Device is always enabled.
+
+Fault status:
+- Output by MIC2009A. Logical LOW indicates switch is in current limiting mode.
+- Unused. Pulled-up to +5V0.
+
+Remaining questions:
+- Is this correct? So the circuit is providing power *to* the USB device, not accepting
+  power *from* it.
+- Main circuit power is +5V0 rail, and is providing current-limited power on +USB0_5V0?
 
 ## Supporting USB-C Power Input ##
 
-TODO...
+TODO ...
 
 ## Power Supplies ##
 
-TODO...
+TODO ...
 
 ## Supporting Ethernet ##
 
-TODO...
+TODO ...
 
 ## Supporting DDR4 ##
+
+TODO ...
+
+## On/Off Controller ##
+
+TODO ...

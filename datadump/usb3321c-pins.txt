@@ -1,0 +1,16 @@
+BALL | NAME | DIRECTION/TYPE | ACTIVE LEVEL | DESCRIPTION
+B1 | ID | Input, Analog | N/A | ID pin of the USB cable. For A-Device ID is grounded. For B-Device ID is floated.
+C2 | VBUS | I/O, Analog | N/A | Connects to external resistor (RVBUS) on USB cable VBUS pin. Used for VBUS comparator inputs and VBUS pulsing during session request protocol.
+C1 | VBAT | Power | N/A | Regulator input.
+D2 | VDD33 | Power | N/A | 3.3V Regulator Output. Requires 2.2μF bypass capacitor to ground.
+D1 | DM | I/O, Analog | N/A | D- pin of the USB cable.
+E1 | DP | I/O, Analog | N/A | D+ pin of the USB cable.
+D3-B4 | DATA[7:0] | I/O, CMOS | N/A | ULPI bi-directional data bus. DATA[7] is MSB, DATA[0] is LSB.
+A5 | CLKOUT | Output, CMOS | N/A | 60MHz ULPI clock output or input (when connected to VDD18).
+B5 | NXT | Output, CMOS | High | PHY asserts to throttle data. Indicates when current byte is accepted.
+A4 | DIR | Output, CMOS | N/A | Controls data bus direction. High when PHY transfers to Link.
+A3 | STP | Input, CMOS | High | Link asserts for one clock cycle to stop current data stream.
+B3 | VDD18 | Power | N/A | External 1.8V Supply input. Needs 0.1μF bypass capacitor to ground.
+B2 | RESETB | Input, CMOS | Low | When low, part is suspended. When high, operates normally.
+A2 | REFCLK | Input, CMOS | N/A | Model-specific reference clock or 60MHz ULPI clock input.
+A1 | RBIAS | Analog, CMOS | N/A | Bias Resistor pin. Requires 8.06kΩ resistor to ground.
