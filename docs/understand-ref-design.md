@@ -385,6 +385,7 @@ Remaining questions:
 
 ![DDR4](figures/ddr4.png)
 ![DDR4 Decoupling](figures/ddr4-decoupling.png)
+![Zynq DDR](figures/zynq-ddr-banks.png)
 
 ### Pins on DDR4 IC ###
 
@@ -551,6 +552,9 @@ Reset:
 ZQ Calibration:
 - Per datasheet: "The ZQ should be connected to VDDQ through a 240Ω ± 1% resistor".
 - Done by R95.
+
+ZQ Calibration on Zynq:
+- R224 (240ohm) resistor to GND.
 
 Power:
 - Connect VDDQ, VDD2 to +1V1 rail.
