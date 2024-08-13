@@ -579,7 +579,33 @@ Remaining questions:
 
 ## Supporting USB-C Power Input ##
 
-TODO ...
+### Power Connector ###
+
+![USB Power Connector](figures/usb-power-connector.png)
+
+### Power Controller ###
+
+![USB Power Controller](figures/usb-power-controller.png)
+
+### VBus Sink Load Switch ###
+
+![VBus Sink Load Switch](figures/vbus-sink-load-switch.png)
+
+### 3.3V Primary Switch ###
+
+![3V3 Primary](figures/usb-3v3-primary.png)
+
+### PDO Selection ###
+
+![PDO Selection](figures/pdo-selection.png)
+
+### Volt Meter ###
+
+![Volt Meter](figures/usb-volt-meter.png)
+
+### Power Decoupling ###
+
+![Power Decoupling](figures/usb-power-decoupling.png)
 
 ## Power Supplies ##
 
