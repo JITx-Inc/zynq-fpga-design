@@ -1,0 +1,22 @@
+## DDR DRAM Pins ##
+
+The DDR I/O pins are located on bank 504 and can have a 16-bit, 32-bit or 64-bit data path to the DRAMs depending on the device type. Bytes 0 to 1 correspond to 16-bit data, bytes 0 to 3 correspond to 32-bit data, and bytes 0 to 7 correspond to 64-bit data. Byte 8 refers to the ECC bits. The pins are summarized in Table 17-3. See Zynq UltraScale+ MPSoC Packaging and Pinout User Guide (UG1075) [Ref 7] for pin assignments. The pin swap guidelines are described in Answer Record 67330. See UltraScale Architecture PCB Design User Guide (UG583)[Ref 15] for clamshell functionality.
+
+Pin Name | Direction | Description
+PS_DDR_DQ | Input/Output | DRAM data.
+PS_DDR_DQS_P | Input/Output | DRAM differential data strobe positive.
+PS_DDR_DQS_N | Input/Output | DRAM differential data strobe negative.
+PS_DDR_ALERT_N | Input | DRAM alert signal.
+PS_DDR_ACT_N | Output | DRAM activation command.
+PS_DDR_A | Output | DRAM row and column address.
+PS_DDR_BA | Output | DRAM bank address.
+PS_DDR_BG | Output | DRAM bank group.
+PS_DDR_CK_N | Output | DRAM differential clock negative.
+PS_DDR_CK | Output | DRAM differential clock positive.
+PS_DDR_CKE | Output | DRAM clock enable.
+PS_DDR_CS | Output | DRAM chip select.
+PS_DDR_DM | Output | DRAM data mask.
+PS_DDR_ODT | Output | DRAM termination control.
+PS_DDR_PARITY | Output | DRAM parity signal.
+PS_DDR_RAM_RST_N | Output | DRAM reset signal, active Low.
+PS_DDR_ZQ | Input/Output | ZQ calibration signal.
