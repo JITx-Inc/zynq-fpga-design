@@ -583,6 +583,37 @@ Remaining questions:
 
 ![USB Power Connector](figures/usb-power-connector.png)
 
+Main connector:
+- J15 (E8124-010-01) is the USB-C connector.
+
+Power input:
+- VBUS pins are connected together providing main power input.
+  Schematic indicates: 5 to 20 volts, 60w.
+- C96 (2.2uF) filtering cap.
+
+Ground:
+- Multiple GND pins connected together to the main Gnd net.
+
+Shielding:
+- SHIELD pin connected through parallel RC circuit to ground.
+  R141 (330ohm) and C100 (100nF).
+- Per spec: provides ESD protection, high-frequency noise filtering,
+  DC grounding, impedance control.
+  
+Configuration Channel:
+- CC1 and CC2 pins connected through 200pF caps (C95, C94) to ground.
+- Basic implementation for cable insertion detection and role negotiation.
+
+USB 2.0 Data Lines:
+- Dp1/Dn1 connected to test points.
+
+Unused SuperSpeed Data Lines:
+- SSRXp1/n1, SSRXp2/n2 unconnected.
+
+Unused SBU (Sideband Use) Pins:
+- SBU1, SBU2 unconnected.
+
+
 ### Power Controller ###
 
 ![USB Power Controller](figures/usb-power-controller.png)
