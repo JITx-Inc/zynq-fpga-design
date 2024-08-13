@@ -629,6 +629,7 @@ Power input:
 - Incoming power on +VDD_3V3 rail.
   Connected to VDD33_REG_IN (Regulator Power Supply) and VDD33_ANA_IN (Analog Power Supply).
 - VCONN_IN (Port Power Switch) not used.
+- NOTE: +VDD_3V3 produced from +3V3_PRI via ferrite bead. 
 
 Power output:
 - Output power on +VDD1V8 rail by VDD18_CORE_OUT (Digital Core Power Supply) pin.
