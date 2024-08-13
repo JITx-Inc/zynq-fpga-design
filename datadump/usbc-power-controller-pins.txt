@@ -1,0 +1,37 @@
+Name | Symbol | Buffer Type | Description
+
+== USB Type-C ==
+Configuration Channel 1 | CC1 | AIO | Configuration Channel (CC) used in the discovery, configuration and management of connections across a USB Type-C cable. (CC1 in UPD350)
+Configuration Channel 2 | CC2 | AIO | Configuration Channel (CC) used in the discovery, configuration and management of connections across a USB Type-C cable. (CC2 in UPD350)
+VBUS Detection | VBUS_DET_IN | AIO | Scaled down version of VBUS input used for VBUS detection. Tie this signal to VBUS via a resistor divider. (VBUS_DET in UPD350)
+
+== SPI Interface ==
+SPI Clock | SPI_CLK | IS | SPI clock. The maximum supported SPI clock frequency is 8 MHz. (SPI_CLK in UPD350 and PA09 in SAMD20)
+SPI Data Master In / Slave Out | SPI_MISO | I/O8 | SPI data master in, slave out. (SPI_DO in UPD350 and PA08 in SAMD20)
+SPI Data Master Out / Slave In | SPI_MOSI | O2 | SPI data master out / slave in. This pin must be connected to SPI_MOSI_SI for proper operation. (PA11 in SAMD20)
+SPI Data Slave In | SPI_MOSI_SI | IS | SPI data slave in. This pin must be connected to SPI_MOSI for proper operation. (SPI_DI in UPD350 and PA07 in SAMD20)
+SPI Chip Enable 0 | SPI_SS0 | IS | Active low SPI chip enable input for UPD301B/C. (SPI_CS_N in UPD350 and PA10 in SAMD20)
+SPI Interrupt 0 | SPI_IRQ_N0 | I | SPI interrupt indicating request for service from optional external UPD350. (IRQ_N in UPD350 and PA14 in SAMD20)
+
+== Serial Wire Debug Interface ==
+Serial Wire Debug Clock | SWCLK | IS | Serial wire debug clock. (PA30 in SAMD20)
+Serial Wire Debug Data | SWDIO | I/O | Serial wire debug bidirectional data. (PA31 in SAMD20)
+
+== Miscellaneous ==
+System Reset Input | RESET_N_IN | I | Active low SAMD20 system reset input. This reset is used for reset of the SAMD20 portion of the UPD301B/C by a companion MCU. (RESET in SAMD20)
+System Reset Common | RESET_N_COM | IS | Active low UPD350 system reset input. This reset is used for reset of the UPD350 portion of the UPD301B/C by a companion MCU. (RESET_N in UPD350)
+
+== General Purpose I/Os ==
+Misc. SAMD20E I/O | PA00, PA01, PA02, PA03, PA04, PA05, PA06, PA15, PA16, PA17, PA18, PA19, PA22, PA23, PA27, PA28 | I/O | Refer to SAMD20E Datasheet for pin function, peripheral detail, and characteristics. (PAxx in SAMD20)
+UPD350 GPIO | GPIO2, GPIO3, GPO4, GPIO5, GPIO6, GPIO7, GPIO8, GPIO9 | I/O | Refer to UPD350 Datasheet for pin function, peripheral detail, and characteristics. (GPIOx, GPO4 in UPD350)
+
+== Power/Ground ==
++5V Port Power Switch Input | VCONN_IN | P | +5V VCONN FET power source. (VS in UPD350)
++3.3V I/O Power Supply Input | VDD33_IO_IN | P | +3.3V I/O power supply input. (VDD33IO in UPD350)
++3.3V Analog Power Supply Input | VDD33_ANA_IN | P | +3.3V analog power supply input. (VDDANA in SAMD20)
++3.3V Always Supply Input | VDD33_ALW_IN | P | +3.3V always supply input. (3V3_ALW & VSW in UPD350)
++3.3V Regulator Power Supply Input | VDD33_REG_IN | P | +3.3V regulator power supply input. (VDDIN in SAMD20)
++1.8V Core Voltage Power Supply Input | VPP18 | P | +1.8V core voltage power supply input. (VDD18 in UPD350)
++1.8V Digital Core Power Supply Output | VDD18_CORE_OUT | P | +1.8V digital core power supply output. This signal must be connected to a 1μF capacitor to ground for proper operation. (VDD18_CAP in UPD350)
++1.2V Core Power Supply Output | VDD12_CORE_OUT | P | +1.2V core power supply output. This signal must be connected to a 1μF capacitor to ground for proper operation. (VDDCORE in SAMD20)
+Ground | VSS | P | Ground pins.

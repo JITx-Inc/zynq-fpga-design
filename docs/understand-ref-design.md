@@ -618,6 +618,77 @@ Unused SBU (Sideband Use) Pins:
 
 ![USB Power Controller](figures/usb-power-controller.png)
 
+Main component:
+- U19 (UPD301C/KYX): USB Power controller IC.
+
+Power input:
+- Incoming power on +USBC_VBUS rail.
+  Connected to VBUS_DET_IN using voltage divider.
+- Incoming power on +3V3_PRI (3.3V primary) rail.
+  Connected to VDD33_IO_IN (I/O Power Supply) and VDD33_ALW_IN (Always Supply Input)
+- Incoming power on +VDD_3V3 rail.
+  Connected to VDD33_REG_IN (Regulator Power Supply) and VDD33_ANA_IN (Analog Power Supply).
+- VCONN_IN (Port Power Switch) not used.
+
+Power output:
+- Output power on +VDD1V8 rail by VDD18_CORE_OUT (Digital Core Power Supply) pin.
+  Immediately input into VPP18 (Core Voltage Power Supply) pin.
+  C190 (1uF) is decoupling cap (required by spec.)
+- Output power on +VDD1V2 rail by VDD12_CORE_OUT (Core Power Supply Output) pin.
+  C197 (1uF) is decoupling cap (required by spec.)
+
+VBUS Detection:
+- USBC_VBUS scaled down using voltage divider R273 (90.9K) and R267 (10K) as-per spec.
+
+Configuration channels:
+- CC1 and CC2 wired (via jumpers) to corresponding pins on USB-C connector.
+
+Reset:
+- RESET_N_IN (System Reset Input) is active low SAMD20 system reset input.
+  Pulled-up to +3V3_PRI high by R124 (10K).
+  C88 (100nF) used as "reset capacitor", so that system is reset on initial power on.
+- RESET_N_COM (System Reset Common) is active low UPD350 system reset input.
+  Pulled-down to gnd by R299 (200K).
+
+Unused SPI Interface:
+- SPI_MOSI and SPI_MOSI_SI must be connected for proper operation (as per spec.)
+  
+Debug Interface Unused:
+- SWCLK and SWDIO
+
+Monitoring:
+- EN_SINK signal connected to PA22.
+  Displayed via indicator LED D17.
+- CAP_MISMATCH signal connected to PA23.
+  Displayed via indicator LED D18.
+
+PA19 and PA18:
+- Pulled to ground by R251 and R252 (10K).
+
+GPIO8:
+- Produces VBUS_DIS signal.
+
+PA27:
+- Pulled up to +3V3_PRI via R123 (10K)
+
+PA04:
+- Wired to PDO_SEL signal.
+
+Ground:
+- VSS connected to GND.
+
+Remaining questions:
+- What is C199? Doesn't look like a decoupling cap.
+- Where does VBUS_Compare go?
+- Where does RESET_N1_IN signal go?
+- UPD350 is always in reset state? Seems wrong. What is PA00?
+- What is PA04?
+- What is PA19 and PA18?
+- Why do we have testpoints on specific pins?
+- What is GPIO8?
+- What is PA27?
+- Where is CAP_MISMATCH generated?
+
 ### VBus Sink Load Switch ###
 
 ![VBus Sink Load Switch](figures/vbus-sink-load-switch.png)
