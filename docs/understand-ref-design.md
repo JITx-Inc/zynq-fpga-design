@@ -613,6 +613,24 @@ Unused SuperSpeed Data Lines:
 Unused SBU (Sideband Use) Pins:
 - SBU1, SBU2 unconnected.
 
+### 3.3V Primary Switch ###
+
+![3V3 Primary](figures/usb-3v3-primary.png)
+
+This circuit produces the primary 3.3V rail from the 5V USB-C input.
+
+Main component:
+- U37 (NCP718ASN330T1G): An LDO voltage regulator.
+
+Input:
+- USBC_VBUS to IN pin.
+- EN is hardwired to input to keep regulator on.
+- C202 (1uF) for input filtering.
+
+Output:
+- OUT pin creates +3V3_PRI rail.
+- NC,GND wired to ground.
+- C203 (1uF) for stabilizing supply.
 
 ### Power Controller ###
 
@@ -736,10 +754,6 @@ Remaining questions:
 - Why 1K resistors for R266, R255? Isn't leakage high when Q14 is ON?
 - What does the Q6 circuit do? 
 
-
-### 3.3V Primary Switch ###
-
-![3V3 Primary](figures/usb-3v3-primary.png)
 
 ### PDO Selection ###
 
