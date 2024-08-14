@@ -759,6 +759,15 @@ Remaining questions:
 
 ![PDO Selection](figures/pdo-selection.png)
 
+This configures the "PDO_SEL" signal that is input to PA04 on the UPD301C power controller.
+
+There are two different resistors that can be populated: R110 (97.6K) and R109 (59K).
+
+There is a note indicating that:
+
+1) Populating R110 (PDO_SEL = 1.63V) configures the controller for "Mode A".
+2) Populating R109 (PDO_SEL = 1.22V) configures the controller for "Mode B".
+
 ### Volt Meter ###
 
 ![Volt Meter](figures/usb-volt-meter.png)
