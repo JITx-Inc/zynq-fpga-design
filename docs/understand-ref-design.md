@@ -694,6 +694,49 @@ Remaining questions:
 
 ![VBus Sink Load Switch](figures/vbus-sink-load-switch.png)
 
+This circuit controls the power delivery from the USB-C source to the
+board. It allows a software EN_SINK signal to control when power becomes
+available on the SINK_PWR rail.
+
+Main components are:
+- Q7, Q15: P-channel MOSFETS acting as switches.
+- Q6, Q14: (SSM3K7002CFU transistors) used for control.
+
+Control inputs:
+- VBUS_DIS: "VBus Disable"
+- EN_SINK: "Enable Sink"
+
+How it works:
+- Q7 And Q15 in standard bidirectional switch arrangement.
+  Blocks current and voltage in both directions when switches are off.
+  (I.e. when gate voltage close to source voltage.)
+  Gates tied together so we control the arrangement using one signal.
+  
+- R268 to keep voltage of source and gates separate.
+  If replaced with short: then switches permanently off.
+  If replaced with open: then gates are floating and circuit is unpredictable.
+
+- Q14 is open when EN_SINK is High:
+  Causes Q7, Q15 gate voltage to be lower than source voltage.
+  Q7, Q15 turn on.
+  Power is delivered to SINK_PWR.
+
+- Q14 is closed when EN_SINK is Low:
+  Causes Q7, Q15 gate voltage to be approx. the same as source voltage.
+  Q7, Q15 turn off.
+  Voltage at SINK_PWR goes to 0. 
+  
+- Why is Q14 an N-channel MOSFET?
+  We want EN_SINK = 0V to turn off the MOSFET.
+  Therefore the Source needs to connect to GND. 
+  But a P-channel MOSFET requires the drain voltage to be less than the source voltage.
+  An N-channel MOSFET allows the drain voltage to be higher than the source voltage.
+  
+Remaining questions:
+- Why 1K resistors for R266, R255? Isn't leakage high when Q14 is ON?
+- What does the Q6 circuit do? 
+
+
 ### 3.3V Primary Switch ###
 
 ![3V3 Primary](figures/usb-3v3-primary.png)
