@@ -857,10 +857,30 @@ Remaining questions:
 - Why is VCC connected like that?
 
 ![1.1V Supply](figures/1v1_supply.png)
+
+- Nearly identical to 0.85V circuit.
+- Some resistors/caps that are DNP in 0.85V are placed here. Why?
+
 ![1.2V Supply](figures/1v2_supply.png)
+
+- Nearly identical to 0.85V circuit.
+- Some resistors/caps that are DNP in 0.85V are placed here. Why?
+
 ![1.8V Supply](figures/1v8_supply.png)
+
+- Nearly identical to 0.85V circuit.
+- Some resistors/caps that are DNP in 0.85V are placed here. Why?
+
 ![3.3V Supply](figures/3v3_supply.png)
+
+- Nearly identical to 0.85V circuit.
+- VOUT is directly tied to VOS as per datasheet.
+
 ![5.0V Supply](figures/5v_supply.png)
+
+- Nearly identical to 0.85V circuit.
+- VOUT is directly tied to VOS as per datasheet.
+
 ![VCCO_HP Voltage Selection](figures/vcco_hp_sel.png)
 
 ## Supporting Ethernet ##
