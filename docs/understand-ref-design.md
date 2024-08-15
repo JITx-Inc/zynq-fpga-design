@@ -754,7 +754,6 @@ Remaining questions:
 - Why 1K resistors for R266, R255? Isn't leakage high when Q14 is ON?
 - What does the Q6 circuit do? 
 
-
 ### PDO Selection ###
 
 ![PDO Selection](figures/pdo-selection.png)
@@ -772,13 +771,97 @@ There is a note indicating that:
 
 ![Volt Meter](figures/usb-volt-meter.png)
 
+This circuit measures voltage levels and reports status on 3 LEDs. It also
+produces a signal "15V_MIN" that signals the board is properly powered.
+
+LM2901 comparator:
+- Open-collector output: drags output to ground, but does not source current.
+- When (-) input lower than (+) input, output is OFF (open).
+- When (-) input higher than (+) input, output is ON (pulled to ground).
+
+Reference voltages created using voltage dividers on +3V3_PRI and input
+to (+) inputs on comparators. When VBUS_Compare exceeds the reference voltages
+the corresponding LEDS turn on.
+
+  Reference voltage for D16 = 0.43V
+  Reference voltage for D15 = 0.83V
+  Reference voltage for D14 = 1.38V
+  
+VBUS_Compare itself comes from a voltage divider with USBC_VBUS and
+works out to be (0.1 * USBC_VBUS).
+
+  Thus D16 indicates USBC_VBUS > 4.3V
+  Thus D15 indicates USBC_VBUS > 8.3V
+  Thus D14 indicates USBC_VBUS > 13.8V  
+  
+For 15V_MIN signal:
+
+  Pulled to ground when VBUS_Compare < 1.38V
+  Pulled up to 3.3V when VBUS_Compare > 1.38V
+
+Remaining questions:
+- What's C168 for? Where does it go?  
+
+
 ### Power Decoupling ###
 
 ![Power Decoupling](figures/usb-power-decoupling.png)
 
+Just a bunch of decoupling caps, some things to note:
+- +VDD_3V3 is created from +3V3_PRI through a ferrite bead FB8. Why?
+- Caps on +VDD1V2 and +VDD1V8 are required by spec of UPD301C.
+- Not sure where the +3V3_PRI caps go.
+
 ## Power Supplies ##
 
-TODO ...
+### 15V Min PWR_ON ###
+
+![15V Min PWR ON](figures/15v_min_pwr.png)
+
+The PWR_EN signal is high when both:
+1. The 15V_MIN signal from the volt meter is high, indicating that power is good.
+2. EN1 is high (comes from the power sequencing controller.)
+
+Remaining questions:
+- Is it common to require a decoupling cap for an AND gate?
+
+### 0.85V Supply ###
+
+![0.85V supply](figures/0V85_supply.png)
+
+Main component:
+- U26 (FS1406-0600-AS) 0.85V Buck converter
+- Input power +SINK_PWR connected to PVIN pins.
+- C126 and C127 (22uF) for input filtering.
+- VIN is connected to +SINK_PWR through a 2.7ohm resistor.
+  (Not sure why the resistor is there.)
+- C135 (1uF) decoupling cap dictated by datasheet.
+
+Enable:
+- PWR_EN controls En pin.
+
+Ground:
+- PGND, AGND connected to ground.
+
+Debugging:
+- VSW: Connected to test pad to measure switching voltage.
+
+Power Good:
+- Power good status on PG pin.
+
+Remaining questions:
+- What is R189 for?
+- SDA, SCL, ADDR, PG are floating in datasheet. Why are they grounded?
+- Datasheet says to connect VOS to VOUT directly. Why the deviation?
+- Datasheet says to pull-up PG to VCC or external bias voltage with 49.9K resistor. Why the deviation?
+- Why is VCC connected like that?
+
+![1.1V Supply](figures/1v1_supply.png)
+![1.2V Supply](figures/1v2_supply.png)
+![1.8V Supply](figures/1v8_supply.png)
+![3.3V Supply](figures/3v3_supply.png)
+![5.0V Supply](figures/5v_supply.png)
+![VCCO_HP Voltage Selection](figures/vcco_hp_sel.png)
 
 ## Supporting Ethernet ##
 
