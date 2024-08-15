@@ -883,6 +883,9 @@ Remaining questions:
 
 ![VCCO_HP Voltage Selection](figures/vcco_hp_sel.png)
 
+- Jumper controlling whether +VCCO_HP rail is connected to
+  +1V2 rail or +1V8 rail.
+
 ## Supporting Ethernet ##
 
 TODO ...
