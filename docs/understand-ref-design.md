@@ -46,7 +46,9 @@ Enable Circuit:
 - R198 (2.21K): Pull up resistor to keep EN high.
 
 Output Circuit:
-- R207 (22.1 ohm): Series termination resistor for clock trace. Keep this resistor close to OUT pin on clock chip. Keep overall trace to Pin H14 on ZynQ chip short.
+- R207 (22.1 ohm): Used to dampen the circuit. If the trace happens to have too much inductance, the signal will "ring". Can replace this resistor when we get board back.
+
+Keep this resistor close to OUT pin on clock chip. Keep overall trace to Pin H14 on ZynQ chip short.
 
 ## Supporting Flash ##
 
@@ -60,7 +62,7 @@ Power supply:
 - C31 (100nF): Decoupling cap to reduce noise.
 
 Enable Circuit:
-- R60 (4.75K): Pull-up resistor to keep CE# (Chip Enable) high.
+- R60 (4.75K): Pull-up resistor to keep CE# (Chip Enable, Active low) high. Disabled by default.
 
 SPI Clock input:
 - SCK pin on flash chip.
@@ -73,6 +75,11 @@ Defaults Configuration:
   R65 (4.75K) pull-up resistor used to disable write protect by default.
 - Hold# (Reset) is active low on flash chip. (Verify)
   R64 (4.75K) pull-up resistor used to keep it high for normal operation.
+  
+NOTES:
+- Not connected to JTAG interface.
+- Bootup: First bring up board using JTAG, then write to
+  this Flash chip using the loaded OS.
 
 ## uSD ##
 
@@ -106,6 +113,30 @@ Remaining questions:
 - What are the SWA/SWB pins on the MicroSD? What is R274 for?
 - Why do the GND pins on J12 require a ferrite bead? Why don't the other GND pins need one?
 
+NOTES:
+- There exist MicroSD cards now that support 1.8V and can boot straight into 1.8V.
+- Then you wouldn't need the voltage translator.
+- NOTE: If you go this route, double-check the ZinQ datasheet, and see whether
+  it would support 1.8V.
+- Note that the CD signal into U20 is hedged like crazy.
+  NOTE: On the dev board itself, R264 is there. 
+  
+How does the Card Select circuit work?
+- There is a mechanical switch between SWA and SWB that is normally closed.
+  So SWA is normally pulled-up close to 1.8V.
+- When the card is inserted, it opens the switch.
+  So now SWA gets pulled down to GND.
+- Since this signal (CD) is being fed directly to ZynQ, that is why SWB is pulled up to 1.8V
+  instead of 3.3V (which is more common.)
+  
+Ground:
+- VSS is the actual ground.
+- GND is the shield ground. What if a human touches this thing?. What if it's noise?
+  It's a big metal part, it is an antenna. Ferrite bead will block off the high-frequency signal.
+  Why not a decoupling cap? Because of ESD: Caps have voltage limitations. Generally we don't
+  put caps on things where we don't know the voltage.
+  Ferrite beads are also used to dissipate energy. 
+
 ## Supporting JTAG ##
 
 ### Level Translation ###
@@ -132,13 +163,21 @@ Signals being translated:
   MIO10_UART0_RX_1V8 => MIO10_UART0_RX_3V3
 
 Pull-up resistors:
-- R184, R178, R41, R176, R39, R171, R37, R168 (4.75K): Ensure signals are high when not actively driven.
+- R184, R178, R41, R176, R39, R171, R37, R168 (4.75K): Probably what makes the level translator work. The chip just pulls things to GND appropriately, or else go to HighZ. 
 
 Enable circuit:
-- Simple low-pass filter R42(200K) and C115(100nF) to reduce noise on EN.
+- A little RC delay circuit.
+- Trying to make sure the 3.3V EN goes to High *AFTER* 1.8V comes up.
 
 Remaining questions:
-- There are no decoupling caps on VREFA and VREFB. Why?
+- There are no decoupling caps on VREFA. It's just odd. (Everyone else would just drop a 100nF.)
+- VREFB is connected to +3V3 through a 200k resistor. Looks a little strange.
+
+NOTES:
+- Why are we using this weird hack with the pull-up resistors?
+  We don't need high-speed.
+  It comes with the ability to translate 10 signals!
+  It's cheap. (Maybe not on DigiKey.)
 
 ### JTAG/UART MicroUSB Connector ###
 
@@ -157,10 +196,13 @@ Power rails:
 USB Signals:
 - ULPI1_D_N, ULPI1_D_P: The USB differential data lines.
 
-Remaining questions:
-- Do we use the USB1_5V0 anywhere else on the board?
+Note:
 - What is the ID_JTAG_UART signal for?
+  Configures whether we're using this connector as host or peripheral.
+  
 - What is the C101 and 0-ohm R144 doing on the S1,S2,S3,S4 pins?
+  The 0-ohm is for flexibility. (Could even plop down a ferrite bead later if necessary.)
+  Cap for noise.
 
 ### JTAG/UART Interface ###
 
@@ -192,9 +234,10 @@ USB Signals and ESD Protection:
 JTAG Signals:
 - The four primary jtag signals (JTAG_TCK_3V3, JTAG_TDI_3V3, JTAG_TDO_3V3, JTAG_TMS_3V3) are output by pins ADBUS[0-3].
 - R128, R129, R130, R131 (22.1 ohm) are series termination resistors for matching impedance.
+- In case there is contention on this bus, and another driver pulls it high, while the FT2232 tries to drive it low, it prevents a high current from damaging the chip.
 
 Reset Signals:
-- Power-on reset and system reset (PS_POR_N_3V3, PS_SRST_N_3V3) is output from ADBUS[6-7].
+- Power-on reset and system reset (PS_POR_N_3V3, PS_SRST_N_3V3) is output from ADBUS[6-7]. "System reset" used to reset just the ZynQ core without resetting every single chip on the board.
 
 UART Signals:
 - UART signals from fpga (MIO10_UART0_RX_3V3, MIO11_UART0_TX_3V3) connect to BDBUS[0-1].
@@ -226,7 +269,7 @@ EEPROM Configuration:
   To write to EEPROM:
   - FT2232HL drives EEDATA directly.
   To read from EEPROM:
-  - FT2232HL sets EEDATA to Hi-Z.
+  - FT2232HL sets driver of EEDATA to Hi-Z.
   - EEPROM then drives DO.
 
 Clock for FT2232 chip:
@@ -238,23 +281,24 @@ Test mode:
 - This sets FT2232HL to "Normal Operation Mode" instead of "Test Mode".
 
 Remaining questions:
-- What are the VREGIN and VREGOUT pins on U17. How to use them?
-- How does the 5V supply from USB1_5V0 relate to this part of the schematic?
-- VPHY and VPLL supplies need to be as clean as possible. Are they connected to separate regulators?
-- No decoupling caps are needed for VPHY, VPLL, VCORE, VCCIO?
-- Where is ID_JTAG_UART going?
-- How do we correctly use the CDSOT23? What is the USB1_5V0 connection for?
-- The DNP resistors R136, R133, R135, R134 for the JTAG signals ensure a default high signal. Are they necessary?
-- What is the pull-up R120 on ADBUS4 for?
-- What is happening to the ADBUS5 pin?
+- What is happening to the ADBUS5 pin? 
 - How do we know the reset signals come out of ADBUS[6-7]?
-- Why do the reset signals (PS_POR_N_3V3, PS_SRST_N_3V3) have 0-ohm jumpers and test points? Delicate place in the schematic?
-- Why does BDBUS[2-7] have test points? What about the other unused pins?
-- How do we program these EEPROMs on the board?
+- How do we program these EEPROMs on the board? 
 - How is the BCBUS7 power saving configuration working?
+  Where does this signal come from? FT_PWRSAV_N.
+  Check datasheet.
+  It's an input.
+  Can force it into "normal mode" versus "suspend mode".
 - Who sends out the PWREN_N signal? Is this for boot sequencing?
 - Values of C86 and C97 load capacitors come from crystal datasheet?
 - Where does the FT2232H_RST_N reset signal come from?
+
+NOTES:
+- Ferrite Bead / Cap circuit: Acts like a voltage divider at a particular frequency: Acts like a low-pass filter. Reduces the noise at that frequency.
+- How do we correctly use the CDSOT23? What is the USB1_5V0 connection for? If there is a surge, power is dumped onto the +USB1_5V0 and GND rails.
+- What is the pull-up R120 on ADBUS4 for? Need to check the datasheet.
+  High probably means something in this context. 
+- Why do the reset signals (PS_POR_N_3V3, PS_SRST_N_3V3) have 0-ohm jumpers and test points? Delicate place in the schematic? If it doesn't boot, LOOK HERE!
 
 ### Decoupling Caps ###
 
@@ -262,6 +306,8 @@ Remaining questions:
 
 Questions:
 - How do I know which pins these decoupling caps correspond to?
+  Just have to guess. Get the CAD package.
+  In JITX: Use short-trace!
 - Why are ferrite beads sometimes needed?
 
 ## Supporting USB2.0 ##
@@ -648,7 +694,7 @@ Power input:
   Connected to VDD33_REG_IN (Regulator Power Supply) and VDD33_ANA_IN (Analog Power Supply).
 - VCONN_IN (Port Power Switch) not used.
 - NOTE: +VDD_3V3 produced from +3V3_PRI via ferrite bead. 
-
+  NOTE: The ferrite bead for producing +VDD_3V3 is probably unnecessary.
 Power output:
 - Output power on +VDD1V8 rail by VDD18_CORE_OUT (Digital Core Power Supply) pin.
   Immediately input into VPP18 (Core Voltage Power Supply) pin.
@@ -666,8 +712,10 @@ Reset:
 - RESET_N_IN (System Reset Input) is active low SAMD20 system reset input.
   Pulled-up to +3V3_PRI high by R124 (10K).
   C88 (100nF) used as "reset capacitor", so that system is reset on initial power on.
+  Used by the programming header to program this thing.
 - RESET_N_COM (System Reset Common) is active low UPD350 system reset input.
   Pulled-down to gnd by R299 (200K).
+  ? Look up in datasheet! ?
 
 Unused SPI Interface:
 - SPI_MOSI and SPI_MOSI_SI must be connected for proper operation (as per spec.)
@@ -707,6 +755,11 @@ Remaining questions:
 - What is GPIO8?
 - What is PA27?
 - Where is CAP_MISMATCH generated?
+
+NOTE:
+- This chip has been updated to MCP301.
+- That chip also has a bunch of registers that we can interrogate.
+- JITX PDAudio project.
 
 ### VBus Sink Load Switch ###
 
@@ -752,7 +805,9 @@ How it works:
   
 Remaining questions:
 - Why 1K resistors for R266, R255? Isn't leakage high when Q14 is ON?
-- What does the Q6 circuit do? 
+- What does the Q6 circuit do?
+  A: VBUS_DIS = "VBUS Discharge"
+     Creates a controlled power-down when USBC is disconnected.
 
 ### PDO Selection ###
 
@@ -893,3 +948,7 @@ TODO ...
 ## On/Off Controller ##
 
 TODO ...
+
+## Removing Stuff ##
+
+
