@@ -40,14 +40,14 @@ public pcb-module module :
 
   ;Explicit net names.
   let :
-    net vcc (vcc)
+    net n1V8 (vcc)
     net gnd (gnd)
     net sck (sck)
     net enable_n (enable_n)
     net io:pin[4] (io)
 
     ;Net symbols
-    symbol(vcc) = ocdb/utils/symbols/supply-sym
+    symbol(n1V8) = ocdb/utils/symbols/supply-sym
     symbol(gnd) = ocdb/utils/symbols/ground-sym
 
   ;Pull up resistors

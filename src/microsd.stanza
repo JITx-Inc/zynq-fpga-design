@@ -1,0 +1,128 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/microsd :
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+  import ocdb/utils/generic-components
+  import ocdb/utils/design-vars
+  import jitx-fpga/dummy
+  
+public pcb-module module :
+  ;Power connections.
+  pin n1V8
+  pin n3V3
+  pin gnd
+
+  ;Sd card lines.
+  pin cmd
+  pin clk
+  pin card-detect
+  port dat:pin[4]  
+
+  ;Level translator and microsd socket.
+  inst level-trans : dummy(
+                       "PI4ULS3V4857",
+                       [["vsd", Left]
+                        ["vcca", Left]
+                        ["cmda", Left]
+                        ["clka", Left]
+                        ["dat0a", Left]
+                        ["dat1a", Left]
+                        ["dat2a", Left]
+                        ["dat3a", Left]
+                        ["sel", Left]
+                        ["clk_fb", Left]
+                        ["vccb", Right]
+                        ["cmdb", Right]
+                        ["clkb", Right]
+                        ["dat0b", Right]
+                        ["dat1b", Right]
+                        ["dat2b", Right]
+                        ["dat3b", Right]
+                        ["cd", Right]
+                        ["gnd0", Right]
+                        ["gnd1", Right]])
+  inst socket : dummy(
+                  "2201778-1"
+                  [["dat2", Left]
+                   ["dat3", Left]
+                   ["cmd", Left]
+                   ["vdd", Left]
+                   ["clk", Left]
+                   ["dat0", Left]
+                   ["dat1", Left]
+                   ["swa", Right]
+                   ["swb", Right]
+                   ["gnd0", Right]
+                   ["gnd1", Right]
+                   ["gnd2", Right]
+                   ["gnd3", Right]
+                   ["gnd4", Right]
+                   ["gnd5", Right]
+                   ["vss", Right]])  
+
+  ;Power the chips.
+  net (n1V8, level-trans.vcca)
+  net (n3V3, level-trans.vsd, socket.vdd)
+  net (gnd, level-trans.gnd0, level-trans.gnd1,
+            socket.vss)
+
+  ;TODO: Need 220.0 ferrite bead, not 470.0
+  inst ferrite : ocdb/components/tdk/MPZ1608/component(470.0)
+  net (ferrite.p[1], socket.gnd0,
+                     socket.gnd1,
+                     socket.gnd2,
+                     socket.gnd3,
+                     socket.gnd4,
+                     socket.gnd5)
+  net (ferrite.p[2], gnd)
+
+  ;Port connections
+  net (cmd, level-trans.cmda)
+  net (clk, level-trans.clka)
+  net (dat[0], level-trans.dat0a)
+  net (dat[1], level-trans.dat1a)
+  net (dat[2], level-trans.dat2a)
+  net (dat[3], level-trans.dat3a)
+  res-strap(card-detect, socket.swa, 0.0)
+
+  ;Explicit net names and symbols.
+  let :
+    net n1V8 (n1V8)
+    net n3V3 (n3V3)
+    net gnd (gnd)
+    net cmd (cmd)
+    net clk (clk)
+    net card-detect (card-detect)
+    net dat:pin[4] (dat)
+    net cd (socket.swa)
+    symbol(n1V8) = ocdb/utils/symbols/supply-sym
+    symbol(n3V3) = ocdb/utils/symbols/supply-sym
+    symbol(gnd) = ocdb/utils/symbols/ground-sym
+
+  ;Decoupling caps.
+  cap-strap(level-trans.vcca, gnd, 100.0e-9)
+  cap-strap(level-trans.vsd, gnd, 100.0e-9)
+  cap-strap(level-trans.vccb, gnd, 2.2e-6)
+  cap-strap(socket.vdd, gnd, 100.0e-9)
+
+  ;Data connections from level translator to socket.
+  net (level-trans.dat0b, socket.dat0)
+  net (level-trans.dat1b, socket.dat1)
+  net (level-trans.dat2b, socket.dat2)
+  net (level-trans.dat3b, socket.dat3)
+  net (level-trans.clkb, socket.clk)
+  net (level-trans.cmdb, socket.cmd)
+  res-strap(level-trans.cd, socket.swa, 0.0)
+
+  ;Pullups and pulldowns.
+  res-strap(level-trans.sel, gnd, 0.0)
+  res-strap(socket.swb, n1V8, 240.0)
+  res-strap(socket.swa, gnd, 4.75e3)
+  res-strap(socket.cmd, n3V3, 4.99e3)
+
+  ;Unused
+  no-connect(level-trans.clk_fb)
+
+
