@@ -1,0 +1,59 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/qspi :
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+  import ocdb/utils/generic-components
+  import ocdb/utils/design-vars
+  import jitx-fpga/dummy
+  
+public pcb-module module :
+  pin vcc
+  pin gnd
+  pin sck
+  pin enable_n
+  port io:pin[4]
+
+  inst flash : dummy(
+                 "IS25WP256E-JLLE",
+                 [["vcc", Left]
+                  ["sck", Left]
+                  ["ce_n", Left]
+                  ["gnd", Left]
+                  ["io0", Right]
+                  ["io1", Right]
+                  ["io2", Right]
+                  ["io3", Right]
+                  ["ep", Right]])
+
+  ;Connect up ports.
+  net (vcc, flash.vcc)                  
+  net (gnd, flash.gnd)
+  net (sck, flash.sck)
+  net (gnd, flash.ep)
+  net (enable_n, flash.ce_n)
+  net (io[0], flash.io0)
+  net (io[1], flash.io1)
+  net (io[2], flash.io2)
+  net (io[3], flash.io3)
+
+  ;Explicit net names.
+  let :
+    net vcc (vcc)
+    net gnd (gnd)
+    net sck (sck)
+    net enable_n (enable_n)
+    net io:pin[4] (io)
+
+    ;Net symbols
+    symbol(vcc) = ocdb/utils/symbols/supply-sym
+    symbol(gnd) = ocdb/utils/symbols/ground-sym
+
+  ;Pull up resistors
+  res-strap(flash.ce_n, flash.vcc, 4.75e3)
+  res-strap(flash.io2, flash.vcc, 4.75e3)
+  res-strap(flash.io3, flash.vcc, 4.75e3)
+
+  ;Decoupling caps.
+  cap-strap(flash.vcc, flash.gnd, 100.0e-9)

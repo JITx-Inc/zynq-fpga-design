@@ -1,0 +1,3 @@
+include? ".slm/stanza.proj"
+pkg-cache: ".slm/pkg-cache"
+packages jitx-fpga/* defined-in "src"

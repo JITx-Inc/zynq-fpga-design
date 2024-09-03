@@ -1,0 +1,15 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/main :
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+
+pcb-module main :
+  inst qspi:jitx-fpga/qspi/module
+  
+set-main-module(main)
+set-board(ocdb/utils/defaults/default-board(
+  ocdb/manufacturers/stackups/jlcpcb-jlc2313, 
+  Rectangle(45.0, 30.0)))
+view-schematic()

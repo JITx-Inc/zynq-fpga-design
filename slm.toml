@@ -1,0 +1,5 @@
+name = "jitx-fpga"
+version = "0.1.0"
+[dependencies]
+JITX = { path = "{SLM_ROOT}/JITX" }
+ocdb = { path = "{SLM_ROOT}/ocdb" }

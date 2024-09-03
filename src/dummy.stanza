@@ -1,0 +1,29 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/dummy :
+  import core
+  import jitx
+  import jitx/commands
+  import ocdb/utils/box-symbol
+  import ocdb/utils/landpatterns
+
+public pcb-component dummy (
+         name:String, 
+         pins:Tuple<[String, Dir]>) :
+  ;Set name       
+  mpn = name
+
+  defn pin-name ([a,b]:[String,Dir]) : Ref(a)
+  defn pin-dir ([a,b]:[String,Dir]) : b
+
+  pin-properties :
+    [pin:Ref | side:Dir]
+    for entry in pins :
+      [(pin-name(entry)) | pin-dir(entry)]
+
+  make-box-symbol()
+
+  pcb-landpattern dummy-lp :
+    make-bga-landpattern(1, length(pins), 0.5, 0.28, min-typ-max(4.85, 5.0, 5.15), min-typ-max(4.85, 5.0, 5.15), FullMatrix())
+  landpattern = dummy-lp(
+                  for ([p,d] in pins, i in 1 to false) :
+                    self.(to-symbol(p)) => dummy-lp.A[i])
