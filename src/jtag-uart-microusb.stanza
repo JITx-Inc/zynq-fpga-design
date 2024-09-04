@@ -1,0 +1,61 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/jtag-uart-microusb :
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+  import ocdb/utils/generic-components
+  import ocdb/utils/design-vars
+  import jitx-fpga/dummy
+  
+public pcb-module module :
+  ;Port connections.
+  pin usb-5V0
+  pin gnd
+  pin dn
+  pin dp
+  pin id
+
+  ;Microusb connector.
+  inst usb : dummy(
+               "47589-0001",
+               [["s1", Left]
+                ["s2", Left]
+                ["s3", Left]
+                ["s4", Left]
+                
+                ["usb5v0", Right]
+                ["d-", Right]
+                ["d+", Right]
+                ["id", Right]
+                ["gnd", Right]])
+
+  ;Power.
+  net (usb-5V0, usb.usb5v0)
+  net (gnd, usb.gnd)
+
+  ;Decoupling caps.
+  cap-strap(usb-5V0, gnd, 10.0e-6)
+
+  ;Shielding.
+  cap-strap(usb.s1, gnd, 100.0e-9)
+  res-strap(usb.s1, gnd, 0.0)
+  net (usb.s1, usb.s2, usb.s3, usb.s4)
+
+  ;Microusb connections.
+  net (usb.d-, dn)
+  net (usb.d+, dp)
+  net (usb.id, id)
+
+  ;Explicit net names and symbols.
+  let :
+    net usb-d-n (dn)
+    net usb-d-p (dp)
+    net jtag-uart-id (id)
+    net gnd (gnd)
+    net usb-5v0 (usb-5V0)
+    symbol(usb-5v0) = ocdb/utils/symbols/supply-sym
+    symbol(gnd) = ocdb/utils/symbols/ground-sym
+
+
+
