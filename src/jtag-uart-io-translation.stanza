@@ -1,0 +1,115 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/jtag-uart-io-translation :
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+  import ocdb/utils/generic-components
+  import ocdb/utils/design-vars
+  import jitx-fpga/dummy
+
+;The signals that can be level translated.
+public pcb-bundle jtag-uart :
+  pin tck
+  pin tms
+  pin tdi
+  pin tdo
+  pin srst_n
+  pin por_n
+  pin uart-tx
+  pin uart-rx
+  
+public pcb-module module :
+  ;Port connections.
+  pin n1V8
+  pin n3V3
+  pin gnd
+  pin clk
+  port sig-1V8:jtag-uart
+  port sig-3V3:jtag-uart
+
+  ;Level translator.
+  inst trans : dummy(
+                  "NVT2010PW,118",
+                  [["vrefa", Left]
+                   ["a1", Left]
+                   ["a2", Left]
+                   ["a3", Left]
+                   ["a4", Left]
+                   ["a5", Left]
+                   ["a6", Left]
+                   ["a7", Left]
+                   ["a8", Left]
+                   ["a9", Left]
+                   ["a10", Left]
+                   ["gnd", Left]
+                   
+                   ["vrefb", Right]
+                   ["b1", Right]
+                   ["b2", Right]
+                   ["b3", Right]
+                   ["b4", Right]
+                   ["b5", Right]
+                   ["b6", Right]
+                   ["b7", Right]
+                   ["b8", Right]
+                   ["b9", Right]
+                   ["b10", Right]
+                   ["en", Right]])
+
+  ;Power the chips.
+  net (n1V8, trans.vrefa)  
+  net (gnd, trans.gnd)  
+
+  ;Port connections
+  net (sig-1V8.tck, trans.a1)
+  net (sig-1V8.tms, trans.a2)
+  net (sig-1V8.tdi, trans.a3)
+  net (sig-1V8.srst_n, trans.a4)
+  net (sig-1V8.tdo, trans.a5)
+  net (sig-1V8.por_n, trans.a6)
+  net (sig-1V8.uart-tx, trans.a7)
+  net (sig-1V8.uart-rx, trans.a8)
+
+  net (sig-3V3.tck, trans.b1)
+  net (sig-3V3.tms, trans.b2)
+  net (sig-3V3.tdi, trans.b3)
+  net (sig-3V3.srst_n, trans.b4)
+  net (sig-3V3.tdo, trans.b5)
+  net (sig-3V3.por_n, trans.b6)
+  net (sig-3V3.uart-tx, trans.b7)
+  net (sig-3V3.uart-rx, trans.b8)
+
+  ;Unused
+  no-connect(trans.a9)
+  no-connect(trans.a10)
+  no-connect(trans.b9)
+  no-connect(trans.b10)
+
+  ;Explicit net names and symbols.
+  let :
+    net n1V8 (n1V8)
+    net n3V3 (n3V3)
+    net gnd (gnd)
+    net sig-1V8:jtag-uart (sig-1V8)
+    net sig-3V3:jtag-uart (sig-3V3)
+    symbol(n1V8) = ocdb/utils/symbols/supply-sym
+    symbol(n3V3) = ocdb/utils/symbols/supply-sym
+    symbol(gnd) = ocdb/utils/symbols/ground-sym
+
+  ;Decoupling caps.
+  cap-strap(trans.en, gnd, 100.0e-9)
+
+  ;Pullups.
+  defn pullup (p:JITXObject, v:Double) : res-strap(p, n3V3, v)
+  pullup(trans.vrefb, 200.0e3)
+  net (trans.en, trans.vrefb)
+  pullup(trans.b1, 4.75e3)
+  pullup(trans.b2, 4.75e3)
+  pullup(trans.b3, 4.75e3)
+  pullup(trans.b4, 4.75e3)
+  pullup(trans.b5, 4.75e3)
+  pullup(trans.b6, 4.75e3)
+  pullup(trans.b7, 4.75e3)
+  pullup(trans.b8, 4.75e3)
+

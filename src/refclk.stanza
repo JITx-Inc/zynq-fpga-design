@@ -9,7 +9,7 @@ defpackage jitx-fpga/refclk :
   import jitx-fpga/dummy
   
 public pcb-module module :
-  ;Power connections.
+  ;Port connections.
   pin n3V3
   pin gnd
   pin clk  

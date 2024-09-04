@@ -9,6 +9,7 @@ pcb-module main :
   inst qspi:jitx-fpga/qspi/module
   inst usd:jitx-fpga/microsd/module
   inst refclk:jitx-fpga/refclk/module
+  inst jtag-uart-io-translation:jitx-fpga/jtag-uart-io-translation/module
   
 set-main-module(main)
 set-board(ocdb/utils/defaults/default-board(
