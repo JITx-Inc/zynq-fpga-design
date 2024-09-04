@@ -1,0 +1,44 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/refclk :
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+  import ocdb/utils/generic-components
+  import ocdb/utils/design-vars
+  import jitx-fpga/dummy
+  
+public pcb-module module :
+  ;Power connections.
+  pin n3V3
+  pin gnd
+  pin clk  
+
+  ;Clock oscillator.
+  inst clkgen : dummy(
+                  "DSC1525MI2A-33M33333",
+                  [["vdd", Left]
+                   ["en", Left]
+                   ["out", Right]
+                   ["gnd", Right]])
+
+  ;Power the chips.
+  net (n3V3, clkgen.vdd)
+  net (gnd, clkgen.gnd)
+
+  ;Port connections
+  res-strap(clk, clkgen.out, 22.1)
+
+  ;Explicit net names and symbols.
+  let :
+    net n3V3 (n3V3)
+    net gnd (gnd)
+    net clk (clk)   
+    symbol(n3V3) = ocdb/utils/symbols/supply-sym
+    symbol(gnd) = ocdb/utils/symbols/ground-sym
+
+  ;Decoupling caps.
+  cap-strap(clkgen.vdd, gnd, 100.0e-9)
+
+  ;Pullups and pulldowns.
+  res-strap(clkgen.en, n3V3, 2.21e3)

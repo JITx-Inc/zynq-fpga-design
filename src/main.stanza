@@ -8,6 +8,7 @@ defpackage jitx-fpga/main :
 pcb-module main :
   inst qspi:jitx-fpga/qspi/module
   inst usd:jitx-fpga/microsd/module
+  inst refclk:jitx-fpga/refclk/module
   
 set-main-module(main)
 set-board(ocdb/utils/defaults/default-board(
