@@ -1,0 +1,218 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/jtag-uart :
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+  import ocdb/utils/generic-components
+  import ocdb/utils/design-vars
+  import jitx-fpga/dummy
+  
+public pcb-module module :
+  ;Port definitions.
+  pin n3V3
+  pin usb-5V0
+  pin gnd
+  pin usb-d-n
+  pin usb-d-p
+  pin jtag-uart-id  
+  pin jtag-tck-3v3
+  pin jtag-tdi-3v3
+  pin jtag-tdo-3v3
+  pin jtag-tms-3v3
+  pin uart-rx-3v3
+  pin uart-tx-3v3
+  pin por-n-3v3
+  pin srst-n-3v3
+  pin pwren-n
+  
+
+  ;FT2232 jtag controller.
+  inst ft2232 : dummy(
+                  "FT2232HL",
+                  [["vregin", Left]
+                   ["vregout", Left]
+                   ["dm", Left]
+                   ["dp", Left]
+                   ["reset_n", Left]
+                   ["ref", Left]
+                   ["eecs", Left]
+                   ["eeclk", Left]
+                   ["eedata", Left]
+                   ["osci", Left]
+                   ["osco", Left]
+                   ["test", Left]
+
+                   ["adbus0", Right]
+                   ["adbus1", Right]
+                   ["adbus2", Right]
+                   ["adbus3", Right]
+                   ["adbus4", Right]
+                   ["adbus5", Right]
+                   ["adbus6", Right]
+                   ["adbus7", Right]
+                   ["acbus0", Right]
+                   ["acbus1", Right]
+                   ["acbus2", Right]
+                   ["acbus3", Right]
+                   ["acbus4", Right]
+                   ["acbus5", Right]
+                   ["acbus6", Right]
+                   ["acbus7", Right]
+                   ["bdbus0", Right]
+                   ["bdbus1", Right]
+                   ["bdbus2", Right]
+                   ["bdbus3", Right]
+                   ["bdbus4", Right]
+                   ["bdbus5", Right]
+                   ["bdbus6", Right]
+                   ["bdbus7", Right]
+                   ["bcbus0", Right]
+                   ["bcbus1", Right]
+                   ["bcbus2", Right]
+                   ["bcbus3", Right]
+                   ["bcbus4", Right]
+                   ["bcbus5", Right]
+                   ["bcbus6", Right]
+                   ["bcbus7", Right]
+                   ["pwren_n", Right]
+                   ["suspend_n", Right]
+
+                   ["vphy", Up]
+                   ["vpll", Up]
+                   ["vcore0", Up]
+                   ["vcore1", Up]
+                   ["vcore2", Up]
+                   ["vccio0", Up]
+                   ["vccio1", Up]
+                   ["vccio2", Up]
+                   ["vccio3", Up]
+
+                   ["agnd", Down]
+                   ["gnd0", Down]
+                   ["gnd1", Down]
+                   ["gnd2", Down]
+                   ["gnd3", Down]
+                   ["gnd4", Down]
+                   ["gnd5", Down]
+                   ["gnd6", Down]
+                   ["gnd7", Down]
+                   ["gnd8", Down]])
+
+  ;Voltage protection diodes.
+  inst diodes : dummy(
+                  "CDSOT23-SR208",
+                  [["p4" Left]
+                   ["p5" Left]
+                   ["p6" Left]
+                   ["p3", Right]
+                   ["p2", Right]
+                   ["p1", Right]])
+  net (diodes.p4, usb-d-p)
+  net (diodes.p3, usb-d-n)
+  net (diodes.p5, gnd)
+  net (diodes.p2, usb-5V0)
+  net (diodes.p6, jtag-uart-id)
+  no-connect(diodes.p1)
+
+  ;EEProm for configuring controller.
+  inst eeprom : dummy(
+                  "93LC56B"
+                  [["di", Left]
+                   ["clk", Left]
+                   ["cs", Left]
+                   ["vcc", Left]
+                   ["do", Right]
+                   ["vss", Right]])
+  net (n3V3, eeprom.vcc)
+  net (gnd, eeprom.vss)
+  res-strap(eeprom.di, n3V3, 10.0e3)
+  res-strap(eeprom.clk, n3V3, 10.0e3)
+  res-strap(eeprom.cs, n3V3, 10.0e3)  
+  cap-strap(eeprom.vcc, gnd, 100.0e-9)
+
+  ;Connections between EEProm and FT2232
+  net (eeprom.di, ft2232.eedata)
+  res-strap(eeprom.do, ft2232.eedata, 2.0e3)
+  res-strap(eeprom.clk, ft2232.eeclk, 22.1)
+  net (eeprom.cs, ft2232.eecs)
+
+  ;Crystal oscillator for controller.
+  inst crystal : dummy(
+                   "ECS-120-10-33B-CKM-TR",
+                   [["p1", Left]
+                    ["p3", Right]
+                    ["gnd0", Down]
+                    ["gnd1", Down]])
+
+  ;Power for FT2232
+  net (n3V3, ft2232.vregin)
+  net (gnd, ft2232.agnd,
+            ft2232.gnd0, ft2232.gnd1, ft2232.gnd2, ft2232.gnd3,
+            ft2232.gnd4, ft2232.gnd5, ft2232.gnd6, ft2232.gnd7,
+            ft2232.gnd8)
+
+  ;Port connections
+  net (usb-d-n, ft2232.dm)
+  net (usb-d-p, ft2232.dp)
+  res-strap(jtag-tck-3v3, ft2232.adbus0, 22.1)
+  res-strap(jtag-tdi-3v3, ft2232.adbus1, 22.1)
+  res-strap(jtag-tdo-3v3, ft2232.adbus2, 22.1)
+  res-strap(jtag-tms-3v3, ft2232.adbus3, 22.1)
+  res-strap(por-n-3v3, ft2232.adbus6, 0.0)
+  res-strap(srst-n-3v3, ft2232.adbus7, 0.0)
+  net (uart-rx-3v3, ft2232.bdbus0)
+  net (uart-tx-3v3, ft2232.bdbus1)
+  net (pwren-n, ft2232.pwren_n)
+
+  ;Decoupling caps.
+  cap-strap(ft2232.vregin, gnd, 4.7e-6)
+  cap-strap(ft2232.vregin, gnd, 100.0e-9)
+  cap-strap(ft2232.vregout, gnd, 4.7e-6)
+
+  ;Pullups and pulldowns
+  res-strap(ft2232.adbus4, n3V3, 4.75e3)
+
+
+
+
+  ;Power.
+  ;net (usb-5V0, usb.usb5v0)
+  ;net (gnd, usb.gnd)
+  ;
+  ;;Decoupling caps.
+  ;cap-strap(usb-5V0, gnd, 10.0e-6)
+  ;
+  ;;Shielding.
+  ;cap-strap(usb.s1, gnd, 100.0e-9)
+  ;res-strap(usb.s1, gnd, 0.0)
+  ;net (usb.s1, usb.s2, usb.s3, usb.s4)
+  ;
+  ;;Microusb connections.
+  ;net (usb.d-, dn)
+  ;net (usb.d+, dp)
+  ;net (usb.id, id)
+  ;
+  ;Explicit net names and symbols.
+  let :
+    net n3V3 (n3V3)
+    net usb-5V0 (usb-5V0)
+    net gnd (gnd)
+    net usb-d-n (usb-d-n)
+    net usb-d-p (usb-d-p)
+    net jtag-uart-id (jtag-uart-id)
+    net jtag-tck-3v3 (jtag-tck-3v3)
+    net jtag-tdi-3v3 (jtag-tdi-3v3)
+    net jtag-tdo-3v3 (jtag-tdo-3v3)
+    net jtag-tms-3v3 (jtag-tms-3v3)
+    net uart-rx-3v3 (uart-rx-3v3)
+    net uart-tx-3v3 (uart-tx-3v3)
+    net por-n-3v3 (por-n-3v3)
+    net srst-n-3v3 (srst-n-3v3)
+    net pwren-n (pwren-n)
+    symbol(usb-5V0) = ocdb/utils/symbols/supply-sym
+    symbol(n3V3) = ocdb/utils/symbols/supply-sym
+    symbol(gnd) = ocdb/utils/symbols/ground-sym
+
+
+
