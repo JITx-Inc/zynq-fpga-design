@@ -1,5 +1,5 @@
 name = "jitx-fpga"
 version = "0.1.0"
 [dependencies]
-JITX = { path = "{SLM_ROOT}/JITX" }
-ocdb = { path = "{SLM_ROOT}/ocdb" }
+ocdb = { git = "JITx-Inc/open-components-database", version = "3.17.0" }
+jsl = { git = "JITx-Inc/jsl", version = "0.5.1" }
