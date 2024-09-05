@@ -1,0 +1,70 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/components/DSC1525MI2A-33M33333T :
+  import core
+  import jitx
+  import jitx/commands
+
+  import jsl/symbols
+  import jsl/landpatterns
+
+public pcb-component component () :
+
+  manufacturer = "Microchip"
+  mpn = "DSC1525MI2A-33M33333T"
+  datasheet = "https://ww1.microchip.com/downloads/en/DeviceDoc/DSC150x-DSC152x-Low-Power-Low-Jitter-MEMS-Oscillators-DS20006516A.pdf"
+  reference-prefix = "U"
+
+  pin-properties:
+    [ pin:Ref  | pads:Int ... | side:Dir ]
+    [ VDD      | 4            | Up       ]
+    [ OUT      | 3            | Right    ]
+    [ GND      | 2            | Down     ]
+    [ OE       | 1            | Left     ]
+
+  val box = BoxSymbol(self)
+  assign-symbol $ create-symbol(box)
+
+  assign-landpattern $ create-landpattern(VFLGA-ASA())
+
+public defstruct VFLGA-ASA <: Package :
+  package-body:PackageBody with:
+    as-method => true
+    default => PackageBody(
+      width = typ(1.6)
+      length = typ(2.0)
+      height = 0.84 +/- 0.05
+    )
+with:
+  printer => true
+
+defmethod name (pkg:VFLGA-ASA) -> String :
+  "VFLGA-ASA"
+
+defmethod courtyard-excess (pkg:VFLGA-ASA) -> Double :
+  0.25
+
+defmethod build-silkscreen (pkg:VFLGA-ASA, root:VirtualLP) -> False :
+  create-silkscreen-outline(root, package-body(pkg), density-level = density-level(pkg))
+  build-outline-pin-1-triangle(root)
+
+defmethod build-pads (pkg:VFLGA-ASA, root:VirtualLP) -> False :
+  val num-scheme = Std-IC-Numbering(4)
+  val planner = RectanglePadPlanner
+  val lead-grid = GridPlanner(
+      pitch = Dims(0.95, 1.55)
+      columns = 2
+      rows = 2
+      anchor = C
+    )
+  val pad-seq = for pos in grid(lead-grid) seq :
+    val [r, c] = [row(pos), column(pos)]
+    val pad-id = to-pad-id(num-scheme, r, c)
+    val pad-shape =
+      if r == 0 and c == 0 :
+        GeneralChamferedRectangle(0.7, 0.5, 0.13, CornerModifierUpperLeft, loc(0.0, -0.05))
+      else :
+        Rectangle(0.7, 0.4)
+    val cls = build-vpad-classes(r, c)
+    VirtualPad(pad-id, smd-pad(pad-shape), pose(pos), class = cls)
+
+  append-all(root, pad-seq)
