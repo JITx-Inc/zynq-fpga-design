@@ -99,6 +99,28 @@ public pcb-module module :
                    ["gnd7", Down]
                    ["gnd8", Down]])
 
+  ;Creating the 3V3_PHY rail.
+  ;Todo: need 220 variant bead, not 470.
+  net n3V3_phy ()
+  inst fb0 : ocdb/components/tdk/MPZ1608/component(470.0)
+  net (fb0.p[1], n3V3)
+  net (fb0.p[2], n3V3_phy)
+  cap-strap(n3V3_phy, gnd, 4.7e-6)
+  cap-strap(n3V3_phy, gnd, 100.0e-9)
+
+  ;Creating the 3V3_PLL rail.
+  ;Todo: need 220 variant bead, not 470.
+  net n3V3_pll ()
+  inst fb1 : ocdb/components/tdk/MPZ1608/component(470.0)
+  net (fb1.p[1], n3V3)
+  net (fb1.p[2], n3V3_pll)
+  cap-strap(n3V3_pll, gnd, 4.7e-6)
+  cap-strap(n3V3_pll, gnd, 100.0e-9)
+
+  ;Creating the 1V8_FT rail.
+  net n1V8_ft (ft2232.vregout)
+  cap-strap(n1V8_ft, gnd, 4.7e-6)
+
   ;Voltage protection diodes.
   inst diodes : dummy(
                   "CDSOT23-SR208",
@@ -144,9 +166,18 @@ public pcb-module module :
                     ["p3", Right]
                     ["gnd0", Down]
                     ["gnd1", Down]])
+  net (crystal.p1, ft2232.osci)
+  net (crystal.p3, ft2232.osco)
+  net (gnd, crystal.gnd0, crystal.gnd1)
+  cap-strap(crystal.p1, gnd, 18.0e-12)
+  cap-strap(crystal.p3, gnd, 18.0e-12)
 
   ;Power for FT2232
   net (n3V3, ft2232.vregin)
+  net (n3V3_phy, ft2232.vphy)
+  net (n3V3_pll, ft2232.vpll)
+  net (n1V8_ft, ft2232.vcore0, ft2232.vcore1, ft2232.vcore2)
+  net (n3V3, ft2232.vccio0, ft2232.vccio1, ft2232.vccio2, ft2232.vccio3)
   net (gnd, ft2232.agnd,
             ft2232.gnd0, ft2232.gnd1, ft2232.gnd2, ft2232.gnd3,
             ft2232.gnd4, ft2232.gnd5, ft2232.gnd6, ft2232.gnd7,
@@ -168,13 +199,32 @@ public pcb-module module :
   ;Decoupling caps.
   cap-strap(ft2232.vregin, gnd, 4.7e-6)
   cap-strap(ft2232.vregin, gnd, 100.0e-9)
-  cap-strap(ft2232.vregout, gnd, 4.7e-6)
+
+  ;Decoupling caps for n1V8_ft
+  cap-strap(n1V8_ft, gnd, 100.0e-9)
+  cap-strap(n1V8_ft, gnd, 100.0e-9)
+  cap-strap(n1V8_ft, gnd, 100.0e-9)
+
+  ;Decoupling caps for n3V3
+  cap-strap(n3V3, gnd, 100.0e-9)
+  cap-strap(n3V3, gnd, 100.0e-9)
+  cap-strap(n3V3, gnd, 100.0e-9)
+  cap-strap(n3V3, gnd, 100.0e-9)
 
   ;Pullups and pulldowns
   res-strap(ft2232.adbus4, n3V3, 4.75e3)
+  res-strap(ft2232.reset_n, n3V3, 0.0)
 
+  ;Unused test pin.
+  res-strap(ft2232.test, gnd, 0.0)
 
-
+  ;Unused FT2232 pins.
+  for i in 0 through 7 :
+    val name = to-string("acbus%_" % [i])
+    no-connect(ft2232.(name))
+  for i in 0 through 6 :
+    val name = to-string("bcbus%_" % [i])
+    no-connect(ft2232.(name))
 
   ;Power.
   ;net (usb-5V0, usb.usb5v0)
@@ -212,6 +262,9 @@ public pcb-module module :
     net pwren-n (pwren-n)
     symbol(usb-5V0) = ocdb/utils/symbols/supply-sym
     symbol(n3V3) = ocdb/utils/symbols/supply-sym
+    symbol(n3V3_phy) = ocdb/utils/symbols/supply-sym
+    symbol(n3V3_pll) = ocdb/utils/symbols/supply-sym
+    symbol(n1V8_ft) = ocdb/utils/symbols/supply-sym
     symbol(gnd) = ocdb/utils/symbols/ground-sym
 
 
