@@ -1,0 +1,107 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/usb2-phy :
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+  import ocdb/utils/generic-components
+  import ocdb/utils/design-vars
+  import jitx-fpga/dummy
+
+public pcb-bundle usb-sig :
+  port data:pin[8]
+  pin stp
+  pin nxt
+  pin dir
+  pin clk
+  
+public pcb-module module :
+  ;Port definitions.
+  pin n5V0
+  pin n1V8
+  pin usb-5V0
+  pin gnd
+  pin usb-d-n
+  pin usb-d-p
+  pin refclk
+  pin reset
+  port out:usb-sig   
+
+  ;FT2232 jtag controller.
+  inst usb : dummy(
+               "USB3321C-GL-R",
+               [["vbus", Left]
+                ["vbat", Left]
+                ["vdd33", Left]
+                ["id", Left]
+                ["dm", Left]
+                ["dp", Left]
+                ["resetb", Left]
+                ["refclk", Left]
+                ["spk_l", Left]
+                ["spk_r", Left]
+                ["gnd", Left]
+                ["data7", Right]
+                ["data6", Right]
+                ["data5", Right]
+                ["data4", Right]
+                ["data3", Right]
+                ["data2", Right]
+                ["data1", Right]
+                ["data0", Right]
+                ["stp", Right]
+                ["nxt", Right]
+                ["dir", Right]
+                ["clkout", Right]
+                ["vdd18", Right]
+                ["rbias", Right]])
+
+  ;Power connections
+  net (n5V0, usb.vbat)
+  net (gnd, usb.gnd)
+  net (n1V8, usb.vdd18)
+  res-strap(usb-5V0, usb.vbus, 10.0e3)
+
+  ;Decoupling caps
+  cap-strap(usb.vdd33, gnd, 2.2e-6)
+  cap-strap(usb.vdd18, gnd, 100.0e-9)  
+
+  ;USB input connections.
+  net (usb-d-n, usb.dm)
+  net (usb-d-p, usb.dp)
+  net (reset, usb.resetb)
+  net (refclk, usb.refclk)
+  res-strap(usb.id, gnd, 0.0)
+  no-connect(usb.spk_l)
+  no-connect(usb.spk_r)
+
+  ;USB output connections.
+  for i in 0 through 7 :
+    val datai = to-string("data%_" % [i])
+    net (usb.(datai), out.data[i])
+  net (usb.stp, out.stp)
+  net (usb.nxt, out.nxt)
+  net (usb.dir, out.dir)
+  net (usb.clkout, out.clk)
+
+  ;Bias resistor
+  res-strap(usb.rbias, gnd, 8.06e3)
+
+  ;Explicit net names and symbols.
+  let :
+    net usb-5V0 (usb-5V0)
+    net n5V0 (n5V0)
+    net n1V8 (n1V8)
+    net clk-26mhz (refclk)
+    net usb-rst (reset)
+    net gnd (gnd)
+    net usb-d-n (usb-d-n)
+    net usb-d-p (usb-d-p)
+    net usb:usb-sig (out)
+    symbol(usb-5V0) = ocdb/utils/symbols/supply-sym
+    symbol(n5V0) = ocdb/utils/symbols/supply-sym
+    symbol(n1V8) = ocdb/utils/symbols/supply-sym
+    symbol(gnd) = ocdb/utils/symbols/ground-sym
+
+
+
