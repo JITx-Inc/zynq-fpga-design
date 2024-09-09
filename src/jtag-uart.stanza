@@ -226,23 +226,6 @@ public pcb-module module :
     val name = to-string("bcbus%_" % [i])
     no-connect(ft2232.(name))
 
-  ;Power.
-  ;net (usb-5V0, usb.usb5v0)
-  ;net (gnd, usb.gnd)
-  ;
-  ;;Decoupling caps.
-  ;cap-strap(usb-5V0, gnd, 10.0e-6)
-  ;
-  ;;Shielding.
-  ;cap-strap(usb.s1, gnd, 100.0e-9)
-  ;res-strap(usb.s1, gnd, 0.0)
-  ;net (usb.s1, usb.s2, usb.s3, usb.s4)
-  ;
-  ;;Microusb connections.
-  ;net (usb.d-, dn)
-  ;net (usb.d+, dp)
-  ;net (usb.id, id)
-  ;
   ;Explicit net names and symbols.
   let :
     net n3V3 (n3V3)
