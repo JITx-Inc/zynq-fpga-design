@@ -1,0 +1,110 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/usbc-power :
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+  import ocdb/utils/generic-components
+  import ocdb/utils/design-vars
+  import jitx-fpga/dummy
+
+public pcb-module module :
+  ;Port definitions.
+  pin n3V3-pri
+  pin cc1
+  pin cc2
+  pin gnd
+
+  ;USBC connector.
+  inst conn : dummy(
+                "E8124-010-01",
+                [["vbus0", Right]
+                 ["vbus1", Right]
+                 ["vbus2", Right]
+                 ["vbus3", Right]                 
+                 ["sstxp1", Right]
+                 ["sstxn1", Right]
+                 ["ssrxp1", Right]
+                 ["ssrxn1", Right]
+                 ["ssrxp2", Right]
+                 ["ssrxn2", Right]
+                 ["sstxp2", Right]
+                 ["sstxn2", Right]
+                 ["dp1_a", Right]
+                 ["dn1_a", Right]
+                 ["dp1_b", Right]
+                 ["dn1_b", Right]
+                 ["cc1", Right]
+                 ["cc2", Right]
+                 ["sbu1", Right]
+                 ["sbu2", Right]                 
+                 ["gnd0", Left]
+                 ["gnd1", Left]
+                 ["gnd2", Left]
+                 ["gnd3", Left]
+                 ["shield", Left]])
+  net (gnd, conn.gnd0,
+            conn.gnd1
+            conn.gnd2
+            conn.gnd3)
+  net vbus (conn.vbus0,
+            conn.vbus1,
+            conn.vbus2,
+            conn.vbus3)
+  cap-strap(conn.vbus0, gnd, 2.2e-6)
+
+  ;Wire up unused dp,dn signals.
+  net (conn.dp1_a, conn.dp1_b)
+  net (conn.dn1_a, conn.dn1_b)
+
+  ;Handle cc signals.
+  net (cc1, conn.cc1)
+  net (cc2, conn.cc2)
+  cap-strap(cc1, gnd, 220.0e-12)
+  cap-strap(cc2, gnd, 220.0e-12)
+
+  ;Shielding.
+  res-strap(conn.shield, gnd, 330.0)
+  cap-strap(conn.shield, gnd, 100.0e-9)
+
+  ;Create 3.3V primary rail.
+  inst prim-3V3 : primary-3V3
+  net (prim-3V3.vbus, vbus)
+  net (prim-3V3.n3V3-pri, n3V3-pri)
+  net (prim-3V3.gnd, gnd)
+
+  ;Explicit net names and symbols.
+  let :
+    net n3V3-pri (n3V3-pri)
+    net cc1 (cc1)
+    net cc2 (cc2)
+    net gnd (gnd)
+    symbol(n3V3-pri) = ocdb/utils/symbols/supply-sym
+    symbol(vbus) = ocdb/utils/symbols/supply-sym
+    symbol(gnd) = ocdb/utils/symbols/ground-sym
+
+;Primary 3V3
+public pcb-module primary-3V3 :
+  pin vbus
+  pin n3V3-pri
+  pin gnd
+  
+  ;LDO.
+  inst ldo : dummy(
+               "NCP718ASN330T1G",
+               [["in", Left]
+                ["en", Left]
+                ["out", Right]
+                ["nc", Right]                 
+                ["gnd", Right]])
+  net (vbus, ldo.in)
+  net (n3V3-pri, ldo.out)
+  net (gnd, ldo.gnd)
+  cap-strap(vbus, gnd, 1.0e-6)
+  cap-strap(n3V3-pri, gnd, 1.0e-6)
+
+  ;Enables and noconnects
+  net (ldo.en, vbus)
+  net (ldo.nc, gnd)
+  
+  
