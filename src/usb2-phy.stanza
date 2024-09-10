@@ -98,6 +98,13 @@ public pcb-module module :
   net (clk.gnd, gnd)
   net clk-26mhz (clk.clk, usb.refclk)
 
+  ;Connector circuit
+  inst usb-conn:usb-conn
+  net (usb-conn.usb-5V0, usb-5V0)
+  net (usb-conn.gnd, gnd)
+  net (usb-conn.d-n, usb-d-n)
+  net (usb-conn.d-p, usb-d-p)
+
   ;Explicit net names and symbols.
   let :
     net usb-5V0 (usb-5V0)
@@ -116,6 +123,37 @@ public pcb-module module :
     symbol(n1V8) = ocdb/utils/symbols/supply-sym
     symbol(gnd) = ocdb/utils/symbols/ground-sym
 
+;Connector circuit.
+public pcb-module usb-conn :
+  pin usb-5V0
+  pin gnd
+  pin d-n
+  pin d-p
+
+  ;Connector
+  inst conn : dummy(
+                "USB-A-S-F-B-TH",
+                [["vbus", Left]
+                 ["d-", Left]
+                 ["d+", Left]
+                 ["gnd", Left]
+                 ["shield0", Right]
+                 ["shield1", Right]])
+  net (d-n, conn.d-)
+  net (d-p, conn.d+)
+  net (gnd, conn.gnd)
+  net (usb-5V0, conn.vbus)
+
+  ;Shielding connections.
+  net (conn.shield0, conn.shield1)
+  cap-strap(conn.shield0, gnd, 100.0e-9)
+  res-strap(conn.shield0, gnd, 330.0)
+
+  ;Decoupling caps.
+  cap-strap(conn.vbus, gnd, 10.0e-6)
+  cap-strap(conn.vbus, gnd, 10.0e-6)
+  cap-strap(conn.vbus, gnd, 100.0e-6)
+
 ;Reference clock circuit.
 public pcb-module phy-clock :
   pin n3V3
@@ -129,13 +167,13 @@ public pcb-module phy-clock :
                    ["en", Left]
                    ["out", Right]
                    ["gnd", Right]])
-  net (n3V3, clkgen.vdd)  
+  net (n3V3, clkgen.vdd)
   net (gnd, clkgen.gnd)
   cap-strap(clkgen.vdd, gnd, 100.0e-9)
-  
+
   res-strap(clkgen.out, clk, 22.1)
   net (n3V3, clkgen.en)
-  
+
 
 ;Small reset circuit.
 public pcb-module phy-reset :
