@@ -1,0 +1,142 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/usbc-power-controller :
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+  import ocdb/utils/generic-components
+  import ocdb/utils/design-vars
+  import jitx-fpga/dummy
+
+public pcb-module module :
+  ;Port definitions.
+  pin usbc-vbus
+  pin n3V3-pri
+  pin vbus-compare
+  pin cc1
+  pin cc2
+  pin gnd
+
+  ;Internal rails
+  net vdd1v8 ()
+  net vdd3v3 ()
+  net vdd1v2 ()
+
+  ;Power controller.
+  inst ctrl : dummy(
+                "UPD301C/KYX",
+                [["vconn_in", Left]
+                 ["vdd33_alw_in", Left]
+                 ["vdd33_io_in", Left]
+                 ["vdd18_core_out", Left]
+                 ["vpp18", Left]
+                 ["vdd33_reg_in", Left]
+                 ["vdd33_ana_in", Left]
+                 ["vdd12_core_out", Left]
+                 ["reset_n_in", Left]
+                 ["reset_n_com", Left]
+                 ["pa00", Left]
+                 ["pa05", Left]
+                 ["pa04", Left]
+                 ["vbus_det_in", Left]
+                 ["cc1", Left]
+                 ["cc2", Left]
+                 ["swclk", Left]
+                 ["swdio", Left]
+                 ["pa19_gpio5", Left]
+                 ["pa18_gpio4", Left]
+                 ["vss", Left]
+
+                 ["pa03", Right]
+                 ["pa02", Right]
+                 ["gpio2", Right]
+                 ["gpio8", Right]
+                 ["pa27_gpio9", Right]
+                 ["pa28", Right]
+                 ["spi_mosi_pa11", Right]
+                 ["spi_mosi_si_pa07", Right]
+                 ["spi_miso_pa08", Right]
+                 ["spi_clk_pa09", Right]
+                 ["spi_ss0_pa10", Right]
+                 ["pa01", Right]
+                 ["spi_irq_n0_pa14", Right]
+                 ["pa15", Right]
+                 ["pa22_gpio6", Right]
+                 ["pa23_gpio7", Right]
+                 ["gpio3", Right]
+                 ["pa17", Right]
+                 ["pa16", Right]
+                 ["pa06", Right]])
+  no-connect(ctrl.vconn_in)
+  net (n3V3-pri, ctrl.vdd33_alw_in,
+                 ctrl.vdd33_io_in)
+  net (vdd1v8, ctrl.vdd18_core_out,
+               ctrl.vpp18)
+  net (vdd3v3, ctrl.vdd33_reg_in
+               ctrl.vdd33_ana_in)
+  net (vdd1v2, ctrl.vdd12_core_out)
+
+  ;Reset line
+  net reset-n1-in (ctrl.reset_n_in)
+  res-strap(reset-n1-in, n3V3-pri, 10.0e3)
+  cap-strap(reset-n1-in, gnd, 100.0e-9)
+
+  ;Reset common
+  net (ctrl.reset_n_com, ctrl.pa00)
+  res-strap(ctrl.pa00, gnd, 200.0e3)
+
+  no-connect(ctrl.pa05)
+
+  ;Select
+  net pdo-sel (ctrl.pa04)
+
+  ;Vbus compare
+  net (vbus-compare, ctrl.vbus_det_in)
+  res-strap(vbus-compare, usbc-vbus, 90.9e3)
+  res-strap(vbus-compare, gnd, 10.0e3)
+  cap-strap(vbus-compare, gnd, 100.0e-9)
+
+  ;CC signals
+  res-strap(cc1, ctrl.cc1, 0.0)
+  res-strap(cc2, ctrl.cc2, 0.0)
+
+  ;swclk and swdio
+  net trgt_swclk (ctrl.swclk)
+  net trgt_swdio (ctrl.swdio)
+
+  ;debug traces.
+  net debug-trace-rx (ctrl.pa19_gpio5)
+  net debug-trace-tx (ctrl.pa18_gpio4)
+  net (gnd, ctrl.vss)
+  res-strap(ctrl.pa19_gpio5, gnd, 10.0e3)
+  res-strap(ctrl.pa18_gpio4, gnd, 10.0e3)
+
+  no-connect(ctrl.pa03)
+  
+  net vbus-dis (ctrl.gpio8)
+  
+  res-strap(ctrl.pa27_gpio9, n3V3-pri, 10.0e3)
+
+  no-connect(ctrl.pa28)
+
+  res-strap(ctrl.spi_mosi_pa11, ctrl.spi_mosi_si_pa07, 0.0)
+  no-connect(ctrl.spi_miso_pa08)
+  no-connect(ctrl.spi_clk_pa09)
+  no-connect(ctrl.spi_ss0_pa10)
+  no-connect(ctrl.spi_irq_n0_pa14)
+  
+
+  ;Explicit net names and symbols.
+  let :
+    net usbc-vbus (usbc-vbus)
+    net n3V3-pri (n3V3-pri)
+    net vbus-compare (vbus-compare)
+    net cc1 (cc1)
+    net cc2 (cc2)
+    net gnd (gnd)
+    symbol(usbc-vbus) = ocdb/utils/symbols/supply-sym
+    symbol(n3V3-pri) = ocdb/utils/symbols/supply-sym
+    symbol(vdd1v8) = ocdb/utils/symbols/supply-sym
+    symbol(vdd3v3) = ocdb/utils/symbols/supply-sym
+    symbol(vdd1v2) = ocdb/utils/symbols/supply-sym
+    symbol(gnd) = ocdb/utils/symbols/ground-sym

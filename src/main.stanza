@@ -14,6 +14,7 @@ pcb-module main :
   inst jtag-uart:jitx-fpga/jtag-uart/module
   inst usb2-phy:jitx-fpga/usb2-phy/module
   inst usb-conn:jitx-fpga/usbc-power/module
+  inst usb-pwr-ctrl:jitx-fpga/usbc-power-controller/module
   
 set-main-module(main)
 set-board(ocdb/utils/defaults/default-board(
