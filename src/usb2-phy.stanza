@@ -18,12 +18,12 @@ public pcb-bundle usb-sig :
 public pcb-module module :
   ;Port definitions.
   pin n5V0
+  pin n3V3
   pin n1V8
   pin usb-5V0
   pin gnd
   pin usb-d-n
   pin usb-d-p
-  pin refclk
   pin power-good
   port out:usb-sig
 
@@ -69,7 +69,6 @@ public pcb-module module :
   ;USB input connections.
   net (usb-d-n, usb.dm)
   net (usb-d-p, usb.dp)
-  net (refclk, usb.refclk)
   res-strap(usb.id, gnd, 0.0)
   no-connect(usb.spk_l)
   no-connect(usb.spk_r)
@@ -93,12 +92,18 @@ public pcb-module module :
   net (rst.reset, usb.resetb)
   net (rst.power-good, power-good)
 
+  ;Clock circuit
+  inst clk:phy-clock
+  net (clk.n3V3, n3V3)
+  net (clk.gnd, gnd)
+  net clk-26mhz (clk.clk, usb.refclk)
+
   ;Explicit net names and symbols.
   let :
     net usb-5V0 (usb-5V0)
     net n5V0 (n5V0)
+    net n3V3 (n3V3)
     net n1V8 (n1V8)
-    net clk-26mhz (refclk)
     net usb-rst (usb.resetb)
     net gnd (gnd)
     net usb-d-n (usb-d-n)
@@ -107,8 +112,30 @@ public pcb-module module :
     net usb:usb-sig (out)
     symbol(usb-5V0) = ocdb/utils/symbols/supply-sym
     symbol(n5V0) = ocdb/utils/symbols/supply-sym
+    symbol(n3V3) = ocdb/utils/symbols/supply-sym
     symbol(n1V8) = ocdb/utils/symbols/supply-sym
     symbol(gnd) = ocdb/utils/symbols/ground-sym
+
+;Reference clock circuit.
+public pcb-module phy-clock :
+  pin n3V3
+  pin gnd
+  pin clk
+
+  ;FT2232 jtag controller.
+  inst clkgen : dummy(
+                  "DSC6101ME1B-026.0000",
+                  [["vdd", Left]
+                   ["en", Left]
+                   ["out", Right]
+                   ["gnd", Right]])
+  net (n3V3, clkgen.vdd)  
+  net (gnd, clkgen.gnd)
+  cap-strap(clkgen.vdd, gnd, 100.0e-9)
+  
+  res-strap(clkgen.out, clk, 22.1)
+  net (n3V3, clkgen.en)
+  
 
 ;Small reset circuit.
 public pcb-module phy-reset :
