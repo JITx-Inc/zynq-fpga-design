@@ -14,7 +14,7 @@ public pcb-bundle usb-sig :
   pin nxt
   pin dir
   pin clk
-  
+
 public pcb-module module :
   ;Port definitions.
   pin n5V0
@@ -24,8 +24,8 @@ public pcb-module module :
   pin usb-d-n
   pin usb-d-p
   pin refclk
-  pin reset
-  port out:usb-sig   
+  pin power-good
+  port out:usb-sig
 
   ;FT2232 jtag controller.
   inst usb : dummy(
@@ -64,12 +64,11 @@ public pcb-module module :
 
   ;Decoupling caps
   cap-strap(usb.vdd33, gnd, 2.2e-6)
-  cap-strap(usb.vdd18, gnd, 100.0e-9)  
+  cap-strap(usb.vdd18, gnd, 100.0e-9)
 
   ;USB input connections.
   net (usb-d-n, usb.dm)
   net (usb-d-p, usb.dp)
-  net (reset, usb.resetb)
   net (refclk, usb.refclk)
   res-strap(usb.id, gnd, 0.0)
   no-connect(usb.spk_l)
@@ -87,21 +86,52 @@ public pcb-module module :
   ;Bias resistor
   res-strap(usb.rbias, gnd, 8.06e3)
 
+  ;Reset circuit
+  inst rst:phy-reset
+  net (rst.n1V8, n1V8)
+  net (rst.gnd, gnd)
+  net (rst.reset, usb.resetb)
+  net (rst.power-good, power-good)
+
   ;Explicit net names and symbols.
   let :
     net usb-5V0 (usb-5V0)
     net n5V0 (n5V0)
     net n1V8 (n1V8)
     net clk-26mhz (refclk)
-    net usb-rst (reset)
+    net usb-rst (usb.resetb)
     net gnd (gnd)
     net usb-d-n (usb-d-n)
     net usb-d-p (usb-d-p)
+    net power-good (power-good)
     net usb:usb-sig (out)
     symbol(usb-5V0) = ocdb/utils/symbols/supply-sym
     symbol(n5V0) = ocdb/utils/symbols/supply-sym
     symbol(n1V8) = ocdb/utils/symbols/supply-sym
     symbol(gnd) = ocdb/utils/symbols/ground-sym
 
+;Small reset circuit.
+public pcb-module phy-reset :
+  pin n1V8
+  pin gnd
+  pin reset
+  pin power-good
 
+  ;FT2232 jtag controller.
+  inst andgate : dummy(
+                   "74LVC1G08GM,115",
+                   [["B", Left]
+                    ["A", Left]
+                    ["vcc", Up]
+                    ["gnd", Down]
+                    ["Y", Right]])
 
+  ;Power and decoupling caps
+  net (n1V8, andgate.vcc)
+  net (gnd, andgate.gnd)
+  cap-strap(n1V8, gnd, 100.0e-9)
+
+  ;Port connections
+  net (andgate.B, n1V8)
+  net (andgate.A, power-good)
+  net (andgate.Y, reset)
