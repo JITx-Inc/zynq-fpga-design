@@ -105,6 +105,12 @@ public pcb-module module :
   net (usb-conn.d-n, usb-d-n)
   net (usb-conn.d-p, usb-d-p)
 
+  ;Over-current fault
+  inst oc-fault:overcurrent-fault-protection
+  net (oc-fault.n5V0, n5V0)
+  net (oc-fault.usb-5V0, usb-5V0)
+  net (oc-fault.gnd, gnd)
+
   ;Explicit net names and symbols.
   let :
     net usb-5V0 (usb-5V0)
@@ -122,6 +128,31 @@ public pcb-module module :
     symbol(n3V3) = ocdb/utils/symbols/supply-sym
     symbol(n1V8) = ocdb/utils/symbols/supply-sym
     symbol(gnd) = ocdb/utils/symbols/ground-sym
+
+;Over-current fault.
+public pcb-module overcurrent-fault-protection :
+  pin n5V0
+  pin usb-5V0
+  pin gnd
+
+  ;Limiter part
+  inst limiter : dummy(
+                   "MIC2009A-2YM6-TR",
+                   [["vin", Left]
+                    ["ilimit", Left]
+                    ["enable_n", Left]
+                    ["vout", Right]
+                    ["fault", Right]
+                    ["gnd", Right]])
+  net (n5V0, limiter.vin)
+  net (usb-5V0, limiter.vout)
+  net (gnd, limiter.gnd)
+  cap-strap(limiter.vin, gnd, 100.0e-9)
+  cap-strap(limiter.vout, gnd, 100.0e-9)
+
+  res-strap(limiter.ilimit, gnd, 240.0)
+  res-strap(limiter.enable_n, gnd, 0.0)
+  res-strap(limiter.fault, n5V0, 10.0e3)
 
 ;Connector circuit.
 public pcb-module usb-conn :
