@@ -124,7 +124,30 @@ public pcb-module module :
   no-connect(ctrl.spi_clk_pa09)
   no-connect(ctrl.spi_ss0_pa10)
   no-connect(ctrl.spi_irq_n0_pa14)
-  
+
+  ;TODO: Should be an EAST0603OA0, instead of a random LED.
+  inst led1 : gen-led-cmp(tol(2.1, 0.1), 0.02, "YELLOW", "0805")
+  inst led2 : gen-led-cmp(tol(2.1, 0.1), 0.02, "YELLOW", "0805")
+  res-strap(ctrl.pa22_gpio6, led1.a, 1.0e3)
+  res-strap(ctrl.pa23_gpio7, led2.a, 1.0e3)
+  net (gnd, led1.c, led2.c)
+
+  ;I2C Slave nets.
+  ;TODO: Not sure where they go.
+  no-connect(ctrl.gpio3)
+  net i2c-slave-scl (ctrl.pa17)
+  net i2c-slave-sda (ctrl.pa16)
+  net i2c-slave-irq (ctrl.pa06)
+
+  ;Test points
+  defn add-test-point (p:JITXObject) :
+    inst tp: ocdb/utils/generic-components/smd-testpoint-cmp(2.0)
+    net (tp.p, p)
+  add-test-point(ctrl.pa02)
+  add-test-point(ctrl.gpio2)
+  add-test-point(ctrl.pa27_gpio9)
+  add-test-point(ctrl.pa01)
+  add-test-point(ctrl.pa15)
 
   ;Explicit net names and symbols.
   let :
