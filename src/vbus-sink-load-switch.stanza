@@ -1,0 +1,80 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/vbus-sink-load-switch :
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+  import ocdb/utils/generic-components
+  import ocdb/utils/design-vars
+  import ocdb/utils/landpatterns 
+  import ocdb/utils/symbols
+  import jitx-fpga/dummy
+  
+public pcb-module module :
+  pin usbc-vbus
+  pin sink-pwr
+  pin vbus-dis
+  pin en-sink
+  pin gnd
+
+  ;Left side.
+  inst q6:dummy-n-fet
+  res-strap(usbc-vbus, q6.d, 100.0)
+  net (q6.s, gnd)
+  res-strap(q6.g, gnd, 100.0e3)
+  net (vbus-dis, q6.g)
+
+  ;Top side.
+  inst q7:dummy-p-fet
+  inst q15:dummy-p-fet
+  net (usbc-vbus, q7.d)
+  net (q7.s, q15.s)
+  net (q15.d, sink-pwr)
+  net (q7.g, q15.g)
+  res-strap(q7.s, q7.g, 1.0e3)
+
+  ;Right side.
+  inst q14:dummy-n-fet
+  res-strap(q15.g, q14.d, 1.0e3)
+  net (q14.s, gnd)
+  res-strap(q14.g, gnd, 100.0e3)
+  net (en-sink, q14.g)
+
+  ;Explicit net names.
+  let :
+    net usbc-vbus (usbc-vbus)
+    net sink-pwr (sink-pwr)
+    net vbus-dis (vbus-dis)
+    net en-sink (en-sink)
+    net gnd (gnd)
+
+    ;Net symbols
+    symbol(usbc-vbus) = ocdb/utils/symbols/supply-sym
+    symbol(sink-pwr) = ocdb/utils/symbols/supply-sym
+    symbol(gnd) = ocdb/utils/symbols/ground-sym
+
+;============================================================
+;====================== Dummy Mosfets =======================
+;============================================================
+
+public pcb-component dummy-n-fet :
+  pin g
+  pin d
+  pin s
+
+  val pkg = SOT23()
+  val sym = fet-sym(FETNType, FETEnhancement, false)
+  landpattern = pkg(g => pkg.p[1], s => pkg.p[2], d => pkg.p[3])
+  symbol = sym(g => sym.g, d => sym.d, s => sym.s)
+  reference-prefix = "Q"
+
+public pcb-component dummy-p-fet :
+  pin g
+  pin d
+  pin s
+
+  val pkg = SOT23()
+  val sym = fet-sym(FETPType, FETEnhancement, false)
+  landpattern = pkg(g => pkg.p[1], s => pkg.p[2], d => pkg.p[3])
+  symbol = sym(g => sym.g, d => sym.d, s => sym.s)
+  reference-prefix = "Q"
