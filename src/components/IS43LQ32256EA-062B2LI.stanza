@@ -1,0 +1,305 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/components/IS43LQ32256EA-062B2LI :
+  import core
+  import jitx
+  import jitx/commands
+
+  import jsl/bundles
+  import jsl/symbols
+  import jsl/landpatterns
+
+  import jitx-fpga/bundles/ddr4
+
+public pcb-component component () :
+
+  manufacturer = "Integrated Silicon Solutions"
+  mpn = "IS43LQ32256EA-062B2LI"
+  datasheet = "https://www.issi.com/WW/pdf/43-46LQ32256EA-AL.pdf"
+  reference-prefix = "U"
+
+  pin-properties:
+    [ pin:Ref    | pads:Ref ... | bank:Int | side:Dir | row:Int | column:Int ]
+    [ RESET_n    | T[11]        | 0        | Left     | 0       | -          ]
+    [ CK_T_A     | J[8]         | 0        | Left     | 1       | -          ]
+    [ CK_C_A     | J[9]         | 0        | Left     | 1       | -          ]
+    [ CK_T_B     | P[8]         | 0        | Left     | 2       | -          ]
+    [ CK_C_B     | P[9]         | 0        | Left     | 2       | -          ]
+    [ ERR_A      | A[11]        | 0        | Right    | -       | -          ]
+    [ ERR_B      | AB[11]       | 0        | Right    | -       | -          ]
+
+    [ CKE_A      | J[4]         | 1        | Left     | 0       | -          ]
+    [ CS_A       | H[4]         | 1        | Left     | 0       | -          ]
+    [ ODT_CA_A   | G[2]         | 1        | Left     | 0       | -          ]
+    [ DMI_A[0]   | C[3]         | 1        | Left     | 0       | -          ]
+    [ DMI_A[1]   | C[10]        | 1        | Left     | 0       | -          ]
+    [ CA_A[0]    | H[2]         | 1        | Left     | 1       | -          ]
+    [ CA_A[1]    | J[2]         | 1        | Left     | 1       | -          ]
+    [ CA_A[2]    | H[9]         | 1        | Left     | 1       | -          ]
+    [ CA_A[3]    | H[10]        | 1        | Left     | 1       | -          ]
+    [ CA_A[4]    | H[11]        | 1        | Left     | 1       | -          ]
+    [ CA_A[5]    | J[11]        | 1        | Left     | 1       | -          ]
+
+    [ DQ_A[0]    | B[2]         | 1        | Right    | 0       | -          ]
+    [ DQ_A[1]    | C[2]         | 1        | Right    | 0       | -          ]
+    [ DQ_A[2]    | E[2]         | 1        | Right    | 0       | -          ]
+    [ DQ_A[3]    | F[2]         | 1        | Right    | 0       | -          ]
+    [ DQ_A[4]    | F[4]         | 1        | Right    | 0       | -          ]
+    [ DQ_A[5]    | E[4]         | 1        | Right    | 0       | -          ]
+    [ DQ_A[6]    | C[4]         | 1        | Right    | 0       | -          ]
+    [ DQ_A[7]    | B[4]         | 1        | Right    | 0       | -          ]
+    [ DQ_A[8]    | B[11]        | 1        | Right    | 1       | -          ]
+    [ DQ_A[9]    | C[11]        | 1        | Right    | 1       | -          ]
+    [ DQ_A[10]   | E[11]        | 1        | Right    | 1       | -          ]
+    [ DQ_A[11]   | F[11]        | 1        | Right    | 1       | -          ]
+    [ DQ_A[12]   | F[9]         | 1        | Right    | 1       | -          ]
+    [ DQ_A[13]   | E[9]         | 1        | Right    | 1       | -          ]
+    [ DQ_A[14]   | C[9]         | 1        | Right    | 1       | -          ]
+    [ DQ_A[15]   | B[9]         | 1        | Right    | 1       | -          ]
+    [ DQS_A_T[0] | D[3]         | 1        | Right    | 2       | -          ]
+    [ DQS_A_C[0] | E[3]         | 1        | Right    | 2       | -          ]
+    [ DQS_A_T[1] | D[10]        | 1        | Right    | 3       | -          ]
+    [ DQS_A_C[1] | E[10]        | 1        | Right    | 3       | -          ]
+
+    [ CKE_B      | P[4]         | 2        | Left     | 0       | -          ]
+    [ CS_B       | R[4]         | 2        | Left     | 0       | -          ]
+    [ ODT_CA_B   | T[2]         | 2        | Left     | 0       | -          ]
+    [ DMI_B[0]   | Y[3]         | 2        | Left     | 0       | -          ]
+    [ DMI_B[1]   | Y[10]        | 2        | Left     | 0       | -          ]
+    [ CA_B[0]    | R[2]         | 2        | Left     | 1       | -          ]
+    [ CA_B[1]    | P[2]         | 2        | Left     | 1       | -          ]
+    [ CA_B[2]    | R[9]         | 2        | Left     | 1       | -          ]
+    [ CA_B[3]    | R[10]        | 2        | Left     | 1       | -          ]
+    [ CA_B[4]    | R[11]        | 2        | Left     | 1       | -          ]
+    [ CA_B[5]    | P[11]        | 2        | Left     | 1       | -          ]
+
+    [ DQ_B[0]    | AA[2]        | 2        | Right    | 0       | -          ]
+    [ DQ_B[1]    | Y[2]         | 2        | Right    | 0       | -          ]
+    [ DQ_B[2]    | V[2]         | 2        | Right    | 0       | -          ]
+    [ DQ_B[3]    | U[2]         | 2        | Right    | 0       | -          ]
+    [ DQ_B[4]    | U[4]         | 2        | Right    | 0       | -          ]
+    [ DQ_B[5]    | V[4]         | 2        | Right    | 0       | -          ]
+    [ DQ_B[6]    | Y[4]         | 2        | Right    | 0       | -          ]
+    [ DQ_B[7]    | AA[4]        | 2        | Right    | 0       | -          ]
+    [ DQ_B[8]    | AA[11]       | 2        | Right    | 1       | -          ]
+    [ DQ_B[9]    | Y[11]        | 2        | Right    | 1       | -          ]
+    [ DQ_B[10]   | V[11]        | 2        | Right    | 1       | -          ]
+    [ DQ_B[11]   | U[11]        | 2        | Right    | 1       | -          ]
+    [ DQ_B[12]   | U[9]         | 2        | Right    | 1       | -          ]
+    [ DQ_B[13]   | V[9]         | 2        | Right    | 1       | -          ]
+    [ DQ_B[14]   | Y[9]         | 2        | Right    | 1       | -          ]
+    [ DQ_B[15]   | AA[9]        | 2        | Right    | 1       | -          ]
+    [ DQS_B_T[0] | W[3]         | 2        | Right    | 2       | -          ]
+    [ DQS_B_C[0] | V[3]         | 2        | Right    | 2       | -          ]
+    [ DQS_B_T[1] | W[10]        | 2        | Right    | 3       | -          ]
+    [ DQS_B_C[1] | V[10]        | 2        | Right    | 3       | -          ]
+
+    [ VSS[0]     | A[3]         | 3        | Left     | -       | -          ]
+    [ VSS[1]     | A[10]        | 3        | Left     | -       | -          ]
+    [ VSS[2]     | C[1]         | 3        | Left     | -       | -          ]
+    [ VSS[3]     | C[5]         | 3        | Left     | -       | -          ]
+    [ VSS[4]     | C[8]         | 3        | Left     | -       | -          ]
+    [ VSS[5]     | C[12]        | 3        | Left     | -       | -          ]
+    [ VSS[6]     | D[2]         | 3        | Left     | -       | -          ]
+    [ VSS[7]     | D[4]         | 3        | Left     | -       | -          ]
+    [ VSS[8]     | D[9]         | 3        | Left     | -       | -          ]
+    [ VSS[9]     | D[11]        | 3        | Left     | -       | -          ]
+    [ VSS[10]    | E[1]         | 3        | Left     | -       | -          ]
+    [ VSS[11]    | E[5]         | 3        | Left     | -       | -          ]
+    [ VSS[12]    | E[8]         | 3        | Left     | -       | -          ]
+    [ VSS[13]    | E[12]        | 3        | Left     | -       | -          ]
+    [ VSS[14]    | G[1]         | 3        | Left     | -       | -          ]
+    [ VSS[15]    | G[3]         | 3        | Left     | -       | -          ]
+    [ VSS[16]    | G[5]         | 3        | Left     | -       | -          ]
+    [ VSS[17]    | G[8]         | 3        | Left     | -       | -          ]
+    [ VSS[18]    | G[10]        | 3        | Left     | -       | -          ]
+    [ VSS[19]    | G[12]        | 3        | Left     | -       | -          ]
+    [ VSS[20]    | J[1]         | 3        | Left     | -       | -          ]
+    [ VSS[21]    | J[3]         | 3        | Left     | -       | -          ]
+    [ VSS[22]    | J[10]        | 3        | Left     | -       | -          ]
+    [ VSS[23]    | J[12]        | 3        | Left     | -       | -          ]
+    [ VSS[24]    | K[2]         | 3        | Left     | -       | -          ]
+    [ VSS[25]    | K[4]         | 3        | Left     | -       | -          ]
+    [ VSS[26]    | K[9]         | 3        | Left     | -       | -          ]
+    [ VSS[27]    | K[11]        | 3        | Left     | -       | -          ]
+    [ VSS[28]    | N[2]         | 3        | Left     | -       | -          ]
+    [ VSS[29]    | N[4]         | 3        | Left     | -       | -          ]
+    [ VSS[30]    | N[9]         | 3        | Left     | -       | -          ]
+    [ VSS[31]    | N[11]        | 3        | Left     | -       | -          ]
+    [ VSS[32]    | P[1]         | 3        | Left     | -       | -          ]
+    [ VSS[33]    | P[3]         | 3        | Left     | -       | -          ]
+    [ VSS[34]    | P[10]        | 3        | Left     | -       | -          ]
+    [ VSS[35]    | P[12]        | 3        | Left     | -       | -          ]
+    [ VSS[36]    | T[1]         | 3        | Left     | -       | -          ]
+    [ VSS[37]    | T[3]         | 3        | Left     | -       | -          ]
+    [ VSS[38]    | T[5]         | 3        | Left     | -       | -          ]
+    [ VSS[39]    | T[8]         | 3        | Left     | -       | -          ]
+    [ VSS[40]    | T[10]        | 3        | Left     | -       | -          ]
+    [ VSS[41]    | T[12]        | 3        | Left     | -       | -          ]
+    [ VSS[42]    | V[1]         | 3        | Left     | -       | -          ]
+    [ VSS[43]    | V[5]         | 3        | Left     | -       | -          ]
+    [ VSS[44]    | V[8]         | 3        | Left     | -       | -          ]
+    [ VSS[45]    | V[12]        | 3        | Left     | -       | -          ]
+    [ VSS[46]    | W[2]         | 3        | Left     | -       | -          ]
+    [ VSS[47]    | W[4]         | 3        | Left     | -       | -          ]
+    [ VSS[48]    | W[9]         | 3        | Left     | -       | -          ]
+    [ VSS[49]    | W[11]        | 3        | Left     | -       | -          ]
+    [ VSS[50]    | Y[1]         | 3        | Left     | -       | -          ]
+    [ VSS[51]    | Y[5]         | 3        | Left     | -       | -          ]
+    [ VSS[52]    | Y[8]         | 3        | Left     | -       | -          ]
+    [ VSS[53]    | Y[12]        | 3        | Left     | -       | -          ]
+    [ VSS[54]    | AB[3]        | 3        | Left     | -       | -          ]
+    [ VSS[55]    | AB[5]        | 3        | Left     | -       | -          ]
+    [ VSS[56]    | AB[8]        | 3        | Left     | -       | -          ]
+    [ VSS[57]    | AB[10]       | 3        | Left     | -       | -          ]
+
+    [ VDDQ[0]    | B[3]         | 4        | Left     | 0       | -          ]
+    [ VDDQ[1]    | B[5]         | 4        | Left     | 0       | -          ]
+    [ VDDQ[2]    | B[8]         | 4        | Left     | 0       | -          ]
+    [ VDDQ[3]    | B[10]        | 4        | Left     | 0       | -          ]
+    [ VDDQ[4]    | D[1]         | 4        | Left     | 0       | -          ]
+    [ VDDQ[5]    | D[5]         | 4        | Left     | 0       | -          ]
+    [ VDDQ[6]    | D[8]         | 4        | Left     | 0       | -          ]
+    [ VDDQ[7]    | D[12]        | 4        | Left     | 0       | -          ]
+    [ VDDQ[8]    | F[3]         | 4        | Left     | 0       | -          ]
+    [ VDDQ[9]    | F[10]        | 4        | Left     | 0       | -          ]
+    [ VDDQ[10]   | U[3]         | 4        | Left     | 0       | -          ]
+    [ VDDQ[11]   | U[10]        | 4        | Left     | 0       | -          ]
+    [ VDDQ[12]   | W[1]         | 4        | Left     | 0       | -          ]
+    [ VDDQ[13]   | W[5]         | 4        | Left     | 0       | -          ]
+    [ VDDQ[14]   | W[8]         | 4        | Left     | 0       | -          ]
+    [ VDDQ[15]   | W[12]        | 4        | Left     | 0       | -          ]
+    [ VDDQ[16]   | AA[3]        | 4        | Left     | 0       | -          ]
+    [ VDDQ[17]   | AA[5]        | 4        | Left     | 0       | -          ]
+    [ VDDQ[18]   | AA[8]        | 4        | Left     | 0       | -          ]
+    [ VDDQ[19]   | AA[10]       | 4        | Left     | 0       | -          ]
+
+    [ VDD1[0]    | F[1]         | 4        | Left     | 1       | -          ]
+    [ VDD1[1]    | F[12]        | 4        | Left     | 1       | -          ]
+    [ VDD1[2]    | G[4]         | 4        | Left     | 1       | -          ]
+    [ VDD1[3]    | G[9]         | 4        | Left     | 1       | -          ]
+    [ VDD1[4]    | T[4]         | 4        | Left     | 1       | -          ]
+    [ VDD1[5]    | T[9]         | 4        | Left     | 1       | -          ]
+    [ VDD1[6]    | U[1]         | 4        | Left     | 1       | -          ]
+    [ VDD1[7]    | U[12]        | 4        | Left     | 1       | -          ]
+
+    [ VDD2[0]    | A[4]         | 4        | Left     | 2       | -          ]
+    [ VDD2[1]    | A[9]         | 4        | Left     | 2       | -          ]
+    [ VDD2[2]    | F[5]         | 4        | Left     | 2       | -          ]
+    [ VDD2[3]    | F[8]         | 4        | Left     | 2       | -          ]
+    [ VDD2[4]    | H[1]         | 4        | Left     | 2       | -          ]
+    [ VDD2[5]    | H[5]         | 4        | Left     | 2       | -          ]
+    [ VDD2[6]    | H[8]         | 4        | Left     | 2       | -          ]
+    [ VDD2[7]    | H[12]        | 4        | Left     | 2       | -          ]
+    [ VDD2[8]    | K[1]         | 4        | Left     | 2       | -          ]
+    [ VDD2[9]    | K[3]         | 4        | Left     | 2       | -          ]
+    [ VDD2[10]   | K[10]        | 4        | Left     | 2       | -          ]
+    [ VDD2[11]   | K[12]        | 4        | Left     | 2       | -          ]
+    [ VDD2[12]   | N[1]         | 4        | Left     | 2       | -          ]
+    [ VDD2[13]   | N[3]         | 4        | Left     | 2       | -          ]
+    [ VDD2[14]   | N[10]        | 4        | Left     | 2       | -          ]
+    [ VDD2[15]   | N[12]        | 4        | Left     | 2       | -          ]
+    [ VDD2[16]   | R[1]         | 4        | Left     | 2       | -          ]
+    [ VDD2[17]   | R[5]         | 4        | Left     | 2       | -          ]
+    [ VDD2[18]   | R[8]         | 4        | Left     | 2       | -          ]
+    [ VDD2[19]   | R[12]        | 4        | Left     | 2       | -          ]
+    [ VDD2[20]   | U[5]         | 4        | Left     | 2       | -          ]
+    [ VDD2[21]   | U[8]         | 4        | Left     | 2       | -          ]
+    [ VDD2[22]   | AB[4]        | 4        | Left     | 2       | -          ]
+    [ VDD2[23]   | AB[9]        | 4        | Left     | 2       | -          ]
+
+    [ ZQ         | A[5]         | 4        | Left     | 3       | -          ]
+
+    [ NC[0]      | A[1]         | 5        | Left     | -       | -          ]
+    [ NC[1]      | A[2]         | 5        | Left     | -       | -          ]
+    [ NC[2]      | A[8]         | 5        | Left     | -       | -          ]
+    [ NC[3]      | A[12]        | 5        | Left     | -       | -          ]
+    [ NC[4]      | B[1]         | 5        | Left     | -       | -          ]
+    [ NC[5]      | B[12]        | 5        | Left     | -       | -          ]
+    [ NC[6]      | G[11]        | 5        | Left     | -       | -          ]
+    [ NC[7]      | H[3]         | 5        | Left     | -       | -          ]
+    [ NC[8]      | J[5]         | 5        | Left     | -       | -          ]
+    [ NC[9]      | K[5]         | 5        | Left     | -       | -          ]
+    [ NC[10]     | K[8]         | 5        | Left     | -       | -          ]
+    [ NC[11]     | N[5]         | 5        | Left     | -       | -          ]
+    [ NC[12]     | N[8]         | 5        | Left     | -       | -          ]
+    [ NC[13]     | P[5]         | 5        | Left     | -       | -          ]
+    [ NC[14]     | R[3]         | 5        | Left     | -       | -          ]
+    [ NC[15]     | AA[1]        | 5        | Left     | -       | -          ]
+    [ NC[16]     | AA[12]       | 5        | Left     | -       | -          ]
+    [ NC[17]     | AB[1]        | 5        | Left     | -       | -          ]
+    [ NC[18]     | AB[2]        | 5        | Left     | -       | -          ]
+    [ NC[19]     | AB[12]       | 5        | Left     | -       | -          ]
+
+  val box = BoxSymbol(self)
+  set-grid(box, [3, 1], 0)
+  set-grid(box, [4, 1], 1)
+  set-grid(box, [4, 1], 2)
+  set-grid(box, [4, 1], 4)
+  assign-symbols(seq({_ => box}, [0, 1, 2, 3, 4, 5]))
+
+  val pkg = BGA(
+    num-leads = 264,
+    lead-diam = 0.35,
+    lead-numbering = Grid-Numbering(22, 12),
+    package-body = PackageBody(
+      width = 10.0 +/- 0.1
+      length = 14.5 +/- 0.1
+      height = 1.0 +/- 0.1
+      ),
+    pad-planner = Perimeter-Matrix-Planner(
+      rows = 22,
+      columns = 12,
+      pitch = Dims(0.8, 0.65),
+      inactive = [PadIsland(1 to 23, 6 to 8), PadIsland(11 to 13, 1 to 13)]
+      )
+  )
+  assign-landpattern $ create-landpattern(pkg)
+
+public pcb-module device () :
+  public inst C : component()
+
+  port GND
+  port VDDQ : power
+  port VDD1 : power
+  port VDD2 : power
+  port DDR4-A : ddr4-channel-x16
+  port DDR4-B : ddr4-channel-x16
+
+  net gnd (GND VDDQ.V- VDD1.V- VDD2.V-)
+  for p in pins(C.VSS) do :
+    net (GND p)
+
+  for p in pins(C.VDDQ) do :
+    net (VDDQ.V+ p)
+  for p in pins(C.VDD1) do :
+    net (VDD1.V+ p)
+  for p in pins(C.VDD2) do :
+    net (VDD2.V+ p)
+
+  ;DDR4 nets
+  for i in 0 to 8 do :
+    net (DDR4-A.d[0].dq[i] C.DQ_A[i])
+    net (DDR4-A.d[1].dq[i] C.DQ_A[i + 8])
+    net (DDR4-B.d[0].dq[i] C.DQ_B[i])
+    net (DDR4-B.d[1].dq[i] C.DQ_B[i + 8])
+  for i in 0 to 2 do :
+    net (DDR4-A.d[i].dqs.P C.DQS_A_T[i])
+    net (DDR4-A.d[i].dqs.N C.DQS_A_C[i])
+    net (DDR4-B.d[i].dqs.P C.DQS_B_T[i])
+    net (DDR4-B.d[i].dqs.N C.DQS_B_C[i])
+  net (DDR4-A.cke C.CKE_A)
+  net (DDR4-B.cke C.CKE_B)
+  net (DDR4-A.cs C.CS_A)
+  net (DDR4-B.cs C.CS_B)
+  for i in 0 to 6 do :
+    net (DDR4-A.ca[i] C.CA_A[i])
+    net (DDR4-B.ca[i] C.CA_B[i])
+  for i in 0 to 2 do :
+    net (DDR4-A.dmi[i] C.DMI_A[i])
+    net (DDR4-B.dmi[i] C.DMI_B[i])
+
+  for channel in [DDR4-A, DDR4-B] do :
+    supports ddr4-channel-x16 :
+      for (bundle-pin in pins(ddr4-channel-x16),
+           channel-pin in pins(channel)) do :
+        bundle-pin => channel-pin

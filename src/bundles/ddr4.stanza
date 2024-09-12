@@ -1,0 +1,20 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/bundles/ddr4 :
+  import core
+  import collections
+
+  import jitx
+  import jitx/commands
+
+  import jsl/bundles
+
+public pcb-bundle ddr4-lane-x8 :
+  port dq : pin[8]
+  port dqs : diff-pair
+
+public pcb-bundle ddr4-channel-x16 :
+  port d : ddr4-lane-x8[2]
+  port cke : pin
+  port cs : pin
+  port ca : pin[6]
+  port dmi : pin[2]

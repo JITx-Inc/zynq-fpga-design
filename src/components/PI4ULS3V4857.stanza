@@ -1,0 +1,64 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/components/PI4ULS3V4857 :
+  import core
+  import jitx
+  import jitx/commands
+
+  import jsl/symbols
+  import jsl/landpatterns
+
+public pcb-component component () :
+
+  manufacturer = "DIODES INCORPORATED"
+  mpn = "PI4ULS3V4857"
+  datasheet = "https://www.diodes.com/assets/Datasheets/PI4ULS3V4857.pdf"
+  reference-prefix = "U"
+
+  pin-properties:
+    [ pin:Ref  | pads:Ref ... | bank:Int | side:Dir ]
+    [ VCCA     | A[2]         | 0        | Up       ]
+    [ VSD      | A[3]         | 0        | Up       ]
+    [ VCCB     | B[3]         | 0        | Up       ]
+    [ GND[0]   | C[2]         | 0        | Down     ]
+    [ GND[1]   | C[3]         | 0        | Down     ]
+    [ CMDA     | C[1]         | 0        | Left     ]
+    [ CLKA     | D[2]         | 0        | Left     ]
+    [ SEL      | E[3]         | 0        | Left     ]
+    [ CD       | B[2]         | 0        | Right    ]
+    [ CMDB     | C[4]         | 0        | Right    ]
+    [ CLKB     | D[3]         | 0        | Right    ]
+    [ CLK_FB   | E[2]         | 0        | Right    ]
+
+    [ DAT0A    | D[1]         | 1        | Left     ]
+    [ DAT1A    | E[1]         | 1        | Left     ]
+    [ DAT2A    | A[1]         | 1        | Left     ]
+    [ DAT3A    | B[1]         | 1        | Left     ]
+    [ DAT0B    | D[4]         | 1        | Right    ]
+    [ DAT1B    | E[4]         | 1        | Right    ]
+    [ DAT2B    | A[4]         | 1        | Right    ]
+    [ DAT3B    | B[4]         | 1        | Right    ]
+
+  val box = BoxSymbol(self)
+  assign-symbols(0 => box, 1 => box)
+
+  val pkg = BGA(
+    num-leads = 20,
+    lead-diam = 0.23,
+    lead-numbering = Grid-Numbering(5, 4),
+    package-body = PackageBody(
+      width = 1.7 +/- 0.3
+      length = 2.1 +/- 0.3
+      height = 0.49 +/- 0.4
+      ),
+    pad-planner = Full-Matrix-Planner(
+      rows = 5,
+      columns = 4,
+      pitch = 0.4
+      )
+  )
+  assign-landpattern $ create-landpattern(pkg)
+
+public pcb-module device () :
+  port GND
+  public inst C : component()
+  net (GND C.GND[0] C.GND[1])
