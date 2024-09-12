@@ -1,0 +1,31 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/pdo-sel :
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+  import ocdb/utils/generic-components
+  import ocdb/utils/design-vars
+  import jitx-fpga/dummy
+  
+public pcb-module module :
+  pin n3v3-pri
+  pin gnd
+  pin pdo-sel
+
+  res-strap(n3v3-pri, pdo-sel, 97.6e3)
+  res-strap(pdo-sel, gnd, 100.0e3)
+  val r = res-strap(n3v3-pri, pdo-sel, 59.0e3)
+  instance-status(r) :
+    bom-status = MarkedDNP
+
+  ;Explicit net names.
+  let :
+    net pdo-sel (pdo-sel)
+    
+    ;Net symbols
+    net n3v3-pri (n3v3-pri)
+    net gnd (gnd)
+    symbol(n3v3-pri) = ocdb/utils/symbols/supply-sym
+    symbol(gnd) = ocdb/utils/symbols/ground-sym
+

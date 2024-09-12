@@ -1,0 +1,73 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/volt-meter :
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+  import ocdb/utils/generic-components
+  import ocdb/utils/design-vars
+  import jitx-fpga/dummy
+  
+public pcb-module module :
+  pin n3v3-pri
+  pin vbus-compare
+  pin gnd
+  pin min-15v
+
+  defn gen-comparator (numer:Double, denom:Double,
+                       minus:JITXObject|Symbol, plus:JITXObject|Symbol) -> JITXObject :
+    inst cmp : dummy(
+                 "LM2091"
+                 [["p-", Left]
+                  ["p+", Left]
+                  ["vcc", Up]
+                  ["gnd", Down]
+                  ["out", Right]])
+    net (gnd, cmp.gnd)
+    net (n3v3-pri, cmp.vcc)
+
+    val ref = if minus == `ref : cmp.p-
+              else if plus == `ref : cmp.p+
+              else : fatal("No reference.")
+    res-strap(n3v3-pri, ref, numer)
+    res-strap(ref, gnd, denom)
+    
+    if minus == `ref :
+      net (plus as JITXObject, cmp.p+)
+    else if plus == `ref :
+      net (minus as JITXObject, cmp.p-)
+    else :
+      fatal("No reference point.")
+      
+    cmp.out
+
+  defn add-led (p:JITXObject) :
+    ;TODO: Should be EAST0603OAD
+    inst led : gen-led-cmp(tol(2.1, 0.1), 0.02, "YELLOW", "0805")
+    net (p, led.c)
+    res-strap(n3v3-pri, led.c, 10.0e3)
+    res-strap(n3v3-pri, led.a, 1.0e3)
+
+  val out1 = gen-comparator(12.0e3, 1.8e3, vbus-compare, `ref)
+  val out2 = gen-comparator(12.0e3, 4.02e3, vbus-compare, `ref)
+  val out3 = gen-comparator(12.0e3, 8.66e3, vbus-compare, `ref)
+  val out4 = gen-comparator(12.0e3, 8.66e3, `ref, vbus-compare)
+  add-led(out1)
+  add-led(out2)
+  add-led(out3)
+
+  net (min-15v, out4)
+  res-strap(n3v3-pri, out4, 10.0e3)
+
+  ;Decoupling cap
+  cap-strap(n3v3-pri, gnd, 100.0e-9)
+
+  ;Explicit net names.
+  let :
+    net n3v3-pri (n3v3-pri)
+    net vbus-compare (vbus-compare)
+    net gnd (gnd)
+    net min-15v (min-15v)
+    symbol(n3v3-pri) = ocdb/utils/symbols/supply-sym
+    symbol(gnd) = ocdb/utils/symbols/ground-sym
+

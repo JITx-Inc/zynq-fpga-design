@@ -16,6 +16,8 @@ pcb-module main :
   inst usb-conn:jitx-fpga/usbc-power/module
   inst usb-pwr-ctrl:jitx-fpga/usbc-power-controller/module
   inst vbus-switch:jitx-fpga/vbus-sink-load-switch/module
+  inst pdo-sel:jitx-fpga/pdo-sel/module
+  inst volt-meter:jitx-fpga/volt-meter/module
   
 set-main-module(main)
 set-board(ocdb/utils/defaults/default-board(
