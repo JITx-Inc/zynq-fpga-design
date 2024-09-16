@@ -1,0 +1,44 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/min-15V-pwr-on :
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+  import ocdb/utils/generic-components
+  import ocdb/utils/design-vars
+  import jitx-fpga/dummy
+  
+public pcb-module module :
+  pin n3V3-pri
+  pin min-15V
+  pin en
+  pin gnd
+  pin pwr-en
+
+  inst and-gate : dummy(
+                    "74LVC1G08GM,115"
+                    [["B", Left]
+                     ["A", Left]
+                     ["vcc", Up]
+                     ["gnd", Down]
+                     ["Y", Right]])  
+  net (min-15V, and-gate.B)
+  res-strap(en, and-gate.A, 0.0)
+  net (pwr-en, and-gate.Y)
+  net (gnd, and-gate.gnd)
+  net (n3V3-pri, and-gate.vcc)
+  cap-strap(n3V3-pri, gnd, 100.0e-9)
+  
+  inst tp: ocdb/utils/generic-components/smd-testpoint-cmp(2.0)
+  net (tp.p, and-gate.Y)
+
+  ;Explicit net names.
+  let :
+    net n3V3-pri (n3V3-pri)
+    net min-15V (min-15V)
+    net en (en)
+    net gnd (gnd)
+    net pwr-en (pwr-en)
+    symbol(n3V3-pri) = ocdb/utils/symbols/supply-sym
+    symbol(gnd) = ocdb/utils/symbols/ground-sym
+

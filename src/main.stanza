@@ -19,6 +19,7 @@ pcb-module main :
   inst pdo-sel:jitx-fpga/pdo-sel/module
   inst volt-meter:jitx-fpga/volt-meter/module
   inst pwr-decouple:jitx-fpga/power-in-decoupling/module
+  inst min-15V-pwr-on:jitx-fpga/min-15V-pwr-on/module
   
 set-main-module(main)
 set-board(ocdb/utils/defaults/default-board(
