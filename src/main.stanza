@@ -50,6 +50,32 @@ pcb-module main :
       net pg3 ()
       res-strap(supply.power-good, pg3, 0.0)
 
+  ;1.2V supply, with supply specific connections.
+  inst supply-1V2:supply-module where :
+    pcb-module supply-module :
+      inst supply:jitx-fpga/pwr-supply/module(1.2, 40.2e3, 47.0e-12, 38.3e3)
+      net n1V8 ()
+      dnp-res-strap(n1V8, supply.en, 0.0)
+      net en3 ()
+      res-strap(en3, supply.en, 0.0)
+      net power-good ()
+      dnp-res-strap(supply.power-good, power-good, 0.0)
+      net pg3 ()
+      res-strap(supply.power-good, pg3, 0.0)
+
+  ;1.8V supply, with supply specific connections.
+  inst supply-1V8:supply-module where :
+    pcb-module supply-module :
+      inst supply:jitx-fpga/pwr-supply/module(1.8, 0.0, DNP(47.0e-12), DNP(200.0e3))
+      net en-1V8 ()
+      dnp-res-strap(en-1V8, supply.en, 0.0)
+      net en2 ()
+      res-strap(en2, supply.en, 0.0)
+      net power-good ()
+      dnp-res-strap(supply.power-good, power-good, 0.0)
+      net pg2 ()
+      res-strap(supply.power-good, pg2, 0.0)
+
 defn dnp-res-strap (a:JITXObject, b:JITXObject, value:Double) :
   inside pcb-module :
     val r = res-strap(a, b, value)
