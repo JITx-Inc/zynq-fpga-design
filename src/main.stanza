@@ -4,6 +4,9 @@ defpackage jitx-fpga/main :
   import collections
   import jitx
   import jitx/commands
+  import ocdb/utils/generic-components
+  import jitx-fpga/pwr-supply with:
+    prefix(module) => pwr-supply-
 
 pcb-module main :
   inst qspi:jitx-fpga/qspi/module
@@ -20,8 +23,41 @@ pcb-module main :
   inst volt-meter:jitx-fpga/volt-meter/module
   inst pwr-decouple:jitx-fpga/power-in-decoupling/module
   inst min-15V-pwr-on:jitx-fpga/min-15V-pwr-on/module
+
+  ;0.85V supply, with supply specific connections.
+  inst supply-0V85:supply-module where :
+    pcb-module supply-module :
+      inst supply:jitx-fpga/pwr-supply/module(0.85, 4.02e3, 470.0e-12, 9.09e3)
+      net pwr-en ()
+      res-strap(pwr-en, supply.en, 0.0)
+      net en1 ()
+      dnp-res-strap(en1, supply.en, 0.0)
+      net power-good ()
+      dnp-res-strap(supply.power-good, power-good, 0.0)
+      net pg1 ()
+      res-strap(supply.power-good, pg1, 0.0)
+
+  ;1.1V supply, with supply specific connections.
+  inst supply-1V1:supply-module where :
+    pcb-module supply-module :
+      inst supply:jitx-fpga/pwr-supply/module(1.1, 0.0, DNP(47.0e-12), DNP(200.0e3))
+      net n1V2 ()
+      dnp-res-strap(n1V2, supply.en, 0.0)
+      net en3 ()
+      res-strap(en3, supply.en, 0.0)
+      net power-good ()
+      dnp-res-strap(supply.power-good, power-good, 0.0)
+      net pg3 ()
+      res-strap(supply.power-good, pg3, 0.0)
+
+defn dnp-res-strap (a:JITXObject, b:JITXObject, value:Double) :
+  inside pcb-module :
+    val r = res-strap(a, b, value)
+    instance-status(r) :
+      bom-status = MarkedDNP
   
 set-main-module(main)
+
 set-board(ocdb/utils/defaults/default-board(
   ocdb/manufacturers/stackups/jlcpcb-jlc2313, 
   Rectangle(45.0, 30.0)))

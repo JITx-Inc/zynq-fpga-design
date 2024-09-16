@@ -1,0 +1,135 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/pwr-supply :
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+  import ocdb/utils/generic-components
+  import ocdb/utils/design-vars
+  import jitx-fpga/dummy
+
+;Do not populate marker.
+public pcb-struct jitx-fpga/pwr-supply/DNP :
+  cmp-value:Double
+
+public pcb-struct jitx-fpga/pwr-supply/Short : ()
+  
+public pcb-module module (voltage:Double,
+                          vout-res:Double|DNP|Short|False,
+                          vout-cap:Double|DNP|Short|False,
+                          vos-res:Double|DNP|Short|False) :
+  pin sink-pwr
+  pin pwr-out
+  pin en
+  pin gnd
+  pin power-good
+
+  val reg-mpn = switch(voltage) :
+    0.85 : "FS1406-0600-AS"
+    1.1 : "FS1406-1100-AS"
+    1.2 : "FS1406-0600-AS"
+    1.8 : "FS1406-1800-AS"
+    3.3 : "FS1404-3300-AS"
+    5.0 : "FS1403-5000-AS"
+    else : fatal("Unsupported voltage level.")
+
+  inst reg : dummy(
+               reg-mpn,
+               [["PVIN0", Left]
+                ["PVIN1", Left]
+                ["PVIN2", Left]
+                ["PVIN3", Left]
+                ["VIN", Left]
+                ["En", Left]
+                ["SDA", Left]
+                ["SCL", Left]
+                ["ADDR", Left]
+                ["VOUT", Right]
+                ["VOS", Right]
+                ["VSW", Right]
+                ["PG", Right]
+                ["VCC", Right]
+                ["PGND0", Right]
+                ["PGND1", Right]
+                ["AGND", Right]])
+
+  ;Sink pwr
+  net (sink-pwr, reg.PVIN0,
+                 reg.PVIN1,
+                 reg.PVIN2,
+                 reg.PVIN3)
+  cap-strap(sink-pwr, gnd, 22.0e-6)
+  cap-strap(sink-pwr, gnd, 22.0e-6)
+
+  ;VIN
+  res-strap(sink-pwr, reg.VIN, 2.7)
+  cap-strap(reg.VIN, gnd, 1.0e-6)
+
+  ;En
+  net (en, reg.En)
+
+  ;SDA/SCL
+  net (gnd, reg.SDA, reg.SCL)
+
+  ;ADDR
+  res-strap(reg.ADDR, gnd, 0.0)
+
+  ;VOUT/VOS
+  net (pwr-out, reg.VOUT)
+  res-strap?(reg.VOUT, reg.VOS, vout-res)
+  cap-strap?(reg.VOUT, reg.VOS, vout-cap)
+  res-strap?(reg.VOS, gnd, vos-res)
+
+  ;Decoupling.
+  cap-strap(reg.VOUT, gnd, 22.0e-6)
+  cap-strap(reg.VOUT, gnd, 22.0e-6)
+
+  ;VSW
+  inst tp: ocdb/utils/generic-components/smd-testpoint-cmp(2.0)
+  net (tp.p, reg.VSW)
+
+  ;PG
+  net (power-good, reg.PG)
+
+  ;VCC
+  cap-strap(reg.VCC, gnd, 2.2e-6)
+  net (gnd, reg.PGND0, reg.PGND1, reg.AGND)
+
+  ;Explicit net names.
+  let :
+    net sink-pwr (sink-pwr)
+    net pwr-out (pwr-out)
+    net gnd (gnd)
+    symbol(sink-pwr) = ocdb/utils/symbols/supply-sym
+    symbol(pwr-out) = ocdb/utils/symbols/supply-sym
+    symbol(gnd) = ocdb/utils/symbols/ground-sym
+
+;Generate a resistor following the given specification.
+defn res-strap? (a:JITXObject, b:JITXObject, value:Double|DNP|Short|False) :
+  inside pcb-module :
+    match(value) :
+      (v:Double) :
+        res-strap(a, b, v)
+      (v:DNP) :
+        val r = res-strap(a, b, cmp-value(v))
+        instance-status(r) :
+          bom-status = MarkedDNP
+      (v:Short) :
+        net (a, b)
+      (v:False) :
+        false
+
+;Generate a capacitor following the given specification.
+defn cap-strap? (a:JITXObject, b:JITXObject, value:Double|DNP|Short|False) :
+  inside pcb-module :
+    match(value) :
+      (v:Double) :
+        cap-strap(a, b, v)
+      (v:DNP) :
+        val r = cap-strap(a, b, cmp-value(v))
+        instance-status(r) :
+          bom-status = MarkedDNP
+      (v:Short) :
+        net (a, b)
+      (v:False) :
+        false
