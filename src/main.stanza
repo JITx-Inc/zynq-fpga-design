@@ -18,6 +18,7 @@ pcb-module main :
   inst vbus-switch:jitx-fpga/vbus-sink-load-switch/module
   inst pdo-sel:jitx-fpga/pdo-sel/module
   inst volt-meter:jitx-fpga/volt-meter/module
+  inst pwr-decouple:jitx-fpga/power-in-decoupling/module
   
 set-main-module(main)
 set-board(ocdb/utils/defaults/default-board(

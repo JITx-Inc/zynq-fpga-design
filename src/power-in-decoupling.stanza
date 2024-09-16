@@ -1,0 +1,45 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/power-in-decoupling :
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+  import ocdb/utils/generic-components
+  import ocdb/utils/design-vars
+  import jitx-fpga/dummy
+  
+public pcb-module module :
+  pin n3V3-pri
+  pin vdd-3V3
+  pin vdd-1V2
+  pin vdd-1V8  
+  pin gnd
+
+  ;TODO: Need 220.0 ferrite bead, not 470.0
+  inst ferrite : ocdb/components/tdk/MPZ1608/component(470.0)
+  net (n3V3-pri, ferrite.p[1])
+  net (vdd-3V3, ferrite.p[2])
+  cap-strap(vdd-3V3, gnd, 10.0e-6)
+  cap-strap(vdd-3V3, gnd, 100.0e-9)
+  cap-strap(vdd-3V3, gnd, 100.0e-9)
+
+  cap-strap(vdd-1V2, gnd, 1.0e-6)
+  
+  cap-strap(vdd-1V8, gnd, 1.0e-6)
+  
+  cap-strap(n3V3-pri, gnd, 2.2e-6)
+  cap-strap(n3V3-pri, gnd, 100.0e-9)
+
+  ;Explicit net names.
+  let :
+    net n3V3-pri (n3V3-pri)
+    net vdd-3V3 (vdd-3V3)
+    net vdd-1V2 (vdd-1V2)
+    net vdd-1V8   (vdd-1V8)
+    net gnd (gnd)
+    symbol(vdd-1V8) = ocdb/utils/symbols/supply-sym
+    symbol(vdd-1V2) = ocdb/utils/symbols/supply-sym
+    symbol(vdd-3V3) = ocdb/utils/symbols/supply-sym
+    symbol(n3V3-pri) = ocdb/utils/symbols/supply-sym
+    symbol(gnd) = ocdb/utils/symbols/ground-sym
+
