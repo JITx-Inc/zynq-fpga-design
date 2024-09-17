@@ -14,25 +14,16 @@ public pcb-bundle diff-gpio :
 public pcb-bundle ultrascale-hd-io-bank :
   port L : diff-pair[[1 through 12]]
 
-public pcb-bundle ultrascale-hp-byte-group :
-  port L : diff-pair[6]
-  port S : pin
-
 public pcb-bundle ultrascale-hp-io-bank :
-  port T : ultrascale-hp-byte-group[4]
+  port L : diff-pair[[1 through 24]]
+  port T : pin[4]
 
 public pcb-bundle ultrascale-short-hp-io-bank :
-  port L : diff-pair[2]
-  port S : pin[2]
+  port L : diff-pair[[11 through 12]]
+  port T : pin[[0 3]]
 
 public pcb-bundle ultrascale-gt-quad :
   port C : lane-pair[4]
-
-public pcb-bundle ultrascale-gt-clock :
-  port I : diff-pair[2]
-
-public pcb-bundle ultrascale-ps-gt-clock :
-  port I : diff-pair[4]
 
 public pcb-bundle ultrascale-global-clock :
   port N : pin
