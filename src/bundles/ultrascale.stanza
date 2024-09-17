@@ -33,6 +33,11 @@ public pcb-bundle ultrascale-high-density-global-clock :
   port N : pin
   port P : pin
 
+;System Monitor Dynamic Reconfiguration Port (DRP) I2C Interface
+public pcb-bundle ultrascale-sysmon-drp :
+  port sda
+  port scl
+
 public pcb-bundle ultrascale-dci-vref :
   port p : pin
 
