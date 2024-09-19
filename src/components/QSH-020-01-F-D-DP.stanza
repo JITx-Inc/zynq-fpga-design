@@ -68,6 +68,7 @@ defmethod build-silkscreen (pkg:QSH-Package, vp:VirtualLP) -> False :
     Line(0.2, [Point(7.245, -3.62), Point(10.635, -3.62), Point(10.635, 3.62), Point(7.245, 3.62)])
     ]
   add-silkscreen-outline(vp, Union(lines))
+  add-reference-designator(vp)
 
 defmethod build-pads (pkg:QSH-Package, vp:VirtualLP) -> False :
   build-data-pads(pkg, vp)
