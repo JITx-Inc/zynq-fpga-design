@@ -11,7 +11,7 @@ defpackage jitx-fpga/components/xczu1cg-sbva484 :
   import jsl/symbols/box-symbol
 
   import jitx-fpga/bundles/ultrascale
-  import jitx-fpga/bundles/ddr4
+  import jitx-fpga/bundles/lpddr4
   import jitx-fpga/landpatterns/sbva484-bga
 
 protected pcb-component component :
@@ -534,217 +534,199 @@ protected pcb-component component :
   assign-landpattern(sbva484-bga)
 
 protected pcb-module module :
-  inst comp : component
+  public inst C : component
 
   port GND : pin
-  port VCCINT : pin
-  port VCCO_PSDDR : pin
-  port VCC_PSINTFP : pin
-  port VCC_PSINTLP : pin
-  port VCCBRAM : pin
-  port VCCINT_IO : pin
-  port VCCO_65 : pin
-  port VCC_PSAUX : pin
-  port PS_MGTRAVCC : pin
-  port PS_MGTRAVTT : pin
-  port VCCAUX_IO : pin
-  port VCC_PSINTFP_DDR : pin
-  port VCC_PSPLL : pin
-  port VCCAUX : pin
-  port VCCO_44 : pin
-  port VCCO_PSIO0 : pin
-  port VCCO_PSIO1 : pin
-  port VCCO_PSIO2 : pin
-  port VCCO_PSIO3 : pin
-  port VCC_PSDDR_PLL : pin
+  port VCC_PSADC : power
+  port VCCINT : power
+  port VCCO_PSDDR : power
+  port VCC_PSINTFP : power
+  port VCC_PSINTLP : power
+  port VCCBRAM : power
+  port VCCINT_IO : power
+  port VCCO_65 : power
+  port VCC_PSAUX : power
+  port PS_MGTRAVCC : power
+  port PS_MGTRAVTT : power
+  port VCCAUX_IO : power
+  port VCC_PSINTFP_DDR : power
+  port VCC_PSPLL : power
+  port VCCAUX : power
+  port VCCO_44 : power
+  port VCCO_PSIO0 : power
+  port VCCO_PSIO1 : power
+  port VCCO_PSIO2 : power
+  port VCCO_PSIO3 : power
+  port VCC_PSDDR_PLL : power
 
-  ;Multi-pad pin nets
-  for p in pins(comp.GND) do :
+  net (GND VCCINT.V- VCCO_PSDDR.V- VCC_PSINTFP.V- VCC_PSINTLP.V-
+    VCCBRAM.V- VCCINT_IO.V- VCCO_65.V- VCC_PSAUX.V- PS_MGTRAVCC.V-
+    PS_MGTRAVTT.V- VCCAUX_IO.V- VCC_PSINTFP_DDR.V- VCC_PSPLL.V- VCCAUX.V-
+    VCCO_44.V- VCCO_PSIO0.V- VCCO_PSIO1.V- VCCO_PSIO2.V- VCCO_PSIO3.V-
+    VCC_PSDDR_PLL.V-)
+  net (C.GNDADC VCC_PSADC.V-)
+  net (C.VCC_PSADC VCC_PSADC.V+)
+  for p in pins(C.GND) do :
     net GND (GND p)
-  for p in pins(comp.VCCINT) do :
-    net (VCCINT p)
-  for p in pins(comp.VCCO_PSDDR) do :
-    net (VCCO_PSDDR p)
-  for p in pins(comp.VCC_PSINTFP) do :
-    net (VCC_PSINTFP p)
-  for p in pins(comp.VCC_PSINTLP) do :
-    net (VCC_PSINTLP p)
-  for p in pins(comp.VCCBRAM) do :
-    net (VCCBRAM p)
-  for p in pins(comp.VCCINT_IO) do :
-    net (VCCINT_IO p)
-  for p in pins(comp.VCCO_65) do :
-    net (VCCO_65 p)
-  for p in pins(comp.VCC_PSAUX) do :
-    net (VCC_PSAUX p)
-  for p in pins(comp.PS_MGTRAVCC) do :
-    net (PS_MGTRAVCC p)
-  for p in pins(comp.PS_MGTRAVTT) do :
-    net (PS_MGTRAVTT p)
-  for p in pins(comp.VCCAUX_IO) do :
-    net (VCCAUX_IO p)
-  for p in pins(comp.VCC_PSINTFP_DDR) do :
-    net (VCC_PSINTFP_DDR p)
-  for p in pins(comp.VCC_PSPLL) do :
-    net (VCC_PSPLL p)
-  for p in pins(comp.VCCAUX) do :
-    net (VCCAUX p)
-  for p in pins(comp.VCCO_44) do :
-    net (VCCO_44 p)
-  for p in pins(comp.VCCO_PSIO0) do :
-    net (VCCO_PSIO0 p)
-  for p in pins(comp.VCCO_PSIO1) do :
-    net (VCCO_PSIO1 p)
-  for p in pins(comp.VCCO_PSIO2) do :
-    net (VCCO_PSIO2 p)
-  for p in pins(comp.VCCO_PSIO3) do :
-    net (VCCO_PSIO3 p)
-  for p in pins(comp.VCC_PSDDR_PLL) do :
-    net (VCC_PSDDR_PLL p)
+  for p in pins(C.VCCINT) do :
+    net (VCCINT.V+ p)
+  for p in pins(C.VCCO_PSDDR) do :
+    net (VCCO_PSDDR.V+ p)
+  for p in pins(C.VCC_PSINTFP) do :
+    net (VCC_PSINTFP.V+ p)
+  for p in pins(C.VCC_PSINTLP) do :
+    net (VCC_PSINTLP.V+ p)
+  for p in pins(C.VCCBRAM) do :
+    net (VCCBRAM.V+ p)
+  for p in pins(C.VCCINT_IO) do :
+    net (VCCINT_IO.V+ p)
+  for p in pins(C.VCCO_65) do :
+    net (VCCO_65.V+ p)
+  for p in pins(C.VCC_PSAUX) do :
+    net (VCC_PSAUX.V+ p)
+  for p in pins(C.PS_MGTRAVCC) do :
+    net (PS_MGTRAVCC.V+ p)
+  for p in pins(C.PS_MGTRAVTT) do :
+    net (PS_MGTRAVTT.V+ p)
+  for p in pins(C.VCCAUX_IO) do :
+    net (VCCAUX_IO.V+ p)
+  for p in pins(C.VCC_PSINTFP_DDR) do :
+    net (VCC_PSINTFP_DDR.V+ p)
+  for p in pins(C.VCC_PSPLL) do :
+    net (VCC_PSPLL.V+ p)
+  for p in pins(C.VCCAUX) do :
+    net (VCCAUX.V+ p)
+  for p in pins(C.VCCO_44) do :
+    net (VCCO_44.V+ p)
+  for p in pins(C.VCCO_PSIO0) do :
+    net (VCCO_PSIO0.V+ p)
+  for p in pins(C.VCCO_PSIO1) do :
+    net (VCCO_PSIO1.V+ p)
+  for p in pins(C.VCCO_PSIO2) do :
+    net (VCCO_PSIO2.V+ p)
+  for p in pins(C.VCCO_PSIO3) do :
+    net (VCCO_PSIO3.V+ p)
+  for p in pins(C.VCC_PSDDR_PLL) do :
+    net (VCC_PSDDR_PLL.V+ p)
 
-  make-supports(comp)
+  make-supports(C)
 
 ;============================================================
 ;========================= Supports =========================
 ;============================================================
 
-defn make-supports (comp:Instance) :
-  make-clock-supports(comp)
-  make-dci-vref-supports(comp)
-  make-byte-clock-supports(comp)
-  make-pci-reset-supports(comp)
-  make-adc-supports(comp)
-  make-sysmon-drp-supports(comp)
-  make-pmbus-alert-supports(comp)
-  make-ps-ddr-supports(comp)
+defn make-supports (C:Instance) :
+  make-clock-supports(C)
+  make-dci-vref-supports(C)
+  make-byte-clock-supports(C)
+  make-pci-reset-supports(C)
+  make-adc-supports(C)
+  make-sysmon-drp-supports(C)
+  make-pmbus-alert-supports(C)
+  make-ps-ddr-supports(C)
 
-defn make-clock-supports (comp:Instance) :
+defn make-clock-supports (C:Instance) :
   inside pcb-module :
     for i in 5 through 8 do :
       supports ultrascale-high-density-global-clock :
-        ultrascale-high-density-global-clock.P => comp.IO_44.L[i].P
-        ultrascale-high-density-global-clock.N => comp.IO_44.L[i].N
+        ultrascale-high-density-global-clock.P => C.IO_44.L[i].P
+        ultrascale-high-density-global-clock.N => C.IO_44.L[i].N
     for i in 11 through 14 do :
       supports ultrascale-global-clock :
-        ultrascale-global-clock.P => comp.IO_65.L[i].P
-        ultrascale-global-clock.N => comp.IO_65.L[i].N
+        ultrascale-global-clock.P => C.IO_65.L[i].P
+        ultrascale-global-clock.N => C.IO_65.L[i].N
     for i in 11 through 12 do :
       supports ultrascale-global-clock :
-        ultrascale-global-clock.P => comp.IO_66.L[i].P
-        ultrascale-global-clock.N => comp.IO_66.L[i].N
+        ultrascale-global-clock.P => C.IO_66.L[i].P
+        ultrascale-global-clock.N => C.IO_66.L[i].N
 
-defn make-dci-vref-supports (comp:Instance) :
+defn make-dci-vref-supports (C:Instance) :
   inside pcb-module :
     supports ultrascale-dci-vref :
-      ultrascale-dci-vref.p => comp.IO_65.T[0]
+      ultrascale-dci-vref.p => C.IO_65.T[0]
     supports ultrascale-dci-vref :
-      ultrascale-dci-vref.p => comp.IO_66.T[0]
+      ultrascale-dci-vref.p => C.IO_66.T[0]
 
-defn make-byte-clock-supports (comp:Instance) :
+defn make-byte-clock-supports (C:Instance) :
   inside pcb-module :
     for i in [1 4 19 22] do :
       supports ultrascale-dedicated-byte-clock :
-        ultrascale-dedicated-byte-clock.P => comp.IO_65.L[i].P
-        ultrascale-dedicated-byte-clock.N => comp.IO_65.L[i].N
+        ultrascale-dedicated-byte-clock.P => C.IO_65.L[i].P
+        ultrascale-dedicated-byte-clock.N => C.IO_65.L[i].N
     for i in [7 10 13 16] do :
       supports ultrascale-quad-byte-clock :
-        ultrascale-quad-byte-clock.P => comp.IO_65.L[i].P
-        ultrascale-quad-byte-clock.N => comp.IO_65.L[i].N
+        ultrascale-quad-byte-clock.P => C.IO_65.L[i].P
+        ultrascale-quad-byte-clock.N => C.IO_65.L[i].N
 
-defn make-pci-reset-supports (comp:Instance) :
+defn make-pci-reset-supports (C:Instance) :
   inside pcb-module :
     supports ultrascale-pci-reset :
-      ultrascale-pci-reset.p => comp.IO_65.L[24].P
+      ultrascale-pci-reset.p => C.IO_65.L[24].P
     supports ultrascale-pci-reset :
-      ultrascale-pci-reset.p => comp.IO_65.L[24].N
+      ultrascale-pci-reset.p => C.IO_65.L[24].N
 
-defn make-adc-supports (comp:Instance) :
+defn make-adc-supports (C:Instance) :
   inside pcb-module :
     for i in cat(3 through 10, 15 through 22) do :
       supports adc-diff-pair :
-        adc-diff-pair.P => comp.IO_65.L[i].P
-        adc-diff-pair.N => comp.IO_65.L[i].N
+        adc-diff-pair.P => C.IO_65.L[i].P
+        adc-diff-pair.N => C.IO_65.L[i].N
     for i in 1 through 12 do :
       supports adc-diff-pair :
-        adc-diff-pair.P => comp.IO_44.L[i].P
-        adc-diff-pair.N => comp.IO_44.L[i].N
+        adc-diff-pair.P => C.IO_44.L[i].P
+        adc-diff-pair.N => C.IO_44.L[i].N
 
-defn make-sysmon-drp-supports (comp:Instance) :
+defn make-sysmon-drp-supports (C:Instance) :
   inside pcb-module :
     supports ultrascale-sysmon-drp :
-      ultrascale-sysmon-drp.sda => comp.IO_65.L[24].P
-      ultrascale-sysmon-drp.scl => comp.IO_65.L[23].P
+      ultrascale-sysmon-drp.sda => C.IO_65.L[24].P
+      ultrascale-sysmon-drp.scl => C.IO_65.L[23].P
 
-defn make-pmbus-alert-supports (comp:Instance) :
+defn make-pmbus-alert-supports (C:Instance) :
   inside pcb-module :
     supports ultrascale-pmbus-alert :
-      ultrascale-pmbus-alert.p => comp.IO_65.L[4].P
+      ultrascale-pmbus-alert.p => C.IO_65.L[4].P
 
-pcb-bundle dq0-pin :
-  port p : pin
 pcb-bundle dq1-pin :
-  port p : pin
-pcb-bundle dq2-pin :
   port p : pin
 pcb-bundle dq3-pin :
   port p : pin
-pcb-bundle ddr-ca-pin :
-  port p : pin
 
-defn make-ps-ddr-supports (comp:Instance) :
+defn make-ps-ddr-supports (C:Instance) :
+  make-ps-lpddr4-supports(C)
+
+defn make-ps-lpddr4-supports (C:Instance) :
+  ;LPDDR4 Rules:
+  ;- No byte lane swapping
+  ;- No bit swapping in bytes 0 and 2
   inside pcb-module :
     for i in 0 to 8 do :
-      supports dq0-pin :
-        dq0-pin.p => comp.PS_DDR_DQ[i]
       supports dq1-pin :
-        dq1-pin.p => comp.PS_DDR_DQ[i + 8]
-      supports dq2-pin :
-        dq2-pin.p => comp.PS_DDR_DQ[i + 16]
+        dq1-pin.p => C.PS_DDR_DQ[i + 8]
       supports dq3-pin :
-        dq3-pin.p => comp.PS_DDR_DQ[i + 24]
+        dq3-pin.p => C.PS_DDR_DQ[i + 24]
 
-    for i in 0 to 18 do :
-      supports ddr-ca-pin :
-        ddr-ca-pin.p => comp.PS_DDR_A[i]
-
-    supports ddr4-channel-x16 :
+    supports lpddr4-dual-x16 :
       for i in 0 to 8 do :
-        require p0:dq0-pin
-        ddr4-channel-x16.d[0].dq[i] => p0.p
+        lpddr4-dual-x16.ch[0].d[0].dq[i] => C.PS_DDR_DQ[i]
+
         require p1:dq1-pin
-        ddr4-channel-x16.d[1].dq[i] => p1.p
-      ddr4-channel-x16.d[0].dqs.P => comp.PS_DDR_DQS[0].P
-      ddr4-channel-x16.d[0].dqs.N => comp.PS_DDR_DQS[0].N
-      ddr4-channel-x16.d[1].dqs.P => comp.PS_DDR_DQS[1].P
-      ddr4-channel-x16.d[1].dqs.N => comp.PS_DDR_DQS[1].N
+        lpddr4-dual-x16.ch[0].d[1].dq[i] => p1.p
 
-      ddr4-channel-x16.cke => comp.PS_DDR_CKE[0]
-      ddr4-channel-x16.cs => comp.PS_DDR_CS_N[0]
+        lpddr4-dual-x16.ch[1].d[0].dq[i] => C.PS_DDR_DQ[i + 16]
 
-      for i in 0 to 6 do :
-        require p:ddr-ca-pin
-        ddr4-channel-x16.ca[i] => p.p
-
-      ddr4-channel-x16.dmi[0] => comp.PS_DDR_DM[0]
-      ddr4-channel-x16.dmi[1] => comp.PS_DDR_DM[1]
-
-    supports ddr4-channel-x16 :
-      for i in 0 to 8 do :
-        require p2:dq2-pin
-        ddr4-channel-x16.d[0].dq[i] => p2.p
         require p3:dq3-pin
-        ddr4-channel-x16.d[1].dq[i] => p3.p
-      ddr4-channel-x16.d[0].dqs.P => comp.PS_DDR_DQS[2].P
-      ddr4-channel-x16.d[0].dqs.N => comp.PS_DDR_DQS[2].N
-      ddr4-channel-x16.d[1].dqs.P => comp.PS_DDR_DQS[3].P
-      ddr4-channel-x16.d[1].dqs.N => comp.PS_DDR_DQS[3].N
+        lpddr4-dual-x16.ch[1].d[1].dq[i] => p3.p
 
-      ddr4-channel-x16.cke => comp.PS_DDR_CKE[1]
-      ddr4-channel-x16.cs => comp.PS_DDR_CS_N[1]
-
-      for i in 0 to 6 do :
-        require p:ddr-ca-pin
-        ddr4-channel-x16.ca[i] => p.p
-
-      ddr4-channel-x16.dmi[0] => comp.PS_DDR_DM[2]
-      ddr4-channel-x16.dmi[1] => comp.PS_DDR_DM[3]
+      for i in 0 to 2 do :
+        for j in 0 to 2 do :
+          val k = 2 * i + j
+          lpddr4-dual-x16.ch[i].d[j].dqs.P => C.PS_DDR_DQS[k].P
+          lpddr4-dual-x16.ch[i].d[j].dqs.N => C.PS_DDR_DQS[k].N
+          lpddr4-dual-x16.ch[i].d[j].dmi => C.PS_DDR_DM[k]
+        lpddr4-dual-x16.ch[i].ck.P => C.PS_DDR_CK[i].P
+        lpddr4-dual-x16.ch[i].ck.N => C.PS_DDR_CK[i].N
+        lpddr4-dual-x16.ch[i].cke => C.PS_DDR_CKE[i]
+        lpddr4-dual-x16.ch[i].cs => C.PS_DDR_CS_N[i]
+        for j in 0 to 6 do :
+          lpddr4-dual-x16.ch[i].ca[j] => C.PS_DDR_A[10 * i + j]

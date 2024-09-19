@@ -8,7 +8,7 @@ defpackage jitx-fpga/components/IS43LQ32256EA-062B2LI :
   import jsl/symbols
   import jsl/landpatterns
 
-  import jitx-fpga/bundles/ddr4
+  import jitx-fpga/bundles/lpddr4
 
 public pcb-component component () :
 
@@ -19,7 +19,7 @@ public pcb-component component () :
 
   pin-properties:
     [ pin:Ref    | pads:Ref ... | bank:Int | side:Dir | row:Int | column:Int ]
-    [ RESET_n    | T[11]        | 0        | Left     | 0       | -          ]
+    [ RESET_N    | T[11]        | 0        | Left     | 0       | -          ]
     [ CK_T_A     | J[8]         | 0        | Left     | 1       | -          ]
     [ CK_C_A     | J[9]         | 0        | Left     | 1       | -          ]
     [ CK_T_B     | P[8]         | 0        | Left     | 2       | -          ]
@@ -262,8 +262,6 @@ public pcb-module device () :
   port VDDQ : power
   port VDD1 : power
   port VDD2 : power
-  port DDR4-A : ddr4-channel-x16
-  port DDR4-B : ddr4-channel-x16
 
   net gnd (GND VDDQ.V- VDD1.V- VDD2.V-)
   for p in pins(C.VSS) do :
@@ -276,30 +274,32 @@ public pcb-module device () :
   for p in pins(C.VDD2) do :
     net (VDD2.V+ p)
 
-  ;DDR4 nets
-  for i in 0 to 8 do :
-    net (DDR4-A.d[0].dq[i] C.DQ_A[i])
-    net (DDR4-A.d[1].dq[i] C.DQ_A[i + 8])
-    net (DDR4-B.d[0].dq[i] C.DQ_B[i])
-    net (DDR4-B.d[1].dq[i] C.DQ_B[i + 8])
-  for i in 0 to 2 do :
-    net (DDR4-A.d[i].dqs.P C.DQS_A_T[i])
-    net (DDR4-A.d[i].dqs.N C.DQS_A_C[i])
-    net (DDR4-B.d[i].dqs.P C.DQS_B_T[i])
-    net (DDR4-B.d[i].dqs.N C.DQS_B_C[i])
-  net (DDR4-A.cke C.CKE_A)
-  net (DDR4-B.cke C.CKE_B)
-  net (DDR4-A.cs C.CS_A)
-  net (DDR4-B.cs C.CS_B)
-  for i in 0 to 6 do :
-    net (DDR4-A.ca[i] C.CA_A[i])
-    net (DDR4-B.ca[i] C.CA_B[i])
-  for i in 0 to 2 do :
-    net (DDR4-A.dmi[i] C.DMI_A[i])
-    net (DDR4-B.dmi[i] C.DMI_B[i])
+  supports lpddr4-dual-x16 :
+    for i in 0 to 8 do :
+      lpddr4-dual-x16.ch[0].d[0].dq[i] => C.DQ_A[i]
+      lpddr4-dual-x16.ch[0].d[1].dq[i] => C.DQ_A[i + 8]
+      lpddr4-dual-x16.ch[1].d[0].dq[i] => C.DQ_B[i]
+      lpddr4-dual-x16.ch[1].d[1].dq[i] => C.DQ_B[i + 8]
 
-  for channel in [DDR4-A, DDR4-B] do :
-    supports ddr4-channel-x16 :
-      for (bundle-pin in pins(ddr4-channel-x16),
-           channel-pin in pins(channel)) do :
-        bundle-pin => channel-pin
+    for i in 0 to 2 do :
+      lpddr4-dual-x16.ch[0].d[i].dqs.P => C.DQS_A_T[i]
+      lpddr4-dual-x16.ch[0].d[i].dqs.N => C.DQS_A_C[i]
+      lpddr4-dual-x16.ch[0].d[i].dmi => C.DMI_A[i]
+
+      lpddr4-dual-x16.ch[1].d[i].dqs.P => C.DQS_B_T[i]
+      lpddr4-dual-x16.ch[1].d[i].dqs.N => C.DQS_B_C[i]
+      lpddr4-dual-x16.ch[1].d[i].dmi => C.DMI_B[i]
+
+    lpddr4-dual-x16.ch[0].ck.P => C.CK_T_A
+    lpddr4-dual-x16.ch[0].ck.N => C.CK_C_A
+    lpddr4-dual-x16.ch[0].cke => C.CKE_A
+    lpddr4-dual-x16.ch[0].cs => C.CS_A
+
+    lpddr4-dual-x16.ch[1].ck.P => C.CK_T_B
+    lpddr4-dual-x16.ch[1].ck.N => C.CK_C_B
+    lpddr4-dual-x16.ch[1].cke => C.CKE_B
+    lpddr4-dual-x16.ch[1].cs => C.CS_B
+
+    for i in 0 to 6 do :
+      lpddr4-dual-x16.ch[0].ca[i] => C.CA_A[i]
+      lpddr4-dual-x16.ch[1].ca[i] => C.CA_B[i]
