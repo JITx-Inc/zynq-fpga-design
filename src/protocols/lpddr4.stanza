@@ -9,7 +9,7 @@ connections between microprocessors and memories in a board design.
 <DOC>
 
 #use-added-syntax(jitx)
-defpackage jitx-fpga/bundles/lpddr4 :
+defpackage jitx-fpga/protocols/lpddr4 :
   import core
   import collections
 

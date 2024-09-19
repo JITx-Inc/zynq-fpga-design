@@ -8,7 +8,7 @@ defpackage jitx-fpga/components/IS43LQ32256EA-062B2LI :
   import jsl/symbols
   import jsl/landpatterns
 
-  import jitx-fpga/bundles/lpddr4
+  import jitx-fpga/protocols/lpddr4
 
 public pcb-component component () :
 

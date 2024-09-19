@@ -11,7 +11,7 @@ defpackage jitx-fpga/components/xczu1cg-sbva484 :
   import jsl/symbols/box-symbol
 
   import jitx-fpga/bundles/ultrascale
-  import jitx-fpga/bundles/lpddr4
+  import jitx-fpga/protocols/lpddr4
   import jitx-fpga/landpatterns/sbva484-bga
 
 protected pcb-component component :

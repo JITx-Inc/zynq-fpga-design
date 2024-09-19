@@ -9,7 +9,7 @@ defpackage jitx-fpga/fpga-group :
   import ocdb/utils/generic-components
 
   import jitx-fpga/bundles/ultrascale
-  import jitx-fpga/bundles/lpddr4
+  import jitx-fpga/protocols/lpddr4
 
 public pcb-module module :
   ;Ports
