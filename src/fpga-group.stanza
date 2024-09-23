@@ -108,10 +108,10 @@ public pcb-module module :
     short-trace(rzq.p[1], fpga.C.PS_DDR_ZQ)
 
     inst j : database-part(["mpn" => "5-146280-4", "manufacturer" => "TE CONNECTIVITY"])
-    net (rail-1v1.V+ j.p[1])
-    net (gnd j.p[2])
-    net (gnd j.p[3] ram.C.ERR_A)
-    net (gnd j.p[4] ram.C.ERR_B)
+    net (j.p[1] rail-1v1.V+)
+    net (j.p[2] gnd)
+    net (j.p[3] ram.C.ERR_A)
+    net (j.p[4] ram.C.ERR_B)
     instance-status(j) :
       bom-status = MarkedDNP
 
