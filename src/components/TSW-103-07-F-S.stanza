@@ -1,0 +1,59 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/components/TSW-103-07-F-S :
+  import core
+  import jitx
+  import jitx/commands
+
+  import jsl/bundles
+  import jsl/symbols
+  import jsl/landpatterns
+  import jsl/geometry/LineRectangle
+
+public pcb-component component () :
+  description = "Square Post Terminal Strip"
+  manufacturer = "Samtec"
+  mpn = "TSW-103-07-F-S"
+  datasheet = "https://suddendocs.samtec.com/productspecs/tsw-sxx.pdf"
+  reference-prefix = "J"
+
+  property(self.rated-temperature) = min-max(-55.0, 125.0)
+
+  pin-properties:
+    [ pin:Ref | pads: Int ... | side:Dir ]
+    [ p[1]    | 1             | Left     ]
+    [ p[2]    | 2             | Left     ]
+    [ p[3]    | 3             | Left     ]
+
+  val box = BoxSymbol(self)
+  assign-symbol $ create-symbol(box)
+
+  assign-landpattern $ create-landpattern(TSW-103-07-F-S-Pkg())
+
+public defstruct TSW-103-07-F-S-Pkg <: Package :
+  package-body:PackageBody with:
+    as-method => true
+    default => PackageBody(
+      width = typ(8.12)
+      length = typ(3.04)
+      height = typ(7.874)
+    )
+with:
+  printer => true
+
+defmethod name (pkg:TSW-103-07-F-S-Pkg) -> String :
+  "TSW-103-07-F-S Header"
+
+defmethod courtyard-excess (pkg:TSW-103-07-F-S-Pkg) -> Double :
+  0.25
+
+defmethod build-silkscreen (pkg:TSW-103-07-F-S-Pkg, vp:VirtualLP) -> False :
+  add-silkscreen-outline(vp, LineRectangle(7.62, 2.54, line-width = 0.2))
+  add-pin-1-dot(vp, Point(-4.46, 0.0), line-width = 0.2)
+  add-reference-designator(vp)
+
+defmethod build-pads (pkg:TSW-103-07-F-S-Pkg, vp:VirtualLP) -> False :
+  append-all(vp, [
+    VirtualPad(#R(p)[1], pth-pad(Circle(0.51), Rectangle(1.37, 1.37)), loc(-2.54, 0.0), class = ["pad"]),
+    VirtualPad(#R(p)[2], pth-pad(1.02, 1.37), loc(0.0, 0.0), class = ["pad"]),
+    VirtualPad(#R(p)[3], pth-pad(1.02, 1.37), loc(2.54, 0.0), class = ["pad"])
+    ])

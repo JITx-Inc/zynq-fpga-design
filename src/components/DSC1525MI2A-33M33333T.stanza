@@ -46,6 +46,7 @@ defmethod courtyard-excess (pkg:VFLGA-ASA) -> Double :
 defmethod build-silkscreen (pkg:VFLGA-ASA, root:VirtualLP) -> False :
   create-silkscreen-outline(root, package-body(pkg), density-level = density-level(pkg))
   build-outline-pin-1-triangle(root)
+  add-reference-designator(root)
 
 defmethod build-pads (pkg:VFLGA-ASA, root:VirtualLP) -> False :
   val num-scheme = Std-IC-Numbering(4)

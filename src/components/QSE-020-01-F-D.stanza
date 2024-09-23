@@ -33,6 +33,24 @@ public pcb-component component (-- with-alignment-pins:True|False = true) :
 
   assign-landpattern $ create-landpattern(QSE-Package(with-alignment-pins))
 
+public pcb-module device (-- with-alignment-pins:True|False = true) :
+  public inst C : component(with-alignment-pins = with-alignment-pins)
+
+  port GND : pin
+
+  let :
+    net GND (GND)
+    for i in 0 to 4 do :
+      net (GND C.GND[i])
+
+  for i in 0 to 40 do :
+    supports gpio :
+      gpio.gpio => C.p[i + 1]
+
+;============================================================
+;========================= Package ==========================
+;============================================================
+
 public defstruct QSE-Package <: Package :
   with-alignment-pins:True|False with:
     default => true
@@ -64,6 +82,7 @@ defmethod build-silkscreen (pkg:QSE-Package, vp:VirtualLP) -> False :
     Line(0.2, [Point(8.2, 3.62), Point(10.635, 3.62), Point(10.635, -3.62), Point(8.2, -3.62)])
     ]
   add-silkscreen-outline(vp, Union(lines))
+  add-reference-designator(vp)
 
 defmethod build-pads (pkg:QSE-Package, vp:VirtualLP) -> False :
   build-data-pads(pkg, vp)
