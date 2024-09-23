@@ -616,6 +616,10 @@ protected pcb-module module :
 ;============================================================
 
 defn make-supports (C:Instance) :
+  make-ps-mio-supports(C)
+  make-gtr-supports(C)
+  make-hd-io-supports(C)
+  make-hp-io-supports(C)
   make-clock-supports(C)
   make-dci-vref-supports(C)
   make-byte-clock-supports(C)
@@ -624,6 +628,55 @@ defn make-supports (C:Instance) :
   make-sysmon-drp-supports(C)
   make-pmbus-alert-supports(C)
   make-ps-ddr-supports(C)
+
+defn make-ps-mio-supports (C:Instance) :
+  inside pcb-module :
+    for i in 0 to 78 do :
+      supports ps-mio-pin :
+        ps-mio-pin.p => C.PS_MIO[i]
+
+defn make-gtr-supports (C:Instance) :
+  inside pcb-module :
+    for i in 0 to 4 do :
+      supports ultrascale-gtr-lane :
+        ultrascale-gtr-lane.TX.P => C.PS_MGTR.C[i].TX.P
+        ultrascale-gtr-lane.TX.N => C.PS_MGTR.C[i].TX.N
+        ultrascale-gtr-lane.RX.P => C.PS_MGTR.C[i].RX.P
+        ultrascale-gtr-lane.RX.N => C.PS_MGTR.C[i].RX.N
+      supports ultrascale-gtr-clock :
+        ultrascale-gtr-clock.P => C.PS_MGTREFCLK[i].P
+        ultrascale-gtr-clock.N => C.PS_MGTREFCLK[i].N
+
+defn make-hd-io-supports (C:Instance) :
+  inside pcb-module :
+    for i in 1 through 12 do :
+      supports ultrascale-hd-diff-pair :
+        ultrascale-hd-diff-pair.P => C.IO_44.L[i].P
+        ultrascale-hd-diff-pair.N => C.IO_44.L[i].N
+      supports ultrascale-hd-pin :
+        ultrascale-hd-pin.p => C.IO_44.L[i].P
+      supports ultrascale-hd-pin :
+        ultrascale-hd-pin.p => C.IO_44.L[i].N
+
+defn make-hp-io-supports (C:Instance) :
+  inside pcb-module :
+    ;Bank 65
+    for i in 1 through 24 do :
+      supports ultrascale-hp-diff-pair :
+        ultrascale-hp-diff-pair.P => C.IO_65.L[i].P
+        ultrascale-hp-diff-pair.N => C.IO_65.L[i].N
+    for i in 0 to 4 do :
+      supports ultrascale-hp-se-pin :
+        ultrascale-hp-se-pin.p => C.IO_65.T[i]
+
+    ;Bank 66
+    for i in 11 through 12 do :
+      supports ultrascale-hp-diff-pair :
+        ultrascale-hp-diff-pair.P => C.IO_66.L[i].P
+        ultrascale-hp-diff-pair.N => C.IO_66.L[i].N
+    for i in [0 3] do :
+      supports ultrascale-hp-se-pin :
+        ultrascale-hp-se-pin.p => C.IO_66.T[i]
 
 defn make-clock-supports (C:Instance) :
   inside pcb-module :

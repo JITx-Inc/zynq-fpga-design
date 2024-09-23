@@ -8,19 +8,24 @@ defpackage jitx-fpga/fpga-group :
   import jsl/bundles
   import ocdb/utils/generic-components
 
+  import jitx-fpga/board
   import jitx-fpga/bundles/ultrascale
   import jitx-fpga/protocols/lpddr4
 
 public pcb-module module :
   ;Ports
   port gnd
-  port gnd-sysmon
+  port gnd-syzmon
   port rail-0v85 : power
   port rail-1v1 : power
   port rail-1v2 : power
   port rail-1v8 : power
+  port rail-3v3 : power
+  port rail-5v0 : power
   port vcco-hp : power
   port vcc-batt : power
+
+  port syz-i2c-3v3 : i2c
 
   ;FPGA
   inst fpga : jitx-fpga/components/xczu1cg-sbva484/module
@@ -29,18 +34,17 @@ public pcb-module module :
   inst ram : jitx-fpga/components/IS43LQ32256EA-062B2LI/device()
 
   ;Syzygy Connectors
-  inst syz-mio : jitx-fpga/components/QSH-020-01-F-D-DP/component()
-  inst syz-pl : jitx-fpga/components/QSH-020-01-F-D-DP/component()
-  inst syz-std : jitx-fpga/components/QSE-020-01-F-D/component()
+  inst syz-mio : jitx-fpga/components/QSH-020-01-F-D-DP/device()
+  inst syz-pl : jitx-fpga/components/QSH-020-01-F-D-DP/device()
+  inst syz-std : jitx-fpga/components/QSE-020-01-F-D/device()
 
 
 
   ;Ground
   let :
-    net gnd (gnd rail-0v85.V- rail-1v1.V- rail-1v2.V- rail-1v8.V- vcco-hp.V-)
-    net (gnd fpga.GND ram.GND)
-    for p in seq-cat(/pins, [syz-mio.GND syz-pl.GND syz-std.GND]) do :
-      net (gnd p)
+    net gnd (gnd rail-0v85.V- rail-1v1.V- rail-1v2.V- rail-1v8.V- rail-3v3.V-
+      rail-5v0.V- vcco-hp.V-)
+    net (gnd fpga.GND ram.GND syz-mio.GND syz-pl.GND syz-std.GND)
 
   ;Power
   let :
@@ -65,10 +69,10 @@ public pcb-module module :
 
   ;PS Sysmon ADC Power
   let :
-    net (gnd-sysmon fpga.VCC_PSADC.V-)
+    net (gnd-syzmon fpga.VCC_PSADC.V-)
 
-    bypass-cap-strap(fpga.VCC_PSADC.V+, gnd-sysmon, 470.0e-9)
-    bypass-cap-strap(fpga.VCC_PSADC.V+, gnd-sysmon, 100.0e-9)
+    bypass-cap-strap(fpga.VCC_PSADC.V+, gnd-syzmon, 470.0e-9)
+    bypass-cap-strap(fpga.VCC_PSADC.V+, gnd-syzmon, 100.0e-9)
 
     inst fb : database-part(["mpn" => "MPZ1005S221ETD25", "manufacturer" => "TDK Corp"])
     net (fb.p[1] fpga.VCC_PSADC.V+)
@@ -76,7 +80,7 @@ public pcb-module module :
     short-trace(fb.p[1] fpga.VCC_PSADC.V+)
 
     inst fb2 : database-part(["mpn" => "MPZ1005S221ETD25", "manufacturer" => "TDK Corp"])
-    net (fb2.p[1] gnd-sysmon)
+    net (fb2.p[1] gnd-syzmon)
     net (fb2.p[2] gnd)
     short-trace(fb2.p[1] fpga.VCC_PSADC.V-)
 
@@ -91,11 +95,13 @@ public pcb-module module :
     bom-status = MarkedDNP
 
 
-  ;DDR4
+
+  ;DDR4 Connection
   let :
     require fpga-lpddr4:lpddr4-dual-x16 from fpga
     require ram-lpddr4:lpddr4-dual-x16 from ram
-    net (fpga-lpddr4 ram-lpddr4)
+    connect-LPDDR4(fpga-lpddr4, ram-lpddr4, routing-struct-differential,
+      routing-struct-single-ended)
 
     net (fpga.C.PS_DDR_RAM_RST_N ram.C.RESET_N)
     val rzq = res-strap(fpga.C.PS_DDR_ZQ, gnd, 240.0)
@@ -108,3 +114,83 @@ public pcb-module module :
     net (gnd j.p[4] ram.C.ERR_B)
     instance-status(j) :
       bom-status = MarkedDNP
+
+  ;Syzygy nets
+  ;syz-mio
+  let :
+    net (syz-mio.D[0].P syz-i2c-3v3.scl)
+    net (syz-mio.D[0].N syz-i2c-3v3.sda)
+
+    net (syz-mio.D[1].P rail-5v0.V+)
+    short-trace(res-strap(syz-mio.D[1].N, gnd, 49.9e3).p[1], syz-mio.D[1].N)
+
+    require gtr-lanes:ultrascale-gtr-lane[2] from fpga
+    require gtr-clk:ultrascale-gtr-clock from fpga
+    for i in 0 to 2 do :
+      net (syz-mio.D[2 * i + 2].P gtr-lanes[i].RX.P)
+      net (syz-mio.D[2 * i + 2].N gtr-lanes[i].RX.N)
+      net (syz-mio.D[2 * i + 3].P gtr-lanes[i].TX.P)
+      net (syz-mio.D[2 * i + 3].N gtr-lanes[i].TX.N)
+    net (syz-mio.D[6].P gtr-clk.P)
+    net (syz-mio.D[6].N gtr-clk.N)
+
+    for i in 6 to 16 do :
+      require mios:ps-mio-pin[2] from fpga
+      net (syz-mio.D[i].P mios[0].p)
+      net (syz-mio.D[i].N mios[1].p)
+
+    require hd-dps:ultrascale-hd-diff-pair[2] from fpga
+    for i in 0 to 2 do :
+      net (syz-mio.D[i + 16].P hd-dps[i].P)
+      net (syz-mio.D[i + 16].N hd-dps[i].N)
+
+    net (syz-mio.D[18].N rail-1v8.V+)
+    net (syz-mio.D[19].N rail-3v3.V+)
+
+  ;syz-pl
+  let :
+    net (syz-pl.D[0].P syz-i2c-3v3.scl)
+    net (syz-pl.D[0].N syz-i2c-3v3.sda)
+
+    net (syz-pl.D[1].P rail-5v0.V+)
+    short-trace(res-strap(syz-pl.D[1].N, gnd, 4.02e3).p[1], syz-pl.D[1].N)
+
+    require gtr-lanes:ultrascale-gtr-lane[2] from fpga
+    require gtr-clk:ultrascale-gtr-clock from fpga
+    for i in 0 to 2 do :
+      net (syz-pl.D[2 * i + 2].P gtr-lanes[i].RX.P)
+      net (syz-pl.D[2 * i + 2].N gtr-lanes[i].RX.N)
+      net (syz-pl.D[2 * i + 3].P gtr-lanes[i].TX.P)
+      net (syz-pl.D[2 * i + 3].N gtr-lanes[i].TX.N)
+    net (syz-pl.D[6].P gtr-clk.P)
+    net (syz-pl.D[6].N gtr-clk.N)
+
+    for i in 7 to 18 do :
+      require hp-dp:ultrascale-hp-diff-pair from fpga
+      net (syz-pl.D[i].P hp-dp.P)
+      net (syz-pl.D[i].N hp-dp.N)
+
+    net (syz-pl.D[18].N vcco-hp.V+)
+    net (syz-pl.D[19].N rail-3v3.V+)
+
+  ;sys-std
+  let :
+    net (syz-std.C.p[1] syz-i2c-3v3.scl)
+    net (syz-std.C.p[3] syz-i2c-3v3.sda)
+
+    net (syz-std.C.p[2] rail-5v0.V+)
+    short-trace(res-strap(syz-std.C.p[4], gnd, 2.0e3).p[1], syz-std.C.p[4])
+
+    for i in 0 to 16 do :
+      val base = 2 * i + 5 - (i % 2)
+      if i == 13 :
+        require hp-ses:ultrascale-hp-se-pin[2] from fpga
+        net (syz-std.C.p[base] hp-ses[0].p)
+        net (syz-std.C.p[base + 2] hp-ses[1].p)
+      else :
+        require hp-dp:ultrascale-hp-diff-pair from fpga
+        net (syz-std.C.p[base] hp-dp.P)
+        net (syz-std.C.p[base + 2] hp-dp.N)
+
+    net (syz-std.C.p[18] vcco-hp.V+)
+    net (syz-std.C.p[19] rail-3v3.V+)

@@ -11,8 +11,20 @@ defpackage jitx-fpga/bundles/ultrascale :
 public pcb-bundle diff-gpio :
   port diff-gpio : diff-pair
 
+public pcb-bundle ps-mio-pin :
+  port p : pin
+
 public pcb-bundle ultrascale-hd-io-bank :
   port L : diff-pair[[1 through 12]]
+
+public pcb-bundle ultrascale-hd-pin :
+  name = "Ultrascale High Density General I/O Pin"
+  port p : pin
+
+public pcb-bundle ultrascale-hd-diff-pair :
+  name = "Ultrascale High Density I/O Differential Pair"
+  port P : pin
+  port N : pin
 
 public pcb-bundle ultrascale-hp-io-bank :
   port L : diff-pair[[1 through 24]]
@@ -21,6 +33,25 @@ public pcb-bundle ultrascale-hp-io-bank :
 public pcb-bundle ultrascale-short-hp-io-bank :
   port L : diff-pair[[11 through 12]]
   port T : pin[[0 3]]
+
+public pcb-bundle ultrascale-hp-se-pin :
+  name = "Ultrascale High Performance Single-Ended Pin"
+  port p : pin
+
+public pcb-bundle ultrascale-hp-diff-pair :
+  name = "Ultrascale High Performance I/O Differential Pair"
+  port P : pin
+  port N : pin
+
+public pcb-bundle ultrascale-gtr-lane :
+  name = "Ultrascale GTR Lane"
+  port TX : diff-pair
+  port RX : diff-pair
+
+public pcb-bundle ultrascale-gtr-clock :
+  name = "Ultrascale GTR Clock"
+  port P : pin
+  port N : pin
 
 public pcb-bundle ultrascale-gt-quad :
   port C : lane-pair[4]

@@ -37,6 +37,31 @@ public pcb-component component (-- with-alignment-pins:True|False = true) :
 
   assign-landpattern $ create-landpattern(QSH-Package(with-alignment-pins))
 
+public pcb-module device (-- with-alignment-pins:True|False = true) :
+  public inst C : component(with-alignment-pins = with-alignment-pins)
+
+  port GND : pin
+  port D : diff-pair[20]
+
+  let:
+    net GND (GND)
+    for i in 0 to 4 do :
+      net (GND C.GND[i])
+
+  for i in 0 to 20 do :
+    net (D[i] C.D[i])
+    supports diff-pair :
+      diff-pair.P => C.D[i].P
+      diff-pair.N => C.D[i].N
+    supports gpio :
+      gpio.gpio => C.D[i].P
+    supports gpio :
+      gpio.gpio => C.D[i].N
+
+;============================================================
+;========================= Package ==========================
+;============================================================
+
 public defstruct QSH-Package <: Package :
   with-alignment-pins:True|False with:
     default => true
