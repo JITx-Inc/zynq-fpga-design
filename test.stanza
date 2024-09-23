@@ -1,0 +1,45 @@
+#use-added-syntax(jitx)
+defpackage test :
+  import core
+  import jitx
+  import jitx/commands
+
+  import jsl/bundles
+
+  import ocdb/utils/defaults
+
+  import jitx-fpga/board
+  import jitx-fpga/protocols/lpddr4
+
+public pcb-module test-module () :
+  ; inst U1 : jitx-fpga/components/IS43LQ32256EA-062B2LI/device()
+  ; inst U2 : jitx-fpga/components/IS43LQ32256EA-062B2LI/device()
+  ; require C1:ddr4-channel-x16 from U1
+  ; require C2:ddr4-channel-x16 from U2
+  ; for p in pins(U1.C) do :
+  ;   val p2 = dot(U2, remove-base(ref(p), ref(U2)))
+  ;   net (p p2)
+  ; net (U1.DDR4-A U2.DDR4-A)
+  ; net (U1.DDR4-B U2.DDR4-B)
+  ; net (C1 C2)
+
+
+  ; inst J1 : jitx-fpga/components/QSH-020-01-F-D-DP/component()
+  ; inst J2 : jitx-fpga/components/QSH-020-01-F-D-DP/component(with-alignment-pins = false)
+  ; inst J1 : jitx-fpga/components/QSE-020-01-F-D/component()
+  ; inst J2 : jitx-fpga/components/QSE-020-01-F-D/component(with-alignment-pins = false)
+  ; for p in pins(J1) do :
+  ;   val p2 = dot(J2, remove-base(ref(p), ref(J1)))
+  ;   net (p p2)
+
+  inst F : jitx-fpga/fpga-group/module
+
+
+set-current-design("test")
+set-paper(ANSI-E)
+set-use-layout-sketch()
+setup-board()
+set-main-module(test-module())
+
+view-board()
+view-schematic()
