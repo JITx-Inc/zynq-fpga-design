@@ -274,32 +274,40 @@ public pcb-module device () :
   for p in pins(C.VDD2) do :
     net (VDD2.V+ p)
 
-  supports lpddr4-dual-x16 :
+  ;Channel A
+  supports lpddr4-x16 :
     for i in 0 to 8 do :
-      lpddr4-dual-x16.ch[0].d[0].dq[i] => C.DQ_A[i]
-      lpddr4-dual-x16.ch[0].d[1].dq[i] => C.DQ_A[i + 8]
-      lpddr4-dual-x16.ch[1].d[0].dq[i] => C.DQ_B[i]
-      lpddr4-dual-x16.ch[1].d[1].dq[i] => C.DQ_B[i + 8]
-
+      lpddr4-x16.d[0].dq[i] => C.DQ_A[i]
+      lpddr4-x16.d[1].dq[i] => C.DQ_A[i + 8]
     for i in 0 to 2 do :
-      lpddr4-dual-x16.ch[0].d[i].dqs.P => C.DQS_A_T[i]
-      lpddr4-dual-x16.ch[0].d[i].dqs.N => C.DQS_A_C[i]
-      lpddr4-dual-x16.ch[0].d[i].dmi => C.DMI_A[i]
-
-      lpddr4-dual-x16.ch[1].d[i].dqs.P => C.DQS_B_T[i]
-      lpddr4-dual-x16.ch[1].d[i].dqs.N => C.DQS_B_C[i]
-      lpddr4-dual-x16.ch[1].d[i].dmi => C.DMI_B[i]
-
-    lpddr4-dual-x16.ch[0].ck.P => C.CK_T_A
-    lpddr4-dual-x16.ch[0].ck.N => C.CK_C_A
-    lpddr4-dual-x16.ch[0].cke => C.CKE_A
-    lpddr4-dual-x16.ch[0].cs => C.CS_A
-
-    lpddr4-dual-x16.ch[1].ck.P => C.CK_T_B
-    lpddr4-dual-x16.ch[1].ck.N => C.CK_C_B
-    lpddr4-dual-x16.ch[1].cke => C.CKE_B
-    lpddr4-dual-x16.ch[1].cs => C.CS_B
-
+      lpddr4-x16.d[i].dqs.P => C.DQS_A_T[i]
+      lpddr4-x16.d[i].dqs.N => C.DQS_A_C[i]
+      lpddr4-x16.d[i].dmi => C.DMI_A[i]
+    lpddr4-x16.ck.P => C.CK_T_A
+    lpddr4-x16.ck.N => C.CK_C_A
+    lpddr4-x16.cke => C.CKE_A
+    lpddr4-x16.cs => C.CS_A
     for i in 0 to 6 do :
-      lpddr4-dual-x16.ch[0].ca[i] => C.CA_A[i]
-      lpddr4-dual-x16.ch[1].ca[i] => C.CA_B[i]
+      lpddr4-x16.ca[i] => C.CA_A[i]
+
+  ;Channel B
+  supports lpddr4-x16 :
+    for i in 0 to 8 do :
+      lpddr4-x16.d[0].dq[i] => C.DQ_B[i]
+      lpddr4-x16.d[1].dq[i] => C.DQ_B[i + 8]
+    for i in 0 to 2 do :
+      lpddr4-x16.d[i].dqs.P => C.DQS_B_T[i]
+      lpddr4-x16.d[i].dqs.N => C.DQS_B_C[i]
+      lpddr4-x16.d[i].dmi => C.DMI_B[i]
+    lpddr4-x16.ck.P => C.CK_T_B
+    lpddr4-x16.ck.N => C.CK_C_B
+    lpddr4-x16.cke => C.CKE_B
+    lpddr4-x16.cs => C.CS_B
+    for i in 0 to 6 do :
+      lpddr4-x16.ca[i] => C.CA_B[i]
+
+  supports lpddr4-dual-x16 :
+    require channels:lpddr4-x16[2]
+    for i in 0 to 2 do :
+      for (p1 in pins(lpddr4-dual-x16.ch[i]), p2 in pins(channels[i])) do :
+        p1 => p2

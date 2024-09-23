@@ -759,27 +759,42 @@ defn make-ps-lpddr4-supports (C:Instance) :
       supports dq3-pin :
         dq3-pin.p => C.PS_DDR_DQ[i + 24]
 
-    supports lpddr4-dual-x16 :
+    ;Channel 0
+    supports lpddr4-x16 :
       for i in 0 to 8 do :
-        lpddr4-dual-x16.ch[0].d[0].dq[i] => C.PS_DDR_DQ[i]
-
+        lpddr4-x16.d[0].dq[i] => C.PS_DDR_DQ[i]
         require p1:dq1-pin
-        lpddr4-dual-x16.ch[0].d[1].dq[i] => p1.p
-
-        lpddr4-dual-x16.ch[1].d[0].dq[i] => C.PS_DDR_DQ[i + 16]
-
-        require p3:dq3-pin
-        lpddr4-dual-x16.ch[1].d[1].dq[i] => p3.p
-
+        lpddr4-x16.d[1].dq[i] => p1.p
       for i in 0 to 2 do :
-        for j in 0 to 2 do :
-          val k = 2 * i + j
-          lpddr4-dual-x16.ch[i].d[j].dqs.P => C.PS_DDR_DQS[k].P
-          lpddr4-dual-x16.ch[i].d[j].dqs.N => C.PS_DDR_DQS[k].N
-          lpddr4-dual-x16.ch[i].d[j].dmi => C.PS_DDR_DM[k]
-        lpddr4-dual-x16.ch[i].ck.P => C.PS_DDR_CK[i].P
-        lpddr4-dual-x16.ch[i].ck.N => C.PS_DDR_CK[i].N
-        lpddr4-dual-x16.ch[i].cke => C.PS_DDR_CKE[i]
-        lpddr4-dual-x16.ch[i].cs => C.PS_DDR_CS_N[i]
-        for j in 0 to 6 do :
-          lpddr4-dual-x16.ch[i].ca[j] => C.PS_DDR_A[10 * i + j]
+        lpddr4-x16.d[i].dqs.P => C.PS_DDR_DQS[i].P
+        lpddr4-x16.d[i].dqs.N => C.PS_DDR_DQS[i].N
+        lpddr4-x16.d[i].dmi => C.PS_DDR_DM[i]
+      lpddr4-x16.ck.P => C.PS_DDR_CK[0].P
+      lpddr4-x16.ck.N => C.PS_DDR_CK[0].N
+      lpddr4-x16.cke => C.PS_DDR_CKE[0]
+      lpddr4-x16.cs => C.PS_DDR_CS_N[0]
+      for i in 0 to 6 do :
+        lpddr4-x16.ca[i] => C.PS_DDR_A[i]
+
+    ;Channel 1
+    supports lpddr4-x16 :
+      for i in 0 to 8 do :
+        lpddr4-x16.d[0].dq[i] => C.PS_DDR_DQ[i + 16]
+        require p3:dq3-pin
+        lpddr4-x16.d[1].dq[i] => p3.p
+      for i in 0 to 2 do :
+        lpddr4-x16.d[i].dqs.P => C.PS_DDR_DQS[i + 2].P
+        lpddr4-x16.d[i].dqs.N => C.PS_DDR_DQS[i + 2].N
+        lpddr4-x16.d[i].dmi => C.PS_DDR_DM[i + 2]
+      lpddr4-x16.ck.P => C.PS_DDR_CK[1].P
+      lpddr4-x16.ck.N => C.PS_DDR_CK[1].N
+      lpddr4-x16.cke => C.PS_DDR_CKE[1]
+      lpddr4-x16.cs => C.PS_DDR_CS_N[1]
+      for i in 0 to 6 do :
+        lpddr4-x16.ca[i] => C.PS_DDR_A[i + 10]
+
+    supports lpddr4-dual-x16 :
+      require channels:lpddr4-x16[2]
+      for i in 0 to 2 do :
+        for (p1 in pins(lpddr4-dual-x16.ch[i]), p2 in pins(channels[i])) do :
+          p1 => p2
