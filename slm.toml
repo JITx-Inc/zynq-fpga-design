@@ -2,4 +2,5 @@ name = "jitx-fpga"
 version = "0.1.0"
 [dependencies]
 ocdb = { git = "JITx-Inc/open-components-database", version = "3.17.0" }
-jsl = { git = "JITx-Inc/jsl", version = "0.6.0" }
+#jsl = { git = "JITx-Inc/jsl", version = "0.6.0" }
+jsl = { path = "jsl" }

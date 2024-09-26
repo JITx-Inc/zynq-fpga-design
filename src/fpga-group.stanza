@@ -6,11 +6,11 @@ defpackage jitx-fpga/fpga-group :
   import jitx/commands
 
   import jsl/bundles
+  import jsl/protocols/memory/lpddr4
   import ocdb/utils/generic-components
 
   import jitx-fpga/board
   import jitx-fpga/bundles/ultrascale
-  import jitx-fpga/protocols/lpddr4
 
 public pcb-module module :
   ;Ports
@@ -98,10 +98,29 @@ public pcb-module module :
 
   ;DDR4 Connection
   let :
-    require fpga-lpddr4:lpddr4-dual-x16 from fpga
-    require ram-lpddr4:lpddr4-dual-x16 from ram
-    connect-LPDDR4(fpga-lpddr4, ram-lpddr4, routing-struct-differential,
-      routing-struct-single-ended)
+    val x32-r2-b = lpddr4(LPDDR4-x32, LPDDR4-Rank2)
+
+    require fpga-no-cke-cs:jitx-fpga/components/xczu1cg-sbva484/lpddr4-x32-no-cke-cs from fpga
+    require ram-x32:x32-r2-b from ram
+
+    node fpga-x32:x32-r2-b
+    for i in 0 to 2 do :
+      for j in 0 to 2 do :
+        for k in 0 to 8 do :
+          net (fpga-x32.ch[i].d[j].dq[k] fpga-no-cke-cs.ch[i].d[j].dq[k])
+        net (fpga-x32.ch[i].d[j].dqs.P fpga-no-cke-cs.ch[i].d[j].dqs.P)
+        net (fpga-x32.ch[i].d[j].dqs.N fpga-no-cke-cs.ch[i].d[j].dqs.N)
+        net (fpga-x32.ch[i].d[j].dmi fpga-no-cke-cs.ch[i].d[j].dmi)
+      net (fpga-x32.ch[i].ck.P fpga-no-cke-cs.ch[i].ck.P)
+      net (fpga-x32.ch[i].ck.N fpga-no-cke-cs.ch[i].ck.N)
+      for j in 0 to 2 do :
+        net (fpga-x32.ch[i].cke[j] fpga.C.PS_DDR_CKE[j])
+        net (fpga-x32.ch[i].cs[j] fpga.C.PS_DDR_CS_N[j])
+      for j in 0 to 6 do :
+        net (fpga-x32.ch[i].ca[j] fpga-no-cke-cs.ch[i].ca[j])
+
+    connect-LPDDR4(fpga-x32, ram-x32, LPDDR4-x32, LPDDR4-Rank2,
+      routing-struct-differential, routing-struct-single-ended)
 
     net (fpga.C.PS_DDR_RAM_RST_N ram.C.RESET_N)
     val rzq = res-strap(fpga.C.PS_DDR_ZQ, gnd, 240.0)
@@ -131,8 +150,8 @@ public pcb-module module :
       net (syz-mio.D[2 * i + 2].N gtr-lanes[i].RX.N)
       net (syz-mio.D[2 * i + 3].P gtr-lanes[i].TX.P)
       net (syz-mio.D[2 * i + 3].N gtr-lanes[i].TX.N)
-    net (syz-mio.D[6].P gtr-clk.P)
-    net (syz-mio.D[6].N gtr-clk.N)
+    cap-strap(syz-mio.D[6].P, gtr-clk.P, 10.0e-9)
+    cap-strap(syz-mio.D[6].N, gtr-clk.N, 10.0e-9)
 
     for i in 6 to 16 do :
       require mios:ps-mio-pin[2] from fpga
@@ -162,8 +181,8 @@ public pcb-module module :
       net (syz-pl.D[2 * i + 2].N gtr-lanes[i].RX.N)
       net (syz-pl.D[2 * i + 3].P gtr-lanes[i].TX.P)
       net (syz-pl.D[2 * i + 3].N gtr-lanes[i].TX.N)
-    net (syz-pl.D[6].P gtr-clk.P)
-    net (syz-pl.D[6].N gtr-clk.N)
+    cap-strap(syz-pl.D[6].P, gtr-clk.P, 10.0e-9)
+    cap-strap(syz-pl.D[6].N, gtr-clk.N, 10.0e-9)
 
     for i in 7 to 18 do :
       require hp-dp:ultrascale-hp-diff-pair from fpga

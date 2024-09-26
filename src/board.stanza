@@ -16,30 +16,42 @@ pcb-material copper :
 
 pcb-material core :
   type = Dielectric
-  dielectric-coefficient = 4.26
+  dielectric-coefficient = 3.6
   name = "FR4 Core"
 
 pcb-material soldermask :
   type = Dielectric
-  dielectric-coefficient = 3.9
+  dielectric-coefficient = 3.7
   name = "Taiyo BSN4000"
 
 pcb-material prepreg :
   type = Dielectric
-  dielectric-coefficient = 4.05
+  dielectric-coefficient = 3.5
   name = "FR4 Prepreg"
 
 public pcb-stackup fpga-stackup :
-  name = "JLCPCB 4-layer 1.6mm"
-  stack(0.019, soldermask)
-  stack(0.035, copper)
-  stack(0.1, prepreg)
-  stack(0.0175, copper)
-  stack(1.2650, core)
-  stack(0.0175, copper)
-  stack(0.1, prepreg)
-  stack(0.035, copper)
-  stack(0.019, soldermask)
+  name = "Intel 10-layer 0.032in"
+  stack(0.013, soldermask)
+  stack(0.030, copper    )
+  stack(0.060, prepreg   )
+  stack(0.025, copper    )
+  stack(0.060, prepreg   )
+  stack(0.015, copper    )
+  stack(0.060, prepreg   )
+  stack(0.025, copper    )
+  stack(0.060, prepreg   )
+  stack(0.015, copper    )
+  stack(0.070, core      )
+  stack(0.015, copper    )
+  stack(0.060, prepreg   )
+  stack(0.025, copper    )
+  stack(0.060, prepreg   )
+  stack(0.025, copper    )
+  stack(0.060, prepreg   )
+  stack(0.025, copper    )
+  stack(0.060, prepreg   )
+  stack(0.030, copper    )
+  stack(0.013, soldermask)
 
 public pcb-via uVia :
   name = "uVia"
@@ -49,10 +61,6 @@ public pcb-via uVia :
   hole-diameter = 0.100
   type = LaserDrill
   via-in-pad = true
-
-;============================================================
-;========================= Routing ==========================
-;============================================================
 
 public pcb-rules fpga-board-rules :
   min-copper-width             = 0.050
@@ -74,6 +82,10 @@ public pcb-rules fpga-board-rules :
   min-soldermask-bridge        = 0.102
   min-hole-to-hole             = 0.254
   min-pth-pin-solder-clearance = 3.000
+
+;============================================================
+;========================= Routing ==========================
+;============================================================
 
 public pcb-routing-structure routing-struct-single-ended :
   name = "50 Ohm single-ended"

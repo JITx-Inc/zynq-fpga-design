@@ -7,8 +7,7 @@ defpackage jitx-fpga/components/IS43LQ32256EA-062B2LI :
   import jsl/bundles
   import jsl/symbols
   import jsl/landpatterns
-
-  import jitx-fpga/protocols/lpddr4
+  import jsl/protocols/memory/lpddr4
 
 public pcb-component component () :
 
@@ -275,39 +274,45 @@ public pcb-module device () :
     net (VDD2.V+ p)
 
   ;Channel A
-  supports lpddr4-x16 :
+  val x16-r2-b = lpddr4-x16(LPDDR4-Rank2)
+  supports x16-r2-b :
     for i in 0 to 8 do :
-      lpddr4-x16.d[0].dq[i] => C.DQ_A[i]
-      lpddr4-x16.d[1].dq[i] => C.DQ_A[i + 8]
+      x16-r2-b.d[0].dq[i] => C.DQ_A[i]
+      x16-r2-b.d[1].dq[i] => C.DQ_A[i + 8]
     for i in 0 to 2 do :
-      lpddr4-x16.d[i].dqs.P => C.DQS_A_T[i]
-      lpddr4-x16.d[i].dqs.N => C.DQS_A_C[i]
-      lpddr4-x16.d[i].dmi => C.DMI_A[i]
-    lpddr4-x16.ck.P => C.CK_T_A
-    lpddr4-x16.ck.N => C.CK_C_A
-    lpddr4-x16.cke => C.CKE_A
-    lpddr4-x16.cs => C.CS_A
+      x16-r2-b.d[i].dqs.P => C.DQS_A_T[i]
+      x16-r2-b.d[i].dqs.N => C.DQS_A_C[i]
+      x16-r2-b.d[i].dmi => C.DMI_A[i]
+    x16-r2-b.ck.P => C.CK_T_A
+    x16-r2-b.ck.N => C.CK_C_A
+    x16-r2-b.cke[0] => C.CKE_A
+    x16-r2-b.cke[1] => C.NC[8] ;connected for compatibility with rank 2 ram
+    x16-r2-b.cs[0] => C.CS_A
+    x16-r2-b.cs[1] => C.NC[7] ;connected for compatibility with rank 2 ram
     for i in 0 to 6 do :
-      lpddr4-x16.ca[i] => C.CA_A[i]
+      x16-r2-b.ca[i] => C.CA_A[i]
 
   ;Channel B
-  supports lpddr4-x16 :
+  supports x16-r2-b :
     for i in 0 to 8 do :
-      lpddr4-x16.d[0].dq[i] => C.DQ_B[i]
-      lpddr4-x16.d[1].dq[i] => C.DQ_B[i + 8]
+      x16-r2-b.d[0].dq[i] => C.DQ_B[i]
+      x16-r2-b.d[1].dq[i] => C.DQ_B[i + 8]
     for i in 0 to 2 do :
-      lpddr4-x16.d[i].dqs.P => C.DQS_B_T[i]
-      lpddr4-x16.d[i].dqs.N => C.DQS_B_C[i]
-      lpddr4-x16.d[i].dmi => C.DMI_B[i]
-    lpddr4-x16.ck.P => C.CK_T_B
-    lpddr4-x16.ck.N => C.CK_C_B
-    lpddr4-x16.cke => C.CKE_B
-    lpddr4-x16.cs => C.CS_B
+      x16-r2-b.d[i].dqs.P => C.DQS_B_T[i]
+      x16-r2-b.d[i].dqs.N => C.DQS_B_C[i]
+      x16-r2-b.d[i].dmi => C.DMI_B[i]
+    x16-r2-b.ck.P => C.CK_T_B
+    x16-r2-b.ck.N => C.CK_C_B
+    x16-r2-b.cke[0] => C.CKE_B
+    x16-r2-b.cke[1] => C.NC[13] ;connected for compatibility with rank 2 ram
+    x16-r2-b.cs[0] => C.CS_B
+    x16-r2-b.cs[1] => C.NC[14] ;connected for compatibility with rank 2 ram
     for i in 0 to 6 do :
-      lpddr4-x16.ca[i] => C.CA_B[i]
+      x16-r2-b.ca[i] => C.CA_B[i]
 
-  supports lpddr4-dual-x16 :
-    require channels:lpddr4-x16[2]
+  val x32-r2-b = lpddr4(LPDDR4-x32, LPDDR4-Rank2)
+  supports x32-r2-b :
+    require channels:x16-r2-b[2]
     for i in 0 to 2 do :
-      for (p1 in pins(lpddr4-dual-x16.ch[i]), p2 in pins(channels[i])) do :
+      for (p1 in pins(x32-r2-b.ch[i]), p2 in pins(channels[i])) do :
         p1 => p2
