@@ -6,6 +6,7 @@ defpackage jitx-fpga/fpga-group :
   import jitx/commands
 
   import jsl/bundles
+  import jsl/si/helpers
   import jsl/protocols/memory/lpddr4
   import ocdb/utils/generic-components
 
@@ -141,15 +142,16 @@ public pcb-module module :
     net (syz-mio.D[0].N syz-i2c-3v3.sda)
 
     net (syz-mio.D[1].P rail-5v0.V+)
-    short-trace(res-strap(syz-mio.D[1].N, gnd, 49.9e3).p[1], syz-mio.D[1].N)
+    val gnd-strap-res = res-strap(syz-mio.D[1].N, gnd, 49.9e3)
+    short-trace(gnd-strap-res.p[1], syz-mio.D[1].N)
 
     require gtr-lanes:ultrascale-gtr-lane[2] from fpga
     require gtr-clk:ultrascale-gtr-clock from fpga
     for i in 0 to 2 do :
-      net (syz-mio.D[2 * i + 2].P gtr-lanes[i].RX.P)
-      net (syz-mio.D[2 * i + 2].N gtr-lanes[i].RX.N)
-      net (syz-mio.D[2 * i + 3].P gtr-lanes[i].TX.P)
-      net (syz-mio.D[2 * i + 3].N gtr-lanes[i].TX.N)
+      topo-net(syz-mio.D[2 * i + 2].P, gtr-lanes[i].RX.P)
+      topo-net(syz-mio.D[2 * i + 2].N, gtr-lanes[i].RX.N)
+      topo-net(syz-mio.D[2 * i + 3].P, gtr-lanes[i].TX.P)
+      topo-net(syz-mio.D[2 * i + 3].N, gtr-lanes[i].TX.N)
     cap-strap(syz-mio.D[6].P, gtr-clk.P, 10.0e-9)
     cap-strap(syz-mio.D[6].N, gtr-clk.N, 10.0e-9)
 
@@ -172,15 +174,16 @@ public pcb-module module :
     net (syz-pl.D[0].N syz-i2c-3v3.sda)
 
     net (syz-pl.D[1].P rail-5v0.V+)
-    short-trace(res-strap(syz-pl.D[1].N, gnd, 4.02e3).p[1], syz-pl.D[1].N)
+    val gnd-strap-res = res-strap(syz-pl.D[1].N, gnd, 4.02e3)
+    short-trace(gnd-strap-res.p[1], syz-pl.D[1].N)
 
     require gtr-lanes:ultrascale-gtr-lane[2] from fpga
     require gtr-clk:ultrascale-gtr-clock from fpga
     for i in 0 to 2 do :
-      net (syz-pl.D[2 * i + 2].P gtr-lanes[i].RX.P)
-      net (syz-pl.D[2 * i + 2].N gtr-lanes[i].RX.N)
-      net (syz-pl.D[2 * i + 3].P gtr-lanes[i].TX.P)
-      net (syz-pl.D[2 * i + 3].N gtr-lanes[i].TX.N)
+      topo-net(syz-pl.D[2 * i + 2].P, gtr-lanes[i].RX.P)
+      topo-net(syz-pl.D[2 * i + 2].N, gtr-lanes[i].RX.N)
+      topo-net(syz-pl.D[2 * i + 3].P, gtr-lanes[i].TX.P)
+      topo-net(syz-pl.D[2 * i + 3].N, gtr-lanes[i].TX.N)
     cap-strap(syz-pl.D[6].P, gtr-clk.P, 10.0e-9)
     cap-strap(syz-pl.D[6].N, gtr-clk.N, 10.0e-9)
 
