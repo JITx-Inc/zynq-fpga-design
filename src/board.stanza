@@ -2,125 +2,115 @@
 defpackage jitx-fpga/board :
   import core
   import collections
-
   import jitx
   import jitx/commands
 
-;============================================================
-;========================= Stackup ==========================
-;============================================================
-
+;==== Materials ================================================================
 pcb-material copper :
   type = Conductor
   name = "Copper"
 
-pcb-material core :
+pcb-material polyimide-core :
   type = Dielectric
-  dielectric-coefficient = 3.6
-  name = "FR4 Core"
+  dielectric-coefficient = 3.3
+  name = "Polyimide Core"
 
-pcb-material soldermask :
+pcb-material polyimide-cover :
   type = Dielectric
-  dielectric-coefficient = 3.7
+  dielectric-coefficient = 2.9
   name = "Taiyo BSN4000"
 
-pcb-material prepreg :
+pcb-material adhesive :
   type = Dielectric
-  dielectric-coefficient = 3.5
-  name = "FR4 Prepreg"
+  dielectric-coefficient = 2.9
+  name = "Taiyo BSN4000"
 
-public pcb-stackup fpga-stackup :
-  name = "Intel 10-layer 0.032in"
-  stack(0.013, soldermask)
-  stack(0.030, copper    )
-  stack(0.060, prepreg   )
-  stack(0.025, copper    )
-  stack(0.060, prepreg   )
-  stack(0.015, copper    )
-  stack(0.060, prepreg   )
-  stack(0.025, copper    )
-  stack(0.060, prepreg   )
-  stack(0.015, copper    )
-  stack(0.070, core      )
-  stack(0.015, copper    )
-  stack(0.060, prepreg   )
-  stack(0.025, copper    )
-  stack(0.060, prepreg   )
-  stack(0.025, copper    )
-  stack(0.060, prepreg   )
-  stack(0.025, copper    )
-  stack(0.060, prepreg   )
-  stack(0.030, copper    )
-  stack(0.013, soldermask)
-
-public pcb-via uVia :
-  name = "uVia"
-  start = LayerIndex(0, Top)
-  stop = LayerIndex(0, Bottom)
-  diameter = 0.200
-  hole-diameter = 0.100
-  type = LaserDrill
-  via-in-pad = true
-
-public pcb-rules fpga-board-rules :
-  min-copper-width             = 0.050
-  min-copper-copper-space      = 0.075
-  min-copper-hole-space        = 0.100
-  min-copper-edge-space        = 0.254
-  min-annular-ring             = 0.050
+; https://jlcpcb.com/blog/flex-pcb-available-at-jlcpcb-from-special-offer
+public pcb-rules jlcpcb-flex-rules :
+  min-copper-width             = 0.080
+  min-copper-copper-space      = 0.080
+  min-copper-hole-space        = 0.200
+  min-copper-edge-space        = 0.200
+  min-annular-ring             = 0.100
   min-drill-diameter           = 0.100
   min-silkscreen-width         = 0.100
   min-pitch-leaded             = 0.350
   min-pitch-bga                = 0.350
-  max-board-width              = 406.4
-  max-board-height             = 558.8
-  min-silk-solder-mask-space   = 0.050
-  min-silkscreen-text-height   = 0.380
+  max-board-width              = 234.0
+  max-board-height             = 490.0
+  min-silk-solder-mask-space   = 0.150
+  min-silkscreen-text-height   = 0.700
   solder-mask-registration     = 0.050
   min-th-pad-expand-outer      = 0.050
   min-soldermask-opening       = 0.152
-  min-soldermask-bridge        = 0.102
+  min-soldermask-bridge        = 0.300
   min-hole-to-hole             = 0.254
   min-pth-pin-solder-clearance = 3.000
 
-;============================================================
-;========================= Routing ==========================
-;============================================================
+public pcb-stackup lpddr4-flex-stackup :
+  name = "JLCPCB 2-layer Flex 0.104mm"
+  stack(0.0125, polyimide-cover)
+  stack(0.0150, adhesive       )
+  stack(0.0120, copper         )
+  stack(0.0250, polyimide-core )
+  stack(0.0120, copper         )
+  stack(0.0150, adhesive       )
+  stack(0.0125, polyimide-cover)
+
+public pcb-via gen-thVia (via-start:LayerIndex via-stop:LayerIndex via-name:String) :
+  name = via-name
+  start = via-start
+  stop = via-stop
+  diameter = 0.400
+  hole-diameter = 0.200
+  type = LaserDrill
 
 public pcb-routing-structure routing-struct-single-ended :
   name = "50 Ohm single-ended"
-  for i in 0 to 4 do :
-    layer-constraints(LayerIndex(i)) :
-      trace-width = 0.050     ; mm
-      clearance = 0.100       ; mm
-      velocity = 0.19e12      ; mm/s
-      insertion-loss = 0.008  ; db/mm @ 1GHz
-      neck-down = NeckDown(0.075 0.075 false false)
+  layer-constraints(Top) :
+    trace-width = 0.080     ; mm
+    clearance = 0.080       ; mm
+    velocity = 0.19e12      ; mm/s
+    insertion-loss = 0.008  ; db/mm @ 1GHz
+    neck-down = NeckDown(0.075 0.075 false false)
+
+  layer-constraints(Bottom) :
+    trace-width = 0.080     ; mm
+    clearance = 0.080       ; mm
+    velocity = 0.19e12      ; mm/s
+    insertion-loss = 0.008  ; db/mm @ 1GHz
+    neck-down = NeckDown(0.075 0.075 false false)
 
 public pcb-differential-routing-structure routing-struct-differential :
   name = "100 Ohm common-mode impedance"
-  for i in 0 to 4 do :
-    layer-constraints(LayerIndex(i)) :
-      trace-width = 0.050     ; mm
-      pair-spacing = 0.100    ; mm
-      clearance = 0.100       ; mm
-      velocity = 0.19e12      ; mm/s
-      insertion-loss = 0.008  ; db/mm @ 1GHz
-      neck-down = DifferentialNeckDown(0.080 0.080 0.100 false false)
+  layer-constraints(Top) :
+    trace-width = 0.080     ; mm
+    pair-spacing = 0.080    ; mm
+    clearance = 0.080       ; mm
+    velocity = 0.19e12      ; mm/s
+    insertion-loss = 0.008  ; db/mm @ 1GHz
+
+  layer-constraints(Bottom) :
+    trace-width = 0.080     ; mm
+    pair-spacing = 0.080    ; mm
+    clearance = 0.080       ; mm
+    velocity = 0.19e12      ; mm/s
+    insertion-loss = 0.008  ; db/mm @ 1GHz
+    neck-down = DifferentialNeckDown(0.080 0.080 0.080 false false)
+
   uncoupled-region = routing-struct-single-ended
 
-;============================================================
-;========================== Board ===========================
-;============================================================
+; Define the shape/size of the board
+public val board-shape = RoundedRectangle(30.0, 50.0, 0.25)
 
-public val board-shape = RoundedRectangle(135.0, 75.0, 0.25)
-
-public pcb-board fpga-board (outline:Shape) :
-  stackup = fpga-stackup
+; Creates a pcb-board with default stackup given the number of layers and board outline.
+public pcb-board flex-board (outline:Shape) :
+  stackup = lpddr4-flex-stackup
   boundary = outline
   signal-boundary = outline
-  vias = [uVia]
+  vias = [gen-thVia(LayerIndex(0,Top), LayerIndex(0,Bottom) "Via-TH")]
 
+; Setup the board
 public defn setup-board () :
-  set-board(fpga-board(board-shape))
-  set-rules(fpga-board-rules)
+  set-board(flex-board(board-shape))
+  set-rules(jlcpcb-flex-rules)
