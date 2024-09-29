@@ -520,6 +520,9 @@ protected pcb-component component :
     [ VCCO_PSDDR[5]      | Y[22]        | VCCO       | Left     | 504             ]
     [ VCCO_PSDDR[6]      | AB[18]       | VCCO       | Left     | 504             ]
 
+  for p in pins(self) do :
+    pin-model(p) = PinModel(typ(0.0), typ(0.0))
+
   val box = BoxSymbol(self)
   val bank-names = [
     `BANK_0
