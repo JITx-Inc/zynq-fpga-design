@@ -229,6 +229,9 @@ public pcb-component component () :
     [ NC[18]     | AB[2]        | 5        | Left     | -       | -          ]
     [ NC[19]     | AB[12]       | 5        | Left     | -       | -          ]
 
+  for p in pins(self) do :
+    pin-model(p) = PinModel(typ(0.0), typ(0.0))
+
   val box = BoxSymbol(self)
   set-grid(box, [3, 1], 0)
   set-grid(box, [4, 1], 1)
