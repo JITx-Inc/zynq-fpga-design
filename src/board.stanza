@@ -101,7 +101,7 @@ public pcb-differential-routing-structure routing-struct-differential :
   uncoupled-region = routing-struct-single-ended
 
 ; Define the shape/size of the board
-public val board-shape = RoundedRectangle(50.0, 50.0, 0.25)
+public val board-shape = RoundedRectangle(40.0, 60.0, 0.25)
 
 ; Creates a pcb-board with default stackup given the number of layers and board outline.
 public pcb-board flex-board (outline:Shape) :
