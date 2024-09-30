@@ -753,7 +753,15 @@ defn make-pmbus-alert-supports (C:Instance) :
     supports ultrascale-pmbus-alert :
       ultrascale-pmbus-alert.p => C.IO_65.L[4].P
 
+pcb-bundle ca0-pin :
+  port p : pin
+pcb-bundle ca1-pin :
+  port p : pin
+pcb-bundle dq0-pin :
+  port p : pin
 pcb-bundle dq1-pin :
+  port p : pin
+pcb-bundle dq2-pin :
   port p : pin
 pcb-bundle dq3-pin :
   port p : pin
@@ -762,20 +770,28 @@ defn make-ps-ddr-supports (C:Instance) :
   make-ps-lpddr4-supports(C)
 
 defn make-ps-lpddr4-supports (C:Instance) :
-  ;LPDDR4 Rules:
-  ;- No byte lane swapping
-  ;- No bit swapping in bytes 0 and 2
   inside pcb-module :
+    for i in 0 to 6 do :
+      supports ca0-pin :
+        ca0-pin.p => C.PS_DDR_A[i]
+      supports ca1-pin :
+        ca1-pin.p => C.PS_DDR_A[i + 10]
+
     for i in 0 to 8 do :
+      supports dq0-pin :
+        dq0-pin.p => C.PS_DDR_DQ[i]
       supports dq1-pin :
         dq1-pin.p => C.PS_DDR_DQ[i + 8]
+      supports dq2-pin :
+        dq2-pin.p => C.PS_DDR_DQ[i + 16]
       supports dq3-pin :
         dq3-pin.p => C.PS_DDR_DQ[i + 24]
 
     ;Channel 0
     supports lpddr4-x16-no-cke-cs :
       for i in 0 to 8 do :
-        lpddr4-x16-no-cke-cs.d[0].dq[i] => C.PS_DDR_DQ[i]
+        require p0:dq0-pin
+        lpddr4-x16-no-cke-cs.d[0].dq[i] => p0.p
         require p1:dq1-pin
         lpddr4-x16-no-cke-cs.d[1].dq[i] => p1.p
       for i in 0 to 2 do :
@@ -785,12 +801,14 @@ defn make-ps-lpddr4-supports (C:Instance) :
       lpddr4-x16-no-cke-cs.ck.P => C.PS_DDR_CK[0].P
       lpddr4-x16-no-cke-cs.ck.N => C.PS_DDR_CK[0].N
       for i in 0 to 6 do :
-        lpddr4-x16-no-cke-cs.ca[i] => C.PS_DDR_A[i]
+        require p:ca0-pin
+        lpddr4-x16-no-cke-cs.ca[i] => p.p
 
     ;Channel 1
     supports lpddr4-x16-no-cke-cs :
       for i in 0 to 8 do :
-        lpddr4-x16-no-cke-cs.d[0].dq[i] => C.PS_DDR_DQ[i + 16]
+        require p2:dq2-pin
+        lpddr4-x16-no-cke-cs.d[0].dq[i] => p2.p
         require p3:dq3-pin
         lpddr4-x16-no-cke-cs.d[1].dq[i] => p3.p
       for i in 0 to 2 do :
@@ -800,7 +818,8 @@ defn make-ps-lpddr4-supports (C:Instance) :
       lpddr4-x16-no-cke-cs.ck.P => C.PS_DDR_CK[1].P
       lpddr4-x16-no-cke-cs.ck.N => C.PS_DDR_CK[1].N
       for i in 0 to 6 do :
-        lpddr4-x16-no-cke-cs.ca[i] => C.PS_DDR_A[i + 10]
+        require p:ca1-pin
+        lpddr4-x16-no-cke-cs.ca[i] => p.p
 
     supports lpddr4-x32-no-cke-cs :
       require channels:lpddr4-x16-no-cke-cs[2]

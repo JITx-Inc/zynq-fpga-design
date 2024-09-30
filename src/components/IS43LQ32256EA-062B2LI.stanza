@@ -241,7 +241,7 @@ public pcb-component component () :
 
   val pkg = BGA(
     num-leads = 264,
-    lead-diam = 0.35,
+    lead-diam = 0.25,
     lead-numbering = Grid-Numbering(22, 12),
     package-body = PackageBody(
       width = 10.0 +/- 0.1
