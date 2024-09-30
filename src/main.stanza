@@ -32,39 +32,39 @@ public pcb-module module :
   ;DRAM
   inst ram : jitx-fpga/components/IS43LQ32256EA-062B2LI/device()
 
-  ;Ground
-  let :
-    net gnd (gnd rail-0v85.V- rail-1v1.V- rail-1v2.V- rail-1v8.V- rail-3v3.V-
-      rail-5v0.V- vcco-hp.V-)
-    net (gnd fpga.GND ram.GND)
+  ; ;Ground
+  ; let :
+  ;   net gnd (gnd rail-0v85.V- rail-1v1.V- rail-1v2.V- rail-1v8.V- rail-3v3.V-
+  ;     rail-5v0.V- vcco-hp.V-)
+  ;   net (gnd fpga.GND ram.GND)
 
-  ;Power
-  let :
-    net rail-0v85 (rail-0v85 fpga.VCCINT fpga.VCCBRAM fpga.VCCINT_IO
-      fpga.PS_MGTRAVCC fpga.VCC_PSINTFP fpga.VCC_PSINTFP_DDR fpga.VCC_PSINTLP)
+  ; ;Power
+  ; let :
+  ;   net rail-0v85 (rail-0v85 fpga.VCCINT fpga.VCCBRAM fpga.VCCINT_IO
+  ;     fpga.PS_MGTRAVCC fpga.VCC_PSINTFP fpga.VCC_PSINTFP_DDR fpga.VCC_PSINTLP)
 
-    net rail-1v1 (rail-1v1 fpga.VCCO_PSDDR ram.VDDQ ram.VDD2)
+  ;   net rail-1v1 (rail-1v1 fpga.VCCO_PSDDR ram.VDDQ ram.VDD2)
 
-    net rail-1v2 (rail-1v2 fpga.VCC_PSPLL)
+  ;   net rail-1v2 (rail-1v2 fpga.VCC_PSPLL)
 
-    net rail-1v8 (rail-1v8 fpga.VCCAUX fpga.VCCAUX_IO fpga.PS_MGTRAVTT
-      fpga.VCC_PSAUX fpga.VCCO_44 fpga.VCCO_65 fpga.VCCO_PSIO0 fpga.VCCO_PSIO1
-      fpga.VCCO_PSIO2 fpga.VCCO_PSIO3 ram.VDD1)
+  ;   net rail-1v8 (rail-1v8 fpga.VCCAUX fpga.VCCAUX_IO fpga.PS_MGTRAVTT
+  ;     fpga.VCC_PSAUX fpga.VCCO_44 fpga.VCCO_65 fpga.VCCO_PSIO0 fpga.VCCO_PSIO1
+  ;     fpga.VCCO_PSIO2 fpga.VCCO_PSIO3 ram.VDD1)
 
-  ;PS Sysmon ADC Power
-  let :
-    net (gnd-syzmon fpga.VCC_PSADC.V-)
+  ; ;PS Sysmon ADC Power
+  ; let :
+  ;   net (gnd-syzmon fpga.VCC_PSADC.V-)
 
-  net (vcc-batt.V+ fpga.C.VCC_PSBATT)
+  ; net (vcc-batt.V+ fpga.C.VCC_PSBATT)
 
   ;DDR4 Connection
   let :
-    val x32-r2-b = lpddr4(LPDDR4-x32, LPDDR4-Rank2)
+    val x32-r1-b = lpddr4(LPDDR4-x32, LPDDR4-Rank1)
 
     require fpga-no-cke-cs:jitx-fpga/components/xczu1cg-sbva484/lpddr4-x32-no-cke-cs from fpga
-    require ram-x32:x32-r2-b from ram
+    require ram-x32:x32-r1-b from ram
 
-    node fpga-x32:x32-r2-b
+    node fpga-x32:x32-r1-b
     for i in 0 to 2 do :
       for j in 0 to 2 do :
         for k in 0 to 8 do :
@@ -74,13 +74,13 @@ public pcb-module module :
         topo-net(fpga-x32.ch[i].d[j].dmi fpga-no-cke-cs.ch[i].d[j].dmi)
       topo-net(fpga-x32.ch[i].ck.P fpga-no-cke-cs.ch[i].ck.P)
       topo-net(fpga-x32.ch[i].ck.N fpga-no-cke-cs.ch[i].ck.N)
-      for j in 0 to 2 do :
+      for j in 0 to 1 do :
         topo-net(fpga-x32.ch[i].cke[j] fpga.C.PS_DDR_CKE[j])
         topo-net(fpga-x32.ch[i].cs[j] fpga.C.PS_DDR_CS_N[j])
       for j in 0 to 6 do :
         topo-net(fpga-x32.ch[i].ca[j] fpga-no-cke-cs.ch[i].ca[j])
 
-    connect-LPDDR4(fpga-x32, ram-x32, LPDDR4-x32, LPDDR4-Rank2,
+    connect-LPDDR4(fpga-x32, ram-x32, LPDDR4-x32, LPDDR4-Rank1,
       routing-struct-differential, routing-struct-single-ended)
 
     topo-net(fpga.C.PS_DDR_RAM_RST_N ram.C.RESET_N)

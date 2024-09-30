@@ -572,55 +572,55 @@ protected pcb-module module :
   port VCCO_PSIO3 : power
   port VCC_PSDDR_PLL : power
 
-  net (GND VCCINT.V- VCCO_PSDDR.V- VCC_PSINTFP.V- VCC_PSINTLP.V-
-    VCCBRAM.V- VCCINT_IO.V- VCCO_65.V- VCC_PSAUX.V- PS_MGTRAVCC.V-
-    PS_MGTRAVTT.V- VCCAUX_IO.V- VCC_PSINTFP_DDR.V- VCC_PSPLL.V- VCCAUX.V-
-    VCCO_44.V- VCCO_PSIO0.V- VCCO_PSIO1.V- VCCO_PSIO2.V- VCCO_PSIO3.V-
-    VCC_PSDDR_PLL.V-)
-  net (C.GNDADC VCC_PSADC.V-)
-  net (C.VCC_PSADC VCC_PSADC.V+)
-  for p in pins(C.GND) do :
-    net GND (GND p)
-  for p in pins(C.VCCINT) do :
-    net (VCCINT.V+ p)
-  for p in pins(C.VCCO_PSDDR) do :
-    net (VCCO_PSDDR.V+ p)
-  for p in pins(C.VCC_PSINTFP) do :
-    net (VCC_PSINTFP.V+ p)
-  for p in pins(C.VCC_PSINTLP) do :
-    net (VCC_PSINTLP.V+ p)
-  for p in pins(C.VCCBRAM) do :
-    net (VCCBRAM.V+ p)
-  for p in pins(C.VCCINT_IO) do :
-    net (VCCINT_IO.V+ p)
-  for p in pins(C.VCCO_65) do :
-    net (VCCO_65.V+ p)
-  for p in pins(C.VCC_PSAUX) do :
-    net (VCC_PSAUX.V+ p)
-  for p in pins(C.PS_MGTRAVCC) do :
-    net (PS_MGTRAVCC.V+ p)
-  for p in pins(C.PS_MGTRAVTT) do :
-    net (PS_MGTRAVTT.V+ p)
-  for p in pins(C.VCCAUX_IO) do :
-    net (VCCAUX_IO.V+ p)
-  for p in pins(C.VCC_PSINTFP_DDR) do :
-    net (VCC_PSINTFP_DDR.V+ p)
-  for p in pins(C.VCC_PSPLL) do :
-    net (VCC_PSPLL.V+ p)
-  for p in pins(C.VCCAUX) do :
-    net (VCCAUX.V+ p)
-  for p in pins(C.VCCO_44) do :
-    net (VCCO_44.V+ p)
-  for p in pins(C.VCCO_PSIO0) do :
-    net (VCCO_PSIO0.V+ p)
-  for p in pins(C.VCCO_PSIO1) do :
-    net (VCCO_PSIO1.V+ p)
-  for p in pins(C.VCCO_PSIO2) do :
-    net (VCCO_PSIO2.V+ p)
-  for p in pins(C.VCCO_PSIO3) do :
-    net (VCCO_PSIO3.V+ p)
-  for p in pins(C.VCC_PSDDR_PLL) do :
-    net (VCC_PSDDR_PLL.V+ p)
+  ; net (GND VCCINT.V- VCCO_PSDDR.V- VCC_PSINTFP.V- VCC_PSINTLP.V-
+  ;   VCCBRAM.V- VCCINT_IO.V- VCCO_65.V- VCC_PSAUX.V- PS_MGTRAVCC.V-
+  ;   PS_MGTRAVTT.V- VCCAUX_IO.V- VCC_PSINTFP_DDR.V- VCC_PSPLL.V- VCCAUX.V-
+  ;   VCCO_44.V- VCCO_PSIO0.V- VCCO_PSIO1.V- VCCO_PSIO2.V- VCCO_PSIO3.V-
+  ;   VCC_PSDDR_PLL.V-)
+  ; net (C.GNDADC VCC_PSADC.V-)
+  ; net (C.VCC_PSADC VCC_PSADC.V+)
+  ; for p in pins(C.GND) do :
+  ;   net GND (GND p)
+  ; for p in pins(C.VCCINT) do :
+  ;   net (VCCINT.V+ p)
+  ; for p in pins(C.VCCO_PSDDR) do :
+  ;   net (VCCO_PSDDR.V+ p)
+  ; for p in pins(C.VCC_PSINTFP) do :
+  ;   net (VCC_PSINTFP.V+ p)
+  ; for p in pins(C.VCC_PSINTLP) do :
+  ;   net (VCC_PSINTLP.V+ p)
+  ; for p in pins(C.VCCBRAM) do :
+  ;   net (VCCBRAM.V+ p)
+  ; for p in pins(C.VCCINT_IO) do :
+  ;   net (VCCINT_IO.V+ p)
+  ; for p in pins(C.VCCO_65) do :
+  ;   net (VCCO_65.V+ p)
+  ; for p in pins(C.VCC_PSAUX) do :
+  ;   net (VCC_PSAUX.V+ p)
+  ; for p in pins(C.PS_MGTRAVCC) do :
+  ;   net (PS_MGTRAVCC.V+ p)
+  ; for p in pins(C.PS_MGTRAVTT) do :
+  ;   net (PS_MGTRAVTT.V+ p)
+  ; for p in pins(C.VCCAUX_IO) do :
+  ;   net (VCCAUX_IO.V+ p)
+  ; for p in pins(C.VCC_PSINTFP_DDR) do :
+  ;   net (VCC_PSINTFP_DDR.V+ p)
+  ; for p in pins(C.VCC_PSPLL) do :
+  ;   net (VCC_PSPLL.V+ p)
+  ; for p in pins(C.VCCAUX) do :
+  ;   net (VCCAUX.V+ p)
+  ; for p in pins(C.VCCO_44) do :
+  ;   net (VCCO_44.V+ p)
+  ; for p in pins(C.VCCO_PSIO0) do :
+  ;   net (VCCO_PSIO0.V+ p)
+  ; for p in pins(C.VCCO_PSIO1) do :
+  ;   net (VCCO_PSIO1.V+ p)
+  ; for p in pins(C.VCCO_PSIO2) do :
+  ;   net (VCCO_PSIO2.V+ p)
+  ; for p in pins(C.VCCO_PSIO3) do :
+  ;   net (VCCO_PSIO3.V+ p)
+  ; for p in pins(C.VCC_PSDDR_PLL) do :
+  ;   net (VCC_PSDDR_PLL.V+ p)
 
   make-supports(C)
 

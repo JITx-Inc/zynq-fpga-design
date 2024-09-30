@@ -265,57 +265,57 @@ public pcb-module device () :
   port VDD1 : power
   port VDD2 : power
 
-  net gnd (GND VDDQ.V- VDD1.V- VDD2.V-)
-  for p in pins(C.VSS) do :
-    net (GND p)
+  ; net gnd (GND VDDQ.V- VDD1.V- VDD2.V-)
+  ; for p in pins(C.VSS) do :
+  ;   net (GND p)
 
-  for p in pins(C.VDDQ) do :
-    net (VDDQ.V+ p)
-  for p in pins(C.VDD1) do :
-    net (VDD1.V+ p)
-  for p in pins(C.VDD2) do :
-    net (VDD2.V+ p)
+  ; for p in pins(C.VDDQ) do :
+  ;   net (VDDQ.V+ p)
+  ; for p in pins(C.VDD1) do :
+  ;   net (VDD1.V+ p)
+  ; for p in pins(C.VDD2) do :
+  ;   net (VDD2.V+ p)
 
   ;Channel A
-  val x16-r2-b = lpddr4-x16(LPDDR4-Rank2)
-  supports x16-r2-b :
+  val x16-r1-b = lpddr4-x16(LPDDR4-Rank1)
+  supports x16-r1-b :
     for i in 0 to 8 do :
-      x16-r2-b.d[0].dq[i] => C.DQ_A[i]
-      x16-r2-b.d[1].dq[i] => C.DQ_A[i + 8]
+      x16-r1-b.d[0].dq[i] => C.DQ_A[i]
+      x16-r1-b.d[1].dq[i] => C.DQ_A[i + 8]
     for i in 0 to 2 do :
-      x16-r2-b.d[i].dqs.P => C.DQS_A_T[i]
-      x16-r2-b.d[i].dqs.N => C.DQS_A_C[i]
-      x16-r2-b.d[i].dmi => C.DMI_A[i]
-    x16-r2-b.ck.P => C.CK_T_A
-    x16-r2-b.ck.N => C.CK_C_A
-    x16-r2-b.cke[0] => C.CKE_A
-    x16-r2-b.cke[1] => C.NC[8] ;connected for compatibility with rank 2 ram
-    x16-r2-b.cs[0] => C.CS_A
-    x16-r2-b.cs[1] => C.NC[7] ;connected for compatibility with rank 2 ram
+      x16-r1-b.d[i].dqs.P => C.DQS_A_T[i]
+      x16-r1-b.d[i].dqs.N => C.DQS_A_C[i]
+      x16-r1-b.d[i].dmi => C.DMI_A[i]
+    x16-r1-b.ck.P => C.CK_T_A
+    x16-r1-b.ck.N => C.CK_C_A
+    x16-r1-b.cke[0] => C.CKE_A
+    ; x16-r1-b.cke[1] => C.NC[8] ;connected for compatibility with rank 2 ram
+    x16-r1-b.cs[0] => C.CS_A
+    ; x16-r1-b.cs[1] => C.NC[7] ;connected for compatibility with rank 2 ram
     for i in 0 to 6 do :
-      x16-r2-b.ca[i] => C.CA_A[i]
+      x16-r1-b.ca[i] => C.CA_A[i]
 
   ;Channel B
-  supports x16-r2-b :
+  supports x16-r1-b :
     for i in 0 to 8 do :
-      x16-r2-b.d[0].dq[i] => C.DQ_B[i]
-      x16-r2-b.d[1].dq[i] => C.DQ_B[i + 8]
+      x16-r1-b.d[0].dq[i] => C.DQ_B[i]
+      x16-r1-b.d[1].dq[i] => C.DQ_B[i + 8]
     for i in 0 to 2 do :
-      x16-r2-b.d[i].dqs.P => C.DQS_B_T[i]
-      x16-r2-b.d[i].dqs.N => C.DQS_B_C[i]
-      x16-r2-b.d[i].dmi => C.DMI_B[i]
-    x16-r2-b.ck.P => C.CK_T_B
-    x16-r2-b.ck.N => C.CK_C_B
-    x16-r2-b.cke[0] => C.CKE_B
-    x16-r2-b.cke[1] => C.NC[13] ;connected for compatibility with rank 2 ram
-    x16-r2-b.cs[0] => C.CS_B
-    x16-r2-b.cs[1] => C.NC[14] ;connected for compatibility with rank 2 ram
+      x16-r1-b.d[i].dqs.P => C.DQS_B_T[i]
+      x16-r1-b.d[i].dqs.N => C.DQS_B_C[i]
+      x16-r1-b.d[i].dmi => C.DMI_B[i]
+    x16-r1-b.ck.P => C.CK_T_B
+    x16-r1-b.ck.N => C.CK_C_B
+    x16-r1-b.cke[0] => C.CKE_B
+    ; x16-r1-b.cke[1] => C.NC[13] ;connected for compatibility with rank 2 ram
+    x16-r1-b.cs[0] => C.CS_B
+    ; x16-r1-b.cs[1] => C.NC[14] ;connected for compatibility with rank 2 ram
     for i in 0 to 6 do :
-      x16-r2-b.ca[i] => C.CA_B[i]
+      x16-r1-b.ca[i] => C.CA_B[i]
 
-  val x32-r2-b = lpddr4(LPDDR4-x32, LPDDR4-Rank2)
-  supports x32-r2-b :
-    require channels:x16-r2-b[2]
+  val x32-r1-b = lpddr4(LPDDR4-x32, LPDDR4-Rank1)
+  supports x32-r1-b :
+    require channels:x16-r1-b[2]
     for i in 0 to 2 do :
-      for (p1 in pins(x32-r2-b.ch[i]), p2 in pins(channels[i])) do :
+      for (p1 in pins(x32-r1-b.ch[i]), p2 in pins(channels[i])) do :
         p1 => p2
