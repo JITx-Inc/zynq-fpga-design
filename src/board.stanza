@@ -64,6 +64,7 @@ public pcb-via gen-thVia (via-start:LayerIndex via-stop:LayerIndex via-name:Stri
   diameter = 0.400
   hole-diameter = 0.200
   type = LaserDrill
+  structure-model(via-start, via-stop) = PinModel(tol(0.5e-15), tol(0.005))
 
 public pcb-routing-structure routing-struct-single-ended :
   name = "50 Ohm single-ended"
@@ -108,7 +109,7 @@ public pcb-board flex-board (outline:Shape) :
   stackup = lpddr4-flex-stackup
   boundary = outline
   signal-boundary = outline
-  vias = [gen-thVia(LayerIndex(0,Top), LayerIndex(0,Bottom) "Via-TH")]
+  vias = [gen-thVia(LayerIndex(0,Top), LayerIndex(0,Bottom), "Via-TH")]
 
 ; Setup the board
 public defn setup-board () :
