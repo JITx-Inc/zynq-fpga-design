@@ -83,8 +83,6 @@ public pcb-module module :
     connect-LPDDR4(fpga-x32, ram-x32, LPDDR4-x32, LPDDR4-Rank1,
       routing-struct-differential, routing-struct-single-ended)
 
-    topo-net(fpga.C.PS_DDR_RAM_RST_N ram.C.RESET_N)
-
 set-current-design("flex-design")
 set-paper(ANSI-E)
 set-use-layout-sketch()
