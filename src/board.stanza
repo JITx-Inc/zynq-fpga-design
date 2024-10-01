@@ -29,7 +29,7 @@ pcb-material adhesive :
 public pcb-rules jlcpcb-flex-rules :
   min-copper-width             = 0.080
   min-copper-copper-space      = 0.080
-  min-copper-hole-space        = 0.200
+  min-copper-hole-space        = 0.175
   min-copper-edge-space        = 0.200
   min-annular-ring             = 0.100
   min-drill-diameter           = 0.100
@@ -61,7 +61,7 @@ public pcb-via gen-thVia (via-start:LayerIndex via-stop:LayerIndex via-name:Stri
   name = via-name
   start = via-start
   stop = via-stop
-  diameter = 0.400
+  diameter = 0.395
   hole-diameter = 0.200
   type = LaserDrill
   structure-model(via-start, via-stop) = PinModel(tol(0.5e-15), tol(0.005))
