@@ -61,8 +61,8 @@ public pcb-via gen-thVia (via-start:LayerIndex via-stop:LayerIndex via-name:Stri
   name = via-name
   start = via-start
   stop = via-stop
-  diameter = 0.400
-  hole-diameter = 0.200
+  diameter = 0.350
+  hole-diameter = 0.150
   type = LaserDrill
   structure-model(via-start, via-stop) = PinModel(tol(0.5e-15), tol(0.005))
 
