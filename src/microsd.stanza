@@ -68,8 +68,7 @@ public pcb-module module :
   net (gnd, level-trans.gnd0, level-trans.gnd1,
             socket.vss)
 
-  ;TODO: Need 220.0 ferrite bead, not 470.0
-  inst ferrite : ocdb/components/tdk/MPZ1608/component(470.0)
+  inst ferrite : database-part(["mpn" => "MMZ1005D220CTD25", "manufacturer" => "TDK Corp"])
   net (ferrite.p[1], socket.gnd0,
                      socket.gnd1,
                      socket.gnd2,
@@ -124,5 +123,3 @@ public pcb-module module :
 
   ;Unused
   no-connect(level-trans.clk_fb)
-
-

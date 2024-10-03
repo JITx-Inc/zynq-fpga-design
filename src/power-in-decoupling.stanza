@@ -15,8 +15,7 @@ public pcb-module module :
   pin vdd-1V8  
   pin gnd
 
-  ;TODO: Need 220.0 ferrite bead, not 470.0
-  inst ferrite : ocdb/components/tdk/MPZ1608/component(470.0)
+  inst ferrite : database-part(["mpn" => "MMZ1005D220CTD25", "manufacturer" => "TDK Corp"])
   net (n3V3-pri, ferrite.p[1])
   net (vdd-3V3, ferrite.p[2])
   cap-strap(vdd-3V3, gnd, 10.0e-6)
@@ -42,4 +41,3 @@ public pcb-module module :
     symbol(vdd-3V3) = ocdb/utils/symbols/supply-sym
     symbol(n3V3-pri) = ocdb/utils/symbols/supply-sym
     symbol(gnd) = ocdb/utils/symbols/ground-sym
-

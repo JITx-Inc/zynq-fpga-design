@@ -2,208 +2,108 @@
 defpackage jitx-fpga/jtag-uart :
   import core
   import collections
+
   import jitx
   import jitx/commands
+  import jsl/bundles
   import ocdb/utils/generic-components
-  import ocdb/utils/design-vars
-  import jitx-fpga/dummy
-  
+
+  import FTDI/components/FT2232HL
+
 public pcb-module module :
   ;Port definitions.
-  pin n3V3
-  pin usb-5V0
-  pin gnd
-  pin usb-d-n
-  pin usb-d-p
-  pin jtag-uart-id  
-  pin jtag-tck-3v3
-  pin jtag-tdi-3v3
-  pin jtag-tdo-3v3
-  pin jtag-tms-3v3
-  pin uart-rx-3v3
-  pin uart-tx-3v3
-  pin por-n-3v3
-  pin srst-n-3v3
-  pin pwren-n
-  
+  port n3V3 : pin
+  port usb-5V0 : pin
+  port gnd : pin
+  port usb-d-n : pin
+  port usb-d-p : pin
+  port jtag-uart-id : pin
+  port jtag-tck-3v3 : pin
+  port jtag-tdi-3v3 : pin
+  port jtag-tdo-3v3 : pin
+  port jtag-tms-3v3 : pin
+  port uart-rx-3v3 : pin
+  port uart-tx-3v3 : pin
+  port por-n-3v3 : pin
+  port srst-n-3v3 : pin
+  port pwren-n : pin
 
   ;FT2232 jtag controller.
-  inst ft2232 : dummy(
-                  "FT2232HL",
-                  [["vregin", Left]
-                   ["vregout", Left]
-                   ["dm", Left]
-                   ["dp", Left]
-                   ["reset_n", Left]
-                   ["ref", Left]
-                   ["eecs", Left]
-                   ["eeclk", Left]
-                   ["eedata", Left]
-                   ["osci", Left]
-                   ["osco", Left]
-                   ["test", Left]
-
-                   ["adbus0", Right]
-                   ["adbus1", Right]
-                   ["adbus2", Right]
-                   ["adbus3", Right]
-                   ["adbus4", Right]
-                   ["adbus5", Right]
-                   ["adbus6", Right]
-                   ["adbus7", Right]
-                   ["acbus0", Right]
-                   ["acbus1", Right]
-                   ["acbus2", Right]
-                   ["acbus3", Right]
-                   ["acbus4", Right]
-                   ["acbus5", Right]
-                   ["acbus6", Right]
-                   ["acbus7", Right]
-                   ["bdbus0", Right]
-                   ["bdbus1", Right]
-                   ["bdbus2", Right]
-                   ["bdbus3", Right]
-                   ["bdbus4", Right]
-                   ["bdbus5", Right]
-                   ["bdbus6", Right]
-                   ["bdbus7", Right]
-                   ["bcbus0", Right]
-                   ["bcbus1", Right]
-                   ["bcbus2", Right]
-                   ["bcbus3", Right]
-                   ["bcbus4", Right]
-                   ["bcbus5", Right]
-                   ["bcbus6", Right]
-                   ["bcbus7", Right]
-                   ["pwren_n", Right]
-                   ["suspend_n", Right]
-
-                   ["vphy", Up]
-                   ["vpll", Up]
-                   ["vcore0", Up]
-                   ["vcore1", Up]
-                   ["vcore2", Up]
-                   ["vccio0", Up]
-                   ["vccio1", Up]
-                   ["vccio2", Up]
-                   ["vccio3", Up]
-
-                   ["agnd", Down]
-                   ["gnd0", Down]
-                   ["gnd1", Down]
-                   ["gnd2", Down]
-                   ["gnd3", Down]
-                   ["gnd4", Down]
-                   ["gnd5", Down]
-                   ["gnd6", Down]
-                   ["gnd7", Down]
-                   ["gnd8", Down]])
+  inst ft2232 : FTDI/components/FT2232HL/device(FT2232H-MPSSE, FT2232H-RS232, use-internal-1v8 = true)
 
   ;Creating the 3V3_PHY rail.
-  ;Todo: need 220 variant bead, not 470.
   net n3V3_phy ()
-  inst fb0 : ocdb/components/tdk/MPZ1608/component(470.0)
+  inst fb0 : database-part(["mpn" => "MMZ1005D220CTD25", "manufacturer" => "TDK Corp"])
   net (fb0.p[1], n3V3)
   net (fb0.p[2], n3V3_phy)
   cap-strap(n3V3_phy, gnd, 4.7e-6)
   cap-strap(n3V3_phy, gnd, 100.0e-9)
 
   ;Creating the 3V3_PLL rail.
-  ;Todo: need 220 variant bead, not 470.
   net n3V3_pll ()
-  inst fb1 : ocdb/components/tdk/MPZ1608/component(470.0)
+  inst fb1 : database-part(["mpn" => "MMZ1005D220CTD25", "manufacturer" => "TDK Corp"])
   net (fb1.p[1], n3V3)
   net (fb1.p[2], n3V3_pll)
   cap-strap(n3V3_pll, gnd, 4.7e-6)
   cap-strap(n3V3_pll, gnd, 100.0e-9)
 
-  ;Creating the 1V8_FT rail.
-  net n1V8_ft (ft2232.vregout)
-  cap-strap(n1V8_ft, gnd, 4.7e-6)
-
   ;Voltage protection diodes.
-  inst diodes : dummy(
-                  "CDSOT23-SR208",
-                  [["p4" Left]
-                   ["p5" Left]
-                   ["p6" Left]
-                   ["p3", Right]
-                   ["p2", Right]
-                   ["p1", Right]])
-  net (diodes.p4, usb-d-p)
-  net (diodes.p3, usb-d-n)
-  net (diodes.p5, gnd)
-  net (diodes.p2, usb-5V0)
-  net (diodes.p6, jtag-uart-id)
-  no-connect(diodes.p1)
+  inst diodes: jitx-fpga/components/CDSOT23-SR208/component
+  net (diodes.IO3, usb-d-p)
+  net (diodes.IO2, usb-d-n)
+  net (diodes.REF2, gnd)
+  net (diodes.REF1, usb-5V0)
+  net (diodes.IO4, jtag-uart-id)
+  no-connect(diodes.IO1)
 
   ;EEProm for configuring controller.
-  inst eeprom : dummy(
-                  "93LC56B"
-                  [["di", Left]
-                   ["clk", Left]
-                   ["cs", Left]
-                   ["vcc", Left]
-                   ["do", Right]
-                   ["vss", Right]])
-  net (n3V3, eeprom.vcc)
-  net (gnd, eeprom.vss)
-  res-strap(eeprom.di, n3V3, 10.0e3)
-  res-strap(eeprom.clk, n3V3, 10.0e3)
-  res-strap(eeprom.cs, n3V3, 10.0e3)  
-  cap-strap(eeprom.vcc, gnd, 100.0e-9)
+  inst eeprom : database-part(["mpn" => "93LC56B-I/SN", "manufacturer" => "Microchip"])
+
+  net (n3V3, eeprom.VCC)
+  net (gnd, eeprom.VSS)
+  res-strap(eeprom.DI, n3V3, 10.0e3)
+  res-strap(eeprom.CLK, n3V3, 10.0e3)
+  res-strap(eeprom.CS, n3V3, 10.0e3)  
+  cap-strap(eeprom.VCC, gnd, 100.0e-9)
 
   ;Connections between EEProm and FT2232
-  net (eeprom.di, ft2232.eedata)
-  res-strap(eeprom.do, ft2232.eedata, 2.0e3)
-  res-strap(eeprom.clk, ft2232.eeclk, 22.1)
-  net (eeprom.cs, ft2232.eecs)
+  net (eeprom.DI, ft2232.cfg.data)
+  res-strap(eeprom.DO, ft2232.cfg.data, 2.0e3)
+  res-strap(eeprom.CLK, ft2232.cfg.clk, 22.1)
+  net (eeprom.CS, ft2232.cfg.cs)
 
   ;Crystal oscillator for controller.
-  inst crystal : dummy(
-                   "ECS-120-10-33B-CKM-TR",
-                   [["p1", Left]
-                    ["p3", Right]
-                    ["gnd0", Down]
-                    ["gnd1", Down]])
-  net (crystal.p1, ft2232.osci)
-  net (crystal.p3, ft2232.osco)
-  net (gnd, crystal.gnd0, crystal.gnd1)
-  cap-strap(crystal.p1, gnd, 18.0e-12)
-  cap-strap(crystal.p3, gnd, 18.0e-12)
+  inst crystal : database-part(["mpn" => "ECS-120-10-33B-CKM-TR", "manufacturer" => "ECS"])
+  net (crystal.In_Out, ft2232.C.OSCI)
+  net (crystal.Out_In, ft2232.C.OSCO)
+  net (gnd, crystal.Gnd0, crystal.Gnd1)
+  cap-strap(crystal.In_Out, gnd, 18.0e-12)
+  cap-strap(crystal.Out_In, gnd, 18.0e-12)
 
   ;Power for FT2232
-  net (n3V3, ft2232.vregin)
-  net (n3V3_phy, ft2232.vphy)
-  net (n3V3_pll, ft2232.vpll)
-  net (n1V8_ft, ft2232.vcore0, ft2232.vcore1, ft2232.vcore2)
-  net (n3V3, ft2232.vccio0, ft2232.vccio1, ft2232.vccio2, ft2232.vccio3)
-  net (gnd, ft2232.agnd,
-            ft2232.gnd0, ft2232.gnd1, ft2232.gnd2, ft2232.gnd3,
-            ft2232.gnd4, ft2232.gnd5, ft2232.gnd6, ft2232.gnd7,
-            ft2232.gnd8)
+  net (n3V3_phy, ft2232.VPHY.V+)
+  net (n3V3_pll, ft2232.VPLL.V+)
+  net (n3V3, ft2232.VCCIO.V+)
+  net (gnd, ft2232.GND)
 
   ;Port connections
-  net (usb-d-n, ft2232.dm)
-  net (usb-d-p, ft2232.dp)
-  res-strap(jtag-tck-3v3, ft2232.adbus0, 22.1)
-  res-strap(jtag-tdi-3v3, ft2232.adbus1, 22.1)
-  res-strap(jtag-tdo-3v3, ft2232.adbus2, 22.1)
-  res-strap(jtag-tms-3v3, ft2232.adbus3, 22.1)
-  res-strap(por-n-3v3, ft2232.adbus6, 0.0)
-  res-strap(srst-n-3v3, ft2232.adbus7, 0.0)
-  net (uart-rx-3v3, ft2232.bdbus0)
-  net (uart-tx-3v3, ft2232.bdbus1)
-  net (pwren-n, ft2232.pwren_n)
+  net (usb-d-n, ft2232.USB.data.N)
+  net (usb-d-p, ft2232.USB.data.P)
 
-  ;Decoupling caps.
-  cap-strap(ft2232.vregin, gnd, 4.7e-6)
-  cap-strap(ft2232.vregin, gnd, 100.0e-9)
+  require ft2232-jtag:jtag from ft2232
+  res-strap(jtag-tck-3v3, ft2232-jtag.tck, 22.1)
+  res-strap(jtag-tdi-3v3, ft2232-jtag.tdi, 22.1)
+  res-strap(jtag-tdo-3v3, ft2232-jtag.tdo, 22.1)
+  res-strap(jtag-tms-3v3, ft2232-jtag.tms, 22.1)
 
-  ;Decoupling caps for n1V8_ft
-  cap-strap(n1V8_ft, gnd, 100.0e-9)
-  cap-strap(n1V8_ft, gnd, 100.0e-9)
-  cap-strap(n1V8_ft, gnd, 100.0e-9)
+  require ft2232-gpio:gpio[2] from ft2232
+  res-strap(por-n-3v3, ft2232-gpio[0].gpio, 0.0)
+  res-strap(srst-n-3v3, ft2232-gpio[1].gpio, 0.0)
+
+  require ft2232-uart:uart-fc() from ft2232
+  net (uart-rx-3v3, ft2232-uart.tx)
+  net (uart-tx-3v3, ft2232-uart.rx)
+  net (pwren-n, ft2232.C.PWREN_n)
 
   ;Decoupling caps for n3V3
   cap-strap(n3V3, gnd, 100.0e-9)
@@ -212,19 +112,11 @@ public pcb-module module :
   cap-strap(n3V3, gnd, 100.0e-9)
 
   ;Pullups and pulldowns
-  res-strap(ft2232.adbus4, n3V3, 4.75e3)
-  res-strap(ft2232.reset_n, n3V3, 0.0)
+  res-strap(ft2232.C.ADBUS[4], n3V3, 4.75e3)
+  res-strap(ft2232.C.RESET_n, n3V3, 0.0)
 
   ;Unused test pin.
-  res-strap(ft2232.test, gnd, 0.0)
-
-  ;Unused FT2232 pins.
-  for i in 0 through 7 :
-    val name = to-string("acbus%_" % [i])
-    no-connect(ft2232.(name))
-  for i in 0 through 6 :
-    val name = to-string("bcbus%_" % [i])
-    no-connect(ft2232.(name))
+  res-strap(ft2232.C.TEST, gnd, 0.0)
 
   ;Explicit net names and symbols.
   let :
@@ -247,8 +139,4 @@ public pcb-module module :
     symbol(n3V3) = ocdb/utils/symbols/supply-sym
     symbol(n3V3_phy) = ocdb/utils/symbols/supply-sym
     symbol(n3V3_pll) = ocdb/utils/symbols/supply-sym
-    symbol(n1V8_ft) = ocdb/utils/symbols/supply-sym
     symbol(gnd) = ocdb/utils/symbols/ground-sym
-
-
-

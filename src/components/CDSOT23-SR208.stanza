@@ -1,0 +1,38 @@
+#use-added-syntax(jitx)
+defpackage jitx-fpga/components/CDSOT23-SR208 :
+  import core
+  import jitx
+  import jitx/commands
+
+  import jsl/symbols
+  import jsl/landpatterns
+  import jsl/design/settings
+
+public pcb-component component :
+
+  manufacturer = "BOURNS"
+  mpn = "CDSOT23-SR208"
+  datasheet = "https://www.bourns.com/docs/Product-Datasheets/CDSOT23-SR208.pdf"
+  reference-prefix = "U"
+
+  pin-properties:
+    [ pin:Ref  | pads:Ref ... | side:Dir | row:Int | column:Int ]
+    [ IO1      | p[1]         | Left     | 0       | -          ]
+    [ REF1     | p[2]         | Left     | 1       | -          ]
+    [ IO2      | p[3]         | Left     | 2       | -          ]
+    [ IO3      | p[4]         | Right    | 0       | -          ]
+    [ REF2     | p[5]         | Right    | 1       | -          ]
+    [ IO4      | p[6]         | Right    | 2       | -          ]
+
+  val box = BoxSymbol(self)
+  set-grid(box, [3, 2])
+  assign-symbol(create-symbol(box))
+
+  val pkg = SOIC-N(
+    num-leads = 6,
+    lead-span = min-max(2.60, 3.00),
+    lead = SOIC-Lead(BigGullWingLeads(), min-max(0.35, 0.55), min-max(0.35, 0.50)),
+    package-length = min-max(2.80, 3.05),
+    density-level = DensityLevelC
+  )
+  assign-landpattern $ create-landpattern(pkg)
