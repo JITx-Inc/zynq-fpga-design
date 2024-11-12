@@ -53,7 +53,7 @@ defmethod build-silkscreen (pkg:TSW-103-07-F-S-Pkg, vp:VirtualLP) -> False :
 
 defmethod build-pads (pkg:TSW-103-07-F-S-Pkg, vp:VirtualLP) -> False :
   append-all(vp, [
-    VirtualPad(#R(p)[1], pth-pad(Circle(0.51), Rectangle(1.37, 1.37)), loc(-2.54, 0.0), class = ["pad"]),
-    VirtualPad(#R(p)[2], pth-pad(1.02, 1.37), loc(0.0, 0.0), class = ["pad"]),
-    VirtualPad(#R(p)[3], pth-pad(1.02, 1.37), loc(2.54, 0.0), class = ["pad"])
+    VirtualPad(1, pth-pad(Circle(0.51), Rectangle(1.37, 1.37)), loc(-2.54, 0.0), class = ["pad"]),
+    VirtualPad(2, pth-pad(1.02, 1.37), loc(0.0, 0.0), class = ["pad"]),
+    VirtualPad(3, pth-pad(1.02, 1.37), loc(2.54, 0.0), class = ["pad"])
     ])
